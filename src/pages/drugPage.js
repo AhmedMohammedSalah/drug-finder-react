@@ -1,4 +1,7 @@
-// src/App.jsx (or src/components/Pharmacy.jsx)
+/*
+Author: Sara
+Description: Drugs page for the pharmacy dashboard, showcasing a list of items with delete and edit functionality.
+*/
 import { useState } from 'react';
 import { TrashIcon, PencilIcon, HomeIcon } from '@heroicons/react/24/solid';
 import IconButton from '../components/shared/btn'; 

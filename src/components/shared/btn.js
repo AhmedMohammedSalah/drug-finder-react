@@ -1,4 +1,12 @@
-// src/components/IconButton.jsx
+/* 
+Author: Sara
+Description: A reusable button component that supports custom icons, colors, and click actions.
+To use this component, you need to install Heroicons if you haven't already. You can
+run this command for icons: npm install @heroicons/react
+
+Input(props): btnColor, btnShade, textColor, hoverShade, focusShade, onClick, icon: Icon, name , path
+*/
+
 import { HomeIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
 
