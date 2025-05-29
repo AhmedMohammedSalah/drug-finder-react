@@ -9,7 +9,7 @@ import PharmacyList from './pages/pharamcieslist';
 // import Drugs from './pages/drugPage'
 import DefaultLayout from './components/layout/default-layout';
 // import IconButton from './components/shared/iconButton';     
-import Drugs from './pages/drugPage'
+
 
 function App() {
   return (
