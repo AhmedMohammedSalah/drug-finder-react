@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "../components/shared/modal";
+import IconButton from '../components/shared/button';
 
 function Drugs() {
   const [showModal, setShowModal] = useState(false);
@@ -12,6 +13,8 @@ function Drugs() {
       >
         Open Modal
       </button>
+
+      <IconButton />
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <h2 className="text-xl font-bold mb-4">Modal Title</h2>
