@@ -1,0 +1,48 @@
+{
+  "pharmacies": [
+    {
+      "store_id": 1,
+      "owner_id": 101,
+      "store_name": "City Pharmacy",
+      "store_type": "hospital",
+      "license_number": "LIC123456",
+      "license_expiry_date": 20251231,
+      "store_logo_url": "https://example.com/logo1.png",
+      "store_banner_url": "https://example.com/banner1.jpg",
+      "description": "Trusted pharmacy with fast service."
+    },
+    {
+      "store_id": 2,
+      "owner_id": 102,
+      "store_name": "MediTech Supplies",
+      "store_type": "Medical Devices",
+      "license_number": "LIC987654",
+      "license_expiry_date": 20241115,
+      "store_logo_url": "https://example.com/logo2.png",
+      "store_banner_url": "https://example.com/banner2.jpg",
+      "description": "Top quality medical devices supplier."
+    },
+    {
+      "store_id": 3,
+      "owner_id": 103,
+      "store_name": "HealthZone",
+      "store_type": "Both",
+      "license_number": "LIC567890",
+      "license_expiry_date": 20261010,
+      "store_logo_url": "https://example.com/logo3.png",
+      "store_banner_url": "https://example.com/banner3.jpg",
+      "description": "All-in-one pharmacy and device store."
+    },
+     {
+      "store_id": 4,
+      "owner_id": 105,
+      "store_name": "shifaa",
+      "store_type": "clinic",
+      "license_number": "LIC567893",
+      "license_expiry_date": 20261010,
+      "store_logo_url": "https://example.com/logo3.png",
+      "store_banner_url": "https://example.com/banner3.jpg",
+      "description": "All-in-one pharmacy and device store."
+    }
+  ]
+}
