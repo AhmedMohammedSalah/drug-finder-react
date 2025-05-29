@@ -11,7 +11,9 @@ const features = [
 
 export default function ProfessionalServicesSection() {
   return (
-    <section className="bg-gradient-to-br from-slate-800 via-slate-900 to-blue-900 py-20">
+    // inside container 
+
+    <section className="bg-gradient-to-br from-slate-800 via-slate-900 to-blue-900 py-20 rounded-3xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}

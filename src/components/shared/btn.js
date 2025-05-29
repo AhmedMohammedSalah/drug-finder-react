@@ -56,7 +56,7 @@ function IconButton({ btnColor, btnShade, textColor, hoverShade, focusShade, onC
       >
         {Icon ? <Icon className="h-6 w-6" /> : name}
       </button>
-    </div>
+     </div>
   );
 }
 

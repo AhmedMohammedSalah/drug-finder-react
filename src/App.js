@@ -16,9 +16,6 @@ function App() {
           {/*[AMS] any route here will have auto header and footer */}
           <Route path="" element={<Home />} />
         </Route>
-        {/* <Route path="/login" element={Login}/> */}
-        {/* <Route path="/register" element={Register}/> */}
-        {/* <Route path="/dashboard" element={Dashboard}/> */}
         <Route path="/Drugs" element={<Drugs />}/>
       </Routes>
     </Router>
