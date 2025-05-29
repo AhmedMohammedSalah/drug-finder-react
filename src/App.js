@@ -7,12 +7,19 @@ import PharmacyList from './pages/pharamcieslist';
 // import Register from './pages/registerPage';
 // import Dashboard from './pages/dashboardPage';
 // import Drugs from './pages/drugPage'
+import DefaultLayout from './components/layout/default-layout';
+// import IconButton from './components/shared/iconButton';     
+import Drugs from './pages/drugPage'
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />}/>
+        {/* [AMS] this is default layout for guest / client */}
+        <Route path="/" element={<DefaultLayout />}>
+          {/*[AMS] any route here will have auto header and footer */}
+          <Route path="" element={<Home />} />
+        </Route>
         {/* <Route path="/login" element={Login}/> */}
         {/* <Route path="/register" element={Register}/> */}
         {/* <Route path="/dashboard" element={Dashboard}/> */}
