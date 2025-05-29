@@ -1,14 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/homePage';
+// import Login from './pages/loginPage';
+// import Register from './pages/registerPage';
+// import Dashboard from './pages/dashboardPage';
 import Drugs from './pages/drugPage'
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<div>Home Page</div>} exact/>
-        <Route path="/login" element={<div>Login Page</div>} exact/>
-        <Route path="/register" element={<div>Register Page</div>} exact/>
-        <Route path="/dashboard" element={<div>Dashboard Page</div>} exact/>
+        <Route path="/" element={Home} exact/>
+        {/* <Route path="/login" element={Login} exact/> */}
+        {/* <Route path="/register" element={Register} exact/> */}
+        {/* <Route path="/dashboard" element={Dashboard} exact/> */}
         <Route path="/Drugs" element={Drugs} exact/>
       </Routes>
     </Router>
