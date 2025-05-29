@@ -29,7 +29,7 @@ const colorClasses = {
   },
 };
 
-function IconButton({ btnColor, btnShade, textColor, hoverShade, focusShade, onClick, icon: Icon, name , path}) {
+function IconButton({ btnColor, btnShade, textColor, hoverShade, focusShade, onClick, icon: Icon, text , path}) {
   
   const navigate = useNavigate();
 
@@ -52,9 +52,9 @@ function IconButton({ btnColor, btnShade, textColor, hoverShade, focusShade, onC
       <button
         className={`p-2 ${bgClass} ${textClass} rounded-full ${hoverClass} focus:outline-none focus:ring-2 ${focusClass} focus:ring-opacity-75`}
         onClick={handleClick}
-        aria-label={name || 'Button'}
+        aria-label={text || 'Button'}
       >
-        {Icon ? <Icon className="h-6 w-6" /> : name}
+        {Icon ? <Icon className="h-6 w-6" /> : text}
       </button>
      </div>
   );
