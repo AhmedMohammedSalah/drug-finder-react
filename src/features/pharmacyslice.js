@@ -1,11 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+/*
+AUTHOR:Amira,
 
-// Async thunk to fetch data
+*/
 export const fetchPharmacies = createAsyncThunk(
   'pharmacy/fetchPharmacies',
-  async () => {
-    const response = await fetch('http://localhost:3001/pharmacies');
-    return await response.json();
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get('http://localhost:3001/pharmacies');
+      return response.data; 
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
   }
 );
 
@@ -28,7 +35,7 @@ const pharmacySlice = createSlice({
       })
       .addCase(fetchPharmacies.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message;
+        state.error = action.payload; 
       });
   }
 });

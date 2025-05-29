@@ -2,47 +2,54 @@
   "pharmacies": [
     {
       "store_id": 1,
+      "store_type":"clinic",
       "owner_id": 101,
       "store_name": "City Pharmacy",
-      "store_type": "hospital",
       "license_number": "LIC123456",
       "license_expiry_date": 20251231,
-      "store_logo_url": "https://example.com/logo1.png",
+      "store_logo_url": "https://static.vecteezy.com/system/resources/previews/011/954/994/non_2x/pharmacy-logo-design-medical-logo-vector.jpg",
       "store_banner_url": "https://example.com/banner1.jpg",
-      "description": "Trusted pharmacy with fast service."
+      "description": "Trusted pharmacy with fast service.",
+      "address":"cairo"
+
     },
     {
       "store_id": 2,
       "owner_id": 102,
-      "store_name": "MediTech Supplies",
-      "store_type": "Medical Devices",
+      "store_name": "medical",
+      "store_type":"hospital",
+
       "license_number": "LIC987654",
       "license_expiry_date": 20241115,
-      "store_logo_url": "https://example.com/logo2.png",
+      "store_logo_url": "https://cdn.vectorstock.com/i/1000v/27/61/medical-pharmacy-logo-design-template-vector-35392761.jpg",
       "store_banner_url": "https://example.com/banner2.jpg",
-      "description": "Top quality medical devices supplier."
+      "description": "Top quality medical devices supplier.",
+      "address":"minya"
     },
     {
       "store_id": 3,
       "owner_id": 103,
       "store_name": "HealthZone",
-      "store_type": "Both",
+    
       "license_number": "LIC567890",
       "license_expiry_date": 20261010,
-      "store_logo_url": "https://example.com/logo3.png",
+      "store_logo_url": "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/pharmacy-logo-design-template-0d5dfdd755aa35d7501f0dbb038755d7_screen.jpg?ts=1680841674",
       "store_banner_url": "https://example.com/banner3.jpg",
-      "description": "All-in-one pharmacy and device store."
+      "description": "All-in-one pharmacy and device store.",
+      "address":"cairo"
+
     },
      {
       "store_id": 4,
       "owner_id": 105,
       "store_name": "shifaa",
-      "store_type": "clinic",
       "license_number": "LIC567893",
       "license_expiry_date": 20261010,
-      "store_logo_url": "https://example.com/logo3.png",
+      "store_logo_url": "https://i.pinimg.com/originals/89/70/d0/8970d0b80833a20fc173b2b86fc66c03.png",
       "store_banner_url": "https://example.com/banner3.jpg",
-      "description": "All-in-one pharmacy and device store."
+      "description": "All-in-one pharmacy and device store.",
+      "address":"minya"
+
     }
   ]
 }
