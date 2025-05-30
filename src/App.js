@@ -4,6 +4,8 @@ import DefaultLayout from './components/layout/default-layout';
 import Pharmaciestlayout from './components/layout/pharmaciest-layout';
 import Drugs from './pages/drugPage';
 import Orders from './pages/ordersPage';
+import PharmacyList from './pages/pharamcieslist';  
+
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
           <Route path="" element={<Home />} />
+          <Route path="/pharmacies" element={<PharmacyList />}/>
         </Route>
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
