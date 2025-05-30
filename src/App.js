@@ -1,11 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/homePage';
-// import Login from './pages/loginPage';
-// import Register from './pages/registerPage';
-// import Dashboard from './pages/dashboardPage';
-import DefaultLayout from './components/layout/default-layout';
-// import IconButton from './components/shared/iconButton';     
-import Drugs from './pages/drugPage'
+import DefaultLayout from './components/layout/default-layout';   
+import Drugs from './pages/drugPage';
+import Orders from './pages/ordersPage';
 
 function App() {
   return (
@@ -16,7 +13,8 @@ function App() {
           {/*[AMS] any route here will have auto header and footer */}
           <Route path="" element={<Home />} />
         </Route>
-        <Route path="/Drugs" element={<Drugs />}/>
+        <Route path="/drugs" element={<Drugs />}/>
+        <Route path="/orders" element={<Orders />}/>
       </Routes>
     </Router>
   );
