@@ -7,6 +7,8 @@ import AddDrug from './pages/addDrugPage';
 import Orders from './pages/ordersPage';
 import PharmacyList from './pages/pharamcieslist';  
 import PharmacyPage from './pages/PharmacyPage.js';
+import LoginPage from './pages/login.js';     
+
 
 function App() {
   return (
@@ -18,14 +20,21 @@ function App() {
           <Route path="" element={<Home />} />
           <Route path="/pharmacies" element={<PharmacyList />}/>
           <Route path="/PharmacyPage" element={<PharmacyPage />}/>
+          {/* [SENU: FOR TEST: LOGIN] */}
+          <Route path="/login" element={<LoginPage />}/>        
         </Route>
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
           <Route path="/pharmacy/drugs" element={<Drugs />}/>
           <Route path="/pharmacy/drugs/add" element={<AddDrug />}/>
           <Route path="/pharmacy/orders" element={<Orders />}/>
+          {/* [SENU: FOR TEST: LOGIN] */}
+          <Route path="/login" element={<LoginPage />}/>        
         </Route>
         
+        <Route path="/Drugs" element={<Drugs />}/>
+        <Route path="/pharmacies" element={<PharmacyList />}/>
+        <Route path="/PharmacyPage" element={<PharmacyPage />}/>
       </Routes>
     </Router>
   );
