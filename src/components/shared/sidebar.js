@@ -1,8 +1,6 @@
- {/* [OKS *0-0*]  sidebar >*/}
 
-import React from "react";
 
-const Sidebar = ({}) => (
+const Sidebar = () => (
   <div className="w-full lg:w-1/4 bg-gray-100 p-4 rounded text-blue-500">
     <div className="mb-6 bg-white p-4 rounded-lg shadow-sm text-center">
       <h5 className="font-semibold mb-3">Our Pharmacy</h5>

@@ -1,4 +1,3 @@
-{/* [OKS *0-0*]  PharmacyPage*/}
 
 import React, { useState } from "react";
 import Sidebar from "../components/shared/sidebar";
@@ -6,6 +5,7 @@ import ProductList from "../components/client/ProductList";
 import Pagination from "../components/shared/Pagination";
 import Toast from "../components/shared/toast";
 
+{/* [OKS *0-0*]  PharmacyPage*/}
 const PharmacyPage = ({ products, categories, totalPages }) => { 
   const [abovePrice, setAbovePrice] = useState(0);
   const [belowPrice, setBelowPrice] = useState(1000);
