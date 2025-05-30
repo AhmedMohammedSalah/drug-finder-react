@@ -6,6 +6,16 @@ import { useState } from 'react';
 import { TrashIcon, PencilIcon, HomeIcon } from '@heroicons/react/24/solid';
 import IconButton from '../components/shared/btn'; 
 import Modal from "../components/shared/modal";
+import Sidebar from "../components/shared/sidebar";
+ const categories = [
+    { _id: "1", name: "Electronics" },
+    { _id: "2", name: "Clothing" },
+    { _id: "3", name: "Books" },
+  ];
+
+  const goToHome = () => {
+    console.log("Navigating to Home...");
+  };
 
 function Drugs() {
   const [showModal, setShowModal] = useState(false);
@@ -35,6 +45,7 @@ function Drugs() {
         icon={HomeIcon}
         name="Home"
       />
+      <Sidebar categories={categories} goToHome={goToHome} />
 
       {/* List with Delete and Edit Buttons */}
       <ul className="mt-4 space-y-2">
