@@ -7,7 +7,7 @@ export default function InputField({ label, type = "text", placeholder, noLabel 
 
       {/* LABEL */}
       {!noLabel && <label className="text-gray-700 font-medium mb-1">{label}</label>}
-
+{/*  */}
       {/* INPUT */}
       <input
         type={type}
