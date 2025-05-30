@@ -3,7 +3,7 @@ import Button from '../shared/btn';
 import { Link } from 'react-router-dom';
 function Nav (){
     return (
-        <div className="flex flex-row items-center justify-between h-full">
+        <div className="flex flex-row items-center justify-around h-full">
             {/* Logo */}
             <div className="flex-shrink-0">
                 <h1 className="text-2xl font-bold text-blue-600">Drug Finder</h1>
