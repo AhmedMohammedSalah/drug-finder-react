@@ -1,5 +1,5 @@
 // import orderList from "../components/pharmacist/orderList";
-import orderList from "../components/pharmacist/orderList";
+import OrderList from "../components/pharmacist/orderList";
 
 function ordersPage() {
   return (
@@ -8,7 +8,7 @@ function ordersPage() {
       <p>Here you can view and manage your orders.</p>
       <button id="load-orders">Load Orders</button>
       <div id="orders-list">
-        <orderList />
+        <OrderList />
       </div>
     </div>
   );
