@@ -7,7 +7,7 @@ import { TrashIcon, PencilIcon, HomeIcon } from '@heroicons/react/24/solid';
 import { Search, User, Menu, X } from "lucide-react"
 import IconButton from '../components/shared/btn'; 
 import Modal from "../components/shared/modal";
-import Sidebar from "../components/shared/sidebar";
+import Sidebar from "../components/client/sidebarFilter";
 import ProductList from '../components/client/ProductList';
 import PharmProductCard from '../components/shared/PharmProductCard';
 
@@ -69,7 +69,6 @@ function Drugs() {
           focusShade="400"  
           path="/pharmacy/drugs/add"
           text="Add Product"
-          // icon={HomeIcon}
         />
         </div>
 

@@ -14,14 +14,15 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/login" element={<LoginPage />}/>  
+
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
           <Route path="" element={<Home />} />
           <Route path="/pharmacies" element={<PharmacyList />}/>
           <Route path="/PharmacyPage" element={<PharmacyPage />}/>
-          {/* [SENU: FOR TEST: LOGIN] */}
-          <Route path="/login" element={<LoginPage />}/>        
+          {/* [SENU: FOR TEST: LOGIN] */}      
         </Route>
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
@@ -29,12 +30,10 @@ function App() {
           <Route path="/pharmacy/drugs/add" element={<AddDrug />}/>
           <Route path="/pharmacy/orders" element={<Orders />}/>
           {/* [SENU: FOR TEST: LOGIN] */}
-          <Route path="/login" element={<LoginPage />}/>        
+          {/* <Route path="/login" element={<LoginPage />}/>         */}
         </Route>
-        
-        <Route path="/Drugs" element={<Drugs />}/>
-        <Route path="/pharmacies" element={<PharmacyList />}/>
-        <Route path="/PharmacyPage" element={<PharmacyPage />}/>
+
+
       </Routes>
     </Router>
   );

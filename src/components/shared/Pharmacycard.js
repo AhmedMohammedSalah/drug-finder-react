@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   BuildingStorefrontIcon,
   MapPinIcon,
@@ -96,7 +97,9 @@ const PharmacyCard = ({ pharmacy }) => {
       <div className="flex flex-col flex-grow z-10">
         <h3 className={`text-xl font-bold ${textColor} mb-2 group-hover:text-opacity-90 transition-colors`}>
           {pharmacy.store_name}
-          <ArrowTopRightOnSquareIcon className="w-4 h-4 inline-block ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+          <Link to='/PharmacyPage'>
+            <ArrowTopRightOnSquareIcon className="w-4 h-4 inline-block ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+          </Link>
         </h3>
         
         <p className="text-sm text-gray-700 mb-4 line-clamp-3">

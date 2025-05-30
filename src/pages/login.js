@@ -3,6 +3,9 @@ import FormWrapper from "./../components/shared/FormWrapper.js";
 import InputField from "./../components/shared/InputField.js";
 import BigBtn from "./../components/shared/BigBtn.js";
 import { validateLoginForm } from "./../utils/validations.js"; 
+import { Link } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+
 
 
 
@@ -14,12 +17,15 @@ export default function LoginPage() {
     const [errors, setErrors] = useState({ email: "", password: "" });
     //================================================================
 
+    const navigate = useNavigate();
+
     const submit = (e) => {
         e.preventDefault();
         const { valid, errors } = validateLoginForm(email, password);
         setErrors(errors);
         if (valid) {
-          alert("HEY WE DID IT SENU! GO TO HOME PAGE OR SOMETHING");
+          // alert("HEY WE DID IT SENU! GO TO HOME PAGE OR SOMETHING");
+          navigate('/');
         }
     };
 

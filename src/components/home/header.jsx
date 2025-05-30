@@ -18,7 +18,7 @@ export default function Header() {
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Home
             </Link>
-            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            <Link to="/pharmacies" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Services
             </Link>
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
@@ -41,10 +41,10 @@ export default function Header() {
             </div>
             {/* action buttons  */}
             {/* if guest */}
-            <button className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/login" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
               <User className="w-5 h-5" />
               <span className="font-medium">Login</span>
-            </button>
+            </Link>
             <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-medium">
               Sign Up
             </button>

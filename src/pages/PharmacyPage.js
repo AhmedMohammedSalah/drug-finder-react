@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import Sidebar from "../components/shared/sidebar";
+import Sidebar from "../components/client/sidebarFilter";
 import ProductList from "../components/client/ProductList";
 import Pagination from "../components/shared/Pagination";
 import Toast from "../components/shared/toast";

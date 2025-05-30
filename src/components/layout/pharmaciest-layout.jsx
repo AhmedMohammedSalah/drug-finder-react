@@ -2,7 +2,7 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Navbar from '../pharmacist/dashboardNav'
 import Footer from '../pharmacist/dashboardFooter'
-import Sidebar from '../shared/sidebar';
+import Sidebar from '../client/sidebarFilter';
 
 const pharmaciestlayout = () => {
     return (
