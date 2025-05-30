@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/homePage';
 import DefaultLayout from './components/layout/default-layout';   
-import pharmaciestlayout from './components/layout/pharmaciest-layout';
+import Pharmaciestlayout from './components/layout/pharmaciest-layout';
 import Drugs from './pages/drugPage';
 import Orders from './pages/ordersPage';
 
@@ -15,7 +15,7 @@ function App() {
           <Route path="" element={<Home />} />
         </Route>
 
-        <Route path="/pharmacy" element={<pharmaciestlayout />}>
+        <Route path="/pharmacy" element={<Pharmaciestlayout />}>
           <Route path="/pharmacy/drugs" element={<Drugs />}/>
           <Route path="/pharmacy/orders" element={<Orders />}/>
         </Route>
