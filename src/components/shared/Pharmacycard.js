@@ -19,11 +19,11 @@ const bgColorMap = {
 };
 
 const textColorMap = {
-  hospital: 'text-yellow-800',
-  clinic: 'text-sky-800',
-  'medical devices': 'text-purple-800',
-  wellness: 'text-green-800',
-  default: 'text-gray-800'
+  hospital: "text-yellow-800",
+  clinic: "text-sky-800",
+  "medical devices": "text-purple-800",
+  wellness: "text-green-800",
+  default: "bg-blue-100",
 };
 
 const iconMap = {

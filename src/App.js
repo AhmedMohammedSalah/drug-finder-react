@@ -26,6 +26,8 @@ function App() {
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
           <Route path="/pharmacy/drugs" element={<Drugs />}/>
           <Route path="/pharmacy/orders" element={<Orders />}/>
+          {/* [SENU: FOR TEST: LOGIN] */}
+          <Route path="/login" element={<LoginPage />}/>        
         </Route>
         
         <Route path="/Drugs" element={<Drugs />}/>
