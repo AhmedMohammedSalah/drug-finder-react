@@ -9,6 +9,7 @@ import PharmacyPage from './pages/PharmacyPage.js';
 // import Dashboard from './pages/dashboardPage';
 // import Drugs from './pages/drugPage'
 import DefaultLayout from './components/layout/default-layout';
+import LoginPage from './pages/login.js';
 // import IconButton from './components/shared/iconButton';     
 
 
@@ -24,6 +25,8 @@ function App() {
         <Route path="/Drugs" element={<Drugs />}/>
         <Route path="/pharmacies" element={<PharmacyList />}/>
         <Route path="/PharmacyPage" element={<PharmacyPage />}/>
+        {/* [SENU: FOR TEST: LOGIN] */}
+        <Route path="/login" element={<LoginPage />}/>        
       </Routes>
     </Router>
   );
