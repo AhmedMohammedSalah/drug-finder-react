@@ -51,5 +51,127 @@
       "address":"minya"
 
     }
-  ]
+  ],
+
+  
+"products": [
+  {
+    "id": 1,
+    "name": "Aspirin 500mg Tablets (100 count)",
+    "description": "Pain reliever for headaches, muscle aches, and minor arthritis pain",
+    "price": 12.99,
+    "originalPrice": 15.99,
+    "category": "Pain Relief",
+    "images": ["/images/drug3.jpg"],
+    "stock": 45,
+    "rating": 4.5,
+    "pharmacy_id": 1
+  },
+  {
+    "id": 2,
+    "name": "Paracetamol 500mg (32 tablets)",
+    "description": "Effective for fever and mild to moderate pain relief",
+    "price": 9.50,
+    "originalPrice": 11.00,
+    "category": "Pain Relief",
+    "images": ["/images/drug2.jpg"],
+    "stock": 78,
+    "rating": 4.2,
+    "pharmacy_id": 1
+  },
+  {
+    "id": 3,
+    "name": "Ibuprofen 200mg (60 tablets)",
+    "description": "Anti-inflammatory pain reliever for arthritis, backaches, and menstrual cramps",
+    "price": 15.00,
+    "category": "Pain Relief",
+    "images": ["/images/drug3.jpg"],
+    "stock": 32,
+    "rating": 4.7,
+    "pharmacy_id": 2
+  },
+  {
+    "id": 4,
+    "name": "Vitamin C 1000mg (60 chewable tablets)",
+    "description": "Immune system support with natural orange flavor",
+    "price": 18.99,
+    "originalPrice": 22.50,
+    "category": "Vitamins",
+    "images": ["/images/drug1.jpg"],
+    "stock": 56,
+    "rating": 4.8,
+    "pharmacy_id": 1
+  },
+  {
+    "id": 5,
+    "name": "Omega-3 Fish Oil 1200mg (90 softgels)",
+    "description": "Supports heart, brain and joint health",
+    "price": 24.95,
+    "category": "Supplements",
+    "images": ["/images/drug2.jpg"],
+    "stock": 23,
+    "rating": 4.6,
+    "pharmacy_id": 2
+  },
+  {
+    "id": 6,
+    "name": "Allergy Relief (Loratadine 10mg, 30 tablets)",
+    "description": "24-hour non-drowsy allergy relief",
+    "price": 14.49,
+    "originalPrice": 17.99,
+    "category": "Allergy",
+    "images": ["/images/drug3.jpg"],
+    "stock": 41,
+    "rating": 4.3,
+    "pharmacy_id": 1
+  },
+  {
+    "id": 7,
+    "name": "Antacid Tablets (72 count)",
+    "description": "Fast relief from heartburn and acid indigestion",
+    "price": 8.25,
+    "category": "Digestive Health",
+    "images": ["/images/drug2.jpg"],
+    "stock": 67,
+    "rating": 4.1,
+    "pharmacy_id": 2
+  },
+  {
+    "id": 8,
+    "name": "Vitamin D3 2000IU (120 softgels)",
+    "description": "Supports bone health and immune function",
+    "price": 16.75,
+    "originalPrice": 19.99,
+    "category": "Vitamins",
+    "images": ["/images/drug3.jpg"],
+    "stock": 38,
+    "rating": 4.9,
+    "pharmacy_id": 1
+  },
+  {
+    "id": 9,
+    "name": "Probiotic Supplement (30 capsules)",
+    "description": "Supports digestive and immune health with 10 billion CFU",
+    "price": 29.99,
+    "category": "Digestive Health",
+    "images": ["/images/drug2.jpg"],
+    "stock": 19,
+    "rating": 4.4,
+    "pharmacy_id": 2
+  },
+  {
+    "id": 10,
+    "name": "Melatonin 5mg (60 tablets)",
+    "description": "Sleep aid supplement for occasional sleeplessness",
+    "price": 12.49,
+    "originalPrice": 14.99,
+    "category": "Sleep Aids",
+    "images": ["/images/drug1.jpg"],
+    "stock": 52,
+    "rating": 4.7,
+    "pharmacy_id": 1
+  }
+]
+
+
 }
