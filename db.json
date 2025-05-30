@@ -2,7 +2,6 @@
   "pharmacies": [
     {
       "store_id": 1,
-      "store_type":"clinic",
       "owner_id": 101,
       "store_name": "City Pharmacy",
       "license_number": "LIC123456",
@@ -17,7 +16,6 @@
       "store_id": 2,
       "owner_id": 102,
       "store_name": "medical",
-      "store_type":"hospital",
 
       "license_number": "LIC987654",
       "license_expiry_date": 20241115,
