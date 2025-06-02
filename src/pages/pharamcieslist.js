@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPharmacies } from '../features/pharmacyslice';
 import PharmacyCard from '../components/shared/Pharmacycard';
+import PharmacyLocator from './components/client/PharmacyLocator';
+
 import {
   ExclamationTriangleIcon,
   BuildingStorefrontIcon,
@@ -28,6 +30,7 @@ const PharmacyList = () => {
     return (
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
         <div className="rounded-xl bg-red-50 p-4 shadow-sm">
+          <PharmacyLocator></PharmacyLocator>
           <div className="flex">
             <div className="flex-shrink-0">
               <ExclamationTriangleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
