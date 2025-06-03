@@ -7,6 +7,7 @@ import AddDrug from './pages/addDrugPage';
 import Orders from './pages/ordersPage';
 import PharmacyList from './pages/pharamcieslist';  
 import PharmacyPage from './pages/PharmacyPage.js';
+import PharmacyMapPage from './pages/PharmacyMapPage.js';
 
 // import Login from './pages/loginPage';
 // import Register from './pages/registerPage';
@@ -31,6 +32,7 @@ function App() {
           <Route path="" element={<Home />} />
           <Route path="/pharmacies" element={<PharmacyList />}/>
           <Route path="/PharmacyPage" element={<PharmacyPage />}/>
+          <Route path="/PharmacyMapPage" element={<PharmacyMapPage />}/>
         </Route>
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
