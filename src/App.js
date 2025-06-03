@@ -14,6 +14,7 @@ import PharmacyPage from './pages/PharmacyPage.js';
 // import Drugs from './pages/drugPage'
 import LoginPage from './pages/login.js';
 import RegisterPage from './pages/register.jsx';
+import NotificationPage from './components/notifications/notification-page.jsx';
 // import IconButton from './components/shared/iconButton';     
 
 
@@ -22,24 +23,32 @@ function App() {
     <Router>
       <Routes>
         {/* [SENU: LOGIN, REGISTER] */}
-        <Route path="/login" element={<LoginPage />}/>
-        <Route path="/register" element={<RegisterPage />}/>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
           <Route path="" element={<Home />} />
-          <Route path="/pharmacies" element={<PharmacyList />}/>
-          <Route path="/PharmacyPage" element={<PharmacyPage />}/>
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
+          {/* [AMS] 🔔 notification page  */}
+          <Route
+            path="/notifications"
+            element={<NotificationPage />}
+          />
         </Route>
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-          <Route path="/pharmacy/drugs" element={<Drugs />}/>
-          <Route path="/pharmacy/drugs/add" element={<AddDrug />}/>
-          <Route path="/pharmacy/orders" element={<Orders />}/>
+          <Route path="/pharmacy/drugs" element={<Drugs />} />
+          <Route path="/pharmacy/drugs/add" element={<AddDrug />} />
+          <Route path="/pharmacy/orders" element={<Orders />} />
+          {/* [AMS] 🔔 notification page  */}
+          <Route
+            path="/pharmacy/notifications"
+            element={<NotificationPage />}
+          />
         </Route>
-
-
       </Routes>
     </Router>
   );

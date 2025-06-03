@@ -1,6 +1,7 @@
 import { Search, User, Menu, X } from "lucide-react"
 import { useState } from "react"
 import {Link} from "react-router-dom"       
+import NotificationDropdown from "../notifications/notification-dropdown"
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -49,6 +50,9 @@ export default function Header() {
               Sign Up
             </Link>
             {/* if logined */}
+
+            {/* Notification Dropdown */}
+            <NotificationDropdown />
             <button className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
               <User className="w-5 h-5" />
               <span className="font-medium">Profile</span>
