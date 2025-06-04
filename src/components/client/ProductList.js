@@ -1,6 +1,9 @@
+
+
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import ProductCard from '../shared/ProductCard';
+{/* [OKS *0-0*]  ProductList shows pharmacy products >*/}
 
 const ProductList = ({ viewMode, toggleViewMode }) => {
   const [products, setProducts] = useState([]);
@@ -81,7 +84,7 @@ const ProductList = ({ viewMode, toggleViewMode }) => {
 
         <div className={
           viewMode === "grid" 
-            ? "grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             : "flex flex-col gap-6"
         }>
           {sortedProducts.map((product) => (

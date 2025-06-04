@@ -1,3 +1,5 @@
+{/* [OKS *0-0*]  pagination >*/}
+
 const Pagination = ({ page, totalPages, changePage }) => (
   <div className="flex justify-center mt-6">
     <button
