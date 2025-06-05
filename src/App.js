@@ -16,6 +16,7 @@ import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.jsx";
 import NotificationPage from "./components/notifications/notification-page.jsx";
+import CartPage from "./components/cart/cartPage.js";
 // import IconButton from './components/shared/iconButton';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
     <Router>
       <Routes>
         {/* [SENU: LOGIN, REGISTER] */}
+        <Route path="/cart" element={<CartPage/>}></Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
@@ -48,6 +50,7 @@ function App() {
             path="/pharmacy/notifications"
             element={<NotificationPage />}
           />
+          
         </Route>
       </Routes>
     </Router>

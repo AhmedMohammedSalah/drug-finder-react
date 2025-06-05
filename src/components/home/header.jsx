@@ -1,10 +1,12 @@
 import { Search, User, Menu, X } from "lucide-react"
 import { useState } from "react"
-import {Link} from "react-router-dom"       
+import { ShoppingCart } from 'lucide-react';
+import { Link } from "react-router-dom"
+import { useSelector } from "react-redux";
 import NotificationDropdown from "../notifications/notification-dropdown"
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+  const cartItems = useSelector(state => state.cart.items);
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,10 +48,22 @@ export default function Header() {
               <User className="w-5 h-5" />
               <span className="font-medium">Login</span>
             </Link>
-            <Link to="/register"className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-medium">
+            <Link to="/register" className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-medium">
               Sign Up
             </Link>
             {/* if logined */}
+         
+  <Link to="/cart" className="relative flex items-center">
+    {/* Extra large cart icon */}
+    <ShoppingCart size={32} className="text-gray-800" />
+    
+    {/* Badge counter - adjusted for extra large icon */}
+    {cartItems.length > 0 && (
+      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center">
+        {cartItems.length}
+      </span>
+    )}
+  </Link>
 
             {/* Notification Dropdown */}
             <NotificationDropdown />
@@ -60,7 +74,7 @@ export default function Header() {
             <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-medium">
               Logout
             </button>
-            
+
           </div>
 
           {/* Mobile menu button */}
@@ -108,6 +122,7 @@ export default function Header() {
                   Logout
                 </button>
               </div>
+
             </nav>
           </div>
         )}

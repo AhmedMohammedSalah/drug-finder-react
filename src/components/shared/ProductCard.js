@@ -1,17 +1,20 @@
-{/* [OKS *0-0*]  Product Card changes with grid change */}
+import { addToCart } from '../../features/cart/cartSlice';
+import { useDispatch } from 'react-redux';
+import { ShoppingCart } from 'lucide-react';
+{/* [OKS *0-0*]  Product Card changes with grid change */ }
 
 const ProductCard = ({ product, viewMode }) => {
-  const imageUrl = product.images?.length > 0 
-    ? `http://localhost:3001${product.images[0]}` 
+  const dispatch = useDispatch();
+  const imageUrl = product.images?.length > 0
+    ? `http://localhost:3001${product.images[0]}`
     : 'https://via.placeholder.com/300x200?text=No+Image';
   return (
-    
-    <div className={`mx-auto transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:scale-105 hover:shadow-lg border-2 border-transparent hover:border-blue-500 ${
-      viewMode === 'grid' ? 'w-50 h-100' : 'w-full flex max-w-3xl'
-    }`}>
-      <img 
-        className={viewMode === 'grid' 
-          ? 'h-48 w-full object-cover object-center' 
+
+    <div className={`mx-auto transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:scale-105 hover:shadow-lg border-2 border-transparent hover:border-blue-500 ${viewMode === 'grid' ? 'w-50 h-100' : 'w-full flex max-w-3xl'
+      }`}>
+      <img
+        className={viewMode === 'grid'
+          ? 'h-48 w-full object-cover object-center'
           : 'h-48 w-64 object-cover object-center'
         }
         src={imageUrl}
@@ -25,7 +28,7 @@ const ProductCard = ({ product, viewMode }) => {
         <h2 className="mb-2 text-lg font-medium dark:text-white text-gray-900">
           {product.name}
         </h2>
-        
+
         {product.description && (
           <p className="mb-2 text-base dark:text-gray-300 text-gray-700 line-clamp-2">
             {product.description}
@@ -36,7 +39,7 @@ const ProductCard = ({ product, viewMode }) => {
           <p className="mr-2 text-lg font-semibold text-gray-900 dark:text-white">
             ${product.price.toFixed(2)}
           </p>
-          
+
           {product.originalPrice && (
             <>
               <p className="text-base font-medium text-gray-500 line-through dark:text-gray-300">
@@ -50,6 +53,13 @@ const ProductCard = ({ product, viewMode }) => {
             </>
           )}
         </div>
+        <button
+          onClick={() => dispatch(addToCart(product))}
+          className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+        >
+          <ShoppingCart size={16} />
+          Add To Cart
+        </button>
       </div>
     </div>
   );
