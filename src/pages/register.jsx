@@ -56,9 +56,16 @@ export default function RegisterPage() {
       password,
       confirmPassword,
     });
+
     setErrors(errors);
+
     if (valid) {
-      alert("HEY WE DID IT SENU! GO TO HOME PAGE OR SOMETHING");
+
+      // check + add backend
+      // ON PROGRESS....
+
+      // logic
+      alert("HEY WE DID IT SENU! GO TO LOGIN PAGE");
     }
   };
 
