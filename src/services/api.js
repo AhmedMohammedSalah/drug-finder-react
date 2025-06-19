@@ -148,7 +148,7 @@ const apiEndpoints = {
 //     updateDoctorProfile: (data) => api.put("doctors/doctors/me/", data),
 //   },
   users: {
-    register: (userData) => apiFileUpload.post("users/", userData),
+    register: (userData) => apiFileUpload.post("users/users/", userData),
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
