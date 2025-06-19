@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import FormWrapper from "./../components/shared/FormWrapper.js";
 import InputField from "./../components/shared/InputField.js";
 import BigBtn from "./../components/shared/BigBtn.js";
 import { validateLoginForm } from "./../utils/validations.js"; 
 import { Link } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-
+import { loginUser, clearError } from "../features/authSlice.js"
+import { useDispatch, useSelector } from "react-redux";
 
 
 
@@ -16,16 +17,35 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({ email: "", password: "" });
     //================================================================
-
+    const dispatch = useDispatch();
+    const { loading, error: authError } = useSelector((state) => state.auth);
+    const [backendError, setBackendError] = useState("");
     const navigate = useNavigate();
 
-    const submit = (e) => {
+    const submit = async(e) => {
         e.preventDefault();
-        const { valid, errors } = validateLoginForm(email, password);
-        setErrors(errors);
+        const { valid, errors: validationErrors } = validateLoginForm(
+          email,
+          password
+        );
+        setErrors(validationErrors);
         if (valid) {
-          // alert("HEY WE DID IT SENU! GO TO HOME PAGE OR SOMETHING");
-          navigate('/');
+          try {
+            dispatch(clearError());
+            setBackendError("");
+            
+            // Dispatch login action
+            await dispatch(loginUser({ email, password })).unwrap();
+            navigate('/');
+          } catch (error) {
+            // Handle specific backend errors
+            if (error?.error === "email_not_verified") {
+              setBackendError("Please verify your email before logging in");
+              
+            } else {
+              setBackendError(error?.detail || "Invalid credentials. Please try again.");
+            }
+          }
         }
     };
 
@@ -36,7 +56,10 @@ export default function LoginPage() {
 
           {/* LEFT-COL - Form */}
           <FormWrapper className="p-10 flex flex-col gap-10" onSubmit={submit}>
-
+            {backendError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                {backendError}
+              </div> )}
             <div className="text-center">
               <h1 className="text-4xl font-bold mb-2">Welcome back</h1>
               <h1 className="text-2xl text-gray-500">Find your Medicine with no time</h1>
