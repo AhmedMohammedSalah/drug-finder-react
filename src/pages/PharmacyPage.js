@@ -22,6 +22,7 @@ const PharmacyPage = ({ products, categories, totalPages }) => {
   return (
     <div className="container mx-auto my-4 px-4">
       <div className="flex flex-col lg:flex-row gap-4">
+        
         <Sidebar
           products={products}
           abovePrice={abovePrice}

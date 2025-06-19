@@ -1,71 +1,174 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormWrapper from "../components/shared/FormWrapper.js";
 import InputField from "../components/shared/InputField.js";
 import BigBtn from "../components/shared/BigBtn.js";
 import DropdownList from "../components/shared/DropdownList.js";
+import FileUpload from "../components/shared/FileUpload.js";
 import { validateRegisterForm } from "../utils/validations.js";
+import { registerUser, clearError } from "../features/authSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   // STATE ==============================
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
-  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [imageProfile, setImageProfile] = useState(null);
+  const [imageLicense, setImageLicense] = useState(null);
 
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
+  const [backendErrors, setBackendErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
   const [errors, setErrors] = useState({
     fullName: "",
     email: "",
-    country: "",
-    city: "",
-    phone: "",
     role: "",
-    gender: "",
     password: "",
     confirmPassword: "",
+    imageLicense: "",
+    imageProfile: "",
   });
 
-  // STATIC DATA ========================
-  const countryOptions = [
-    { id: "eg", name: "Egypt" },
-    { id: "us", name: "USA" },
-    { id: "fr", name: "France" },
-    { id: "de", name: "Germany" },
-  ];
+  // Reset requirements when role changes
+  useEffect(() => {
+    if (role !== "pharmacist") {
+      setErrors((prev) => ({
+        ...prev,
+        imageLicense: "",
+        imageProfile: "",
+      }));
+      setBackendErrors((prev) => ({
+        ...prev,
+        image_license: "",
+        image_profile: "",
+      }));
+    }
+  }, [role]);
 
+  // STATIC DATA ========================
   const roleOptions = [
-    { id: "patient", name: "Patient" },
+    { id: "client", name: "Client" },
     { id: "pharmacist", name: "Pharmacist" },
   ];
 
+  // Handle file uploads
+  const handleProfileImage = (file) => {
+    setImageProfile(file);
+    if (file) {
+      setErrors((prev) => ({ ...prev, imageProfile: "" }));
+      setBackendErrors((prev) => ({ ...prev, image_profile: "" }));
+    }
+  };
+
+  const handleLicenseImage = (file) => {
+    setImageLicense(file);
+    if (file) {
+      setErrors((prev) => ({ ...prev, imageLicense: "" }));
+      setBackendErrors((prev) => ({ ...prev, image_license: "" }));
+    }
+  };
+
+  // Convert backend errors to strings
+  const getErrorString = (field) => {
+    const error = backendErrors[field];
+    if (!error) return "";
+    if (Array.isArray(error)) return error.join(" ");
+    return error;
+  };
+
   // SUBMIT ============================
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const { valid, errors } = validateRegisterForm({
+
+    // Create form data with files
+    const formData = new FormData();
+    formData.append("name", fullName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("role", role);
+
+    // Append files if they exist
+    if (imageProfile) formData.append("image_profile", imageProfile);
+    if (imageLicense) formData.append("image_license", imageLicense);
+
+    // Run frontend validation
+    const validationResult = validateRegisterForm({
       fullName,
       email,
-      country,
-      city,
-      phone,
       role,
-      gender,
       password,
       confirmPassword,
+      imageProfile: role === "pharmacist" ? imageProfile : "skip",
+      imageLicense: role === "pharmacist" ? imageLicense : "skip",
     });
-    setErrors(errors);
-    if (valid) {
-      alert("HEY WE DID IT SENU! GO TO HOME PAGE OR SOMETHING");
+
+    setErrors(validationResult.errors);
+
+    // Only submit if valid
+    if (validationResult.valid) {
+      try {
+        // Clear previous errors
+        dispatch(clearError());
+        setBackendErrors({});
+        setGeneralError("");
+
+        // Dispatch register action with formData
+        const result = await dispatch(registerUser(formData));
+        console.log(result);
+        if (registerUser.fulfilled.match(result)) {
+          
+          navigate("/login");
+        } else {
+          throw result.payload;
+        }
+      } catch (error) {
+        const errorData = error.payload || error;
+        console.log("Registration error:", errorData);
+
+        if (errorData && typeof errorData === "object") {
+          const fieldErrors = {};
+          let generalErrorMsg = "";
+
+          // Convert all error values to strings
+          Object.keys(errorData).forEach((key) => {
+            if (Array.isArray(errorData[key])) {
+              fieldErrors[key] = errorData[key].join(" ");
+            } else {
+              fieldErrors[key] = errorData[key];
+            }
+          });
+
+          // Special handling for different error formats
+          if (fieldErrors.error) {
+            generalErrorMsg = fieldErrors.error;
+            delete fieldErrors.error;
+          } else if (fieldErrors.detail) {
+            generalErrorMsg = fieldErrors.detail;
+            delete fieldErrors.detail;
+          } else if (fieldErrors.non_field_errors) {
+            generalErrorMsg = fieldErrors.non_field_errors;
+            delete fieldErrors.non_field_errors;
+          }
+
+          setBackendErrors(fieldErrors);
+          setGeneralError(generalErrorMsg);
+        } else if (typeof errorData === "string") {
+          setGeneralError(errorData);
+        } else {
+          setGeneralError("Registration failed. Please try again.");
+        }
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-100">
       <div className="bg-white shadow-md flex w-[1200px] border border-gray-300 rounded-lg overflow-hidden">
-
         {/* LEFT-COL (30%) */}
         <div className="w-[30%] bg-gray-200">
           <img
@@ -77,7 +180,12 @@ export default function RegisterPage() {
 
         {/* RIGHT-COL (70%) */}
         <div className="w-[70%] p-10">
-          <FormWrapper className="flex flex-col gap-10 h-full" onSubmit={submit}>
+          <FormWrapper className="flex flex-col gap-6 h-full" onSubmit={submit}>
+            {generalError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                {generalError}
+              </div>
+            )}
 
             {/* Heading */}
             <div className="text-start">
@@ -86,10 +194,8 @@ export default function RegisterPage() {
 
             {/* GRID: TWO COLS */}
             <div className="grid grid-cols-2 gap-6">
-
               {/* FIRST COL */}
               <div className="flex flex-col gap-4">
-                
                 {/* full name */}
                 <InputField
                   label="Full Name"
@@ -97,7 +203,7 @@ export default function RegisterPage() {
                   placeholder="Enter your full name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  error={errors.fullName}
+                  error={errors.fullName || getErrorString("name")}
                 />
 
                 {/* email */}
@@ -107,16 +213,7 @@ export default function RegisterPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  error={errors.email}
-                />
-
-                {/* country (Dropdown) */}
-                <DropdownList
-                  label="Country"
-                  options={countryOptions}
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  error={errors.country}
+                  error={errors.email || getErrorString("email")}
                 />
 
                 {/* password */}
@@ -126,40 +223,19 @@ export default function RegisterPage() {
                   placeholder="Choose your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  error={errors.password}
+                  error={errors.password || getErrorString("password")}
                 />
               </div>
 
               {/* SECOND COL */}
               <div className="flex flex-col gap-4">
-
                 {/* role (Dropdown) */}
                 <DropdownList
                   label="Role"
                   options={roleOptions}
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  error={errors.role}
-                />
-
-                {/* phone number */}
-                <InputField
-                  label="Phone Number"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  error={errors.phone}
-                />
-
-                {/* city */}
-                <InputField
-                  label="City"
-                  type="text"
-                  placeholder="Enter your city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  error={errors.city}
+                  error={errors.role || getErrorString("role")}
                 />
 
                 {/* confirm password */}
@@ -169,42 +245,63 @@ export default function RegisterPage() {
                   placeholder="Re-enter your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  error={errors.confirmPassword}
+                  error={
+                    errors.confirmPassword || getErrorString("confirm_password")
+                  }
                 />
-              </div>
 
-              {/* GENDER */}
-              <div className="col-span-2">
-                <label className="block text-gray-700 font-medium mb-2">Gender</label>
-                <div className="flex gap-6">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="male"
-                      checked={gender === "male"}
-                      onChange={(e) => setGender(e.target.value)}
-                    />
-                    Male
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="female"
-                      checked={gender === "female"}
-                      onChange={(e) => setGender(e.target.value)}
-                    />
-                    Female
-                  </label>
-                </div>
-                {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+                {/* Profile Image Upload */}
+                {role === "pharmacist" && (
+                  <FileUpload
+                    label="Profile Image (Required)"
+                    onFileChange={handleProfileImage}
+                    accept="image/*"
+                    error={
+                      errors.imageProfile || getErrorString("image_profile")
+                    }
+                    required
+                  />
+                )}
               </div>
             </div>
 
-            {/* SUBMIT BUTTON */}
-            <BigBtn text="Register" onClick={submit} />
+            {/* File Uploads Row */}
+            <div className="grid grid-cols-2 gap-6 mt-4">
+              {/* Profile Image for Patient */}
+              {role === "client" && (
+                <div className="col-span-1">
+                  <FileUpload
+                    label="Profile Image (Optional)"
+                    onFileChange={handleProfileImage}
+                    accept="image/*"
+                    error={getErrorString("image_profile")}
+                  />
+                </div>
+              )}
 
+              {/* License Image for Pharmacist */}
+              {role === "pharmacist" && (
+                <div className="col-span-1">
+                  <FileUpload
+                    label="License Image (Required)"
+                    onFileChange={handleLicenseImage}
+                    accept="image/*"
+                    error={
+                      errors.imageLicense || getErrorString("image_license")
+                    }
+                    required
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <BigBtn
+              text={loading ? "Registering..." : "Register"}
+              onClick={submit}
+              disabled={loading}
+              className="mt-4"
+            />
           </FormWrapper>
         </div>
       </div>
