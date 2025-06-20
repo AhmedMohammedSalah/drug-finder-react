@@ -3,19 +3,35 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchPharmacies } from '../features/pharmacyslice';
 import PharmacyCard from '../components/shared/Pharmacycard';
 
+// ICONS
 import {
   ExclamationTriangleIcon,
   BuildingStorefrontIcon,
 } from '@heroicons/react/24/outline';
 
+
 const PharmacyList = () => {
+
+
+  // GET DATA
   const dispatch = useDispatch();
   const { data, status, error } = useSelector((state) => state.pharmacy);
 
+  // FETCH ON MOUNT
   useEffect(() => {
     dispatch(fetchPharmacies());
+
+    // DEBUG
+    console.log("data = ", data)
+
   }, [dispatch]);
 
+  // MANUAL REFRESH
+  const refreshLocations = () => {
+    dispatch(fetchPharmacies());
+  };
+
+  // LOADING STATE
   if (status === 'loading') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
@@ -25,21 +41,26 @@ const PharmacyList = () => {
     );
   }
 
+  // ERROR STATE
   if (status === 'failed') {
     return (
-    
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
         <div className="rounded-xl bg-red-50 p-4 shadow-sm">
           <div className="flex">
             <div className="flex-shrink-0">
-
               <ExclamationTriangleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">Failed to load data</h3>
               <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
+                <p>{error || 'Something went wrong. Please try again.'}</p>
               </div>
+              <button
+                onClick={refreshLocations}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Try Again
+              </button>
             </div>
           </div>
         </div>
@@ -47,6 +68,7 @@ const PharmacyList = () => {
     );
   }
 
+  // MAIN CONTENT
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header Section */}
@@ -58,7 +80,9 @@ const PharmacyList = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Nearby Pharmacies</h1>
-              <p className="text-sm text-gray-500">Find pharmacies and medical suppliers in your area</p>
+              <p className="text-sm text-gray-500">
+                Find pharmacies and medical suppliers in your area
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -78,14 +102,17 @@ const PharmacyList = () => {
             </div>
             <h3 className="mt-4 text-xl font-semibold text-gray-900">No Pharmacies Found</h3>
             <p className="mt-2 text-sm text-gray-600">Try adjusting your search or location settings.</p>
-            <button className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+              onClick={refreshLocations}
+              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Refresh Locations
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((pharmacy) => (
-              <PharmacyCard key={pharmacy.store_id} pharmacy={pharmacy} />
+              <PharmacyCard key={pharmacy.id} pharmacy={pharmacy} />
             ))}
           </div>
         )}

@@ -8,7 +8,7 @@ export const fetchPharmacies = createAsyncThunk(
   'pharmacy/fetchPharmacies',
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get('http://localhost:3001/pharmacies');
+      const response = await axios.get('http://localhost:8000/medical_stores');
       return response.data; 
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
