@@ -1,4 +1,4 @@
-import { s as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/homePage";
 import DefaultLayout from "./components/layout/default-layout";
 import Pharmaciestlayout from "./components/layout/pharmaciest-layout";

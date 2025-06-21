@@ -153,6 +153,10 @@ const apiEndpoints = {
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
   },
+  pharmacies: {
+    findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
+  },
+  
   // [AMS]
 //   notifications: {
 //     list: () => api.get("notifications/"),
