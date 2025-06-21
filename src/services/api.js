@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 // Create axios instance
 const api = axios.create({
@@ -153,6 +152,23 @@ const apiEndpoints = {
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
   },
+  inventory: {
+    getMedicines: (config = {}) => api.get("inventory/medicines/", config),
+    // You can add getDevices or other inventory endpoints here as needed
+  },
+  cart: {
+    getCart: () => {
+      const result = api.get("cart/cart/");
+      result.then(res => console.log("Cart API response:", res.data)).catch(err => console.error("Cart API error:", err));
+      return result;
+    },
+    getCartById: (id) => api.get(`cart/cart/${id}/`),
+    createCart: (data) => api.post("cart/cart/", data),
+    updateCart: (id, data) => api.patch(`cart/cart/${id}/`, data),
+    updateItems: (id, items) => api.patch(`cart/cart/${id}/update-items/`, { items }),
+    removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
+    deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
+  },
   // [AMS]
 //   notifications: {
 //     list: () => api.get("notifications/"),
@@ -166,3 +182,8 @@ const apiEndpoints = {
 };
 
 export default apiEndpoints;
+
+// Example usage:
+apiEndpoints.inventory.getMedicines().then(response => {
+  // response.data contains the list of medicines
+});
