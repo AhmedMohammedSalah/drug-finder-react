@@ -19,13 +19,19 @@ const CartPage = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  const handleQuantityChange = (productId, change) => {
-    if (!cart) return;
-    dispatch(updateCartItems({
-      cartId: cart.id,
-      items: [{ product: productId, quantity: change }],
-    }));
-  };
+  useEffect(() => {
+    console.log('Cart state:', cart);
+  }, [cart]);
+
+const handleQuantityChange = (productId, change) => {
+  if (!cart) return;
+
+  dispatch(updateCartItems({
+    cartId: cart.id,
+    items: [{ product: productId, quantity: change }], // ← أرسل الفرق فقط
+  }));
+};
+
 
   const handleRemove = (productId) => {
     if (!cart) return;
@@ -54,7 +60,7 @@ const CartPage = () => {
           <div>
             <h3 className="text-md font-bold">Product #{item.product}</h3>
             <p className="text-sm">Quantity: {item.quantity}</p>
-            <p className="text-sm">Price: {item.price} SAR</p>
+            <p className="text-sm">Price: {item.price} Eg</p>
           </div>
           <div className="flex gap-2 items-center">
             <IconButton text={"+"} onClick={() => handleQuantityChange(item.product, 1)} />
@@ -65,7 +71,7 @@ const CartPage = () => {
       ))}
 
       <div className="border-t pt-4 mt-4">
-        <p>Shipping Cost: {cart.shipping_cost} SAR</p>
+        <p>Shipping Cost: {cart.shipping_cost} Eg</p>
         <p>Tax: {cart.tax} SAR</p>
         <p className="font-bold text-lg">Total: {cart.total_price} SAR</p>
         <IconButton text={"🧹 Clear Cart"} onClick={handleClearCart} />

@@ -6,7 +6,9 @@ import { toast } from 'react-toastify';
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
   try {
     const res = await apiEndpoints.cart.getCart();
-    return res.data[0];
+     console.log('Cart fetched successfully:', res.data);
+  return res.data.results[0];// FIX: return the cart object, not res.data[0]
+   
   } catch (err) {
     toast.error('Failed to load cart.');
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
@@ -120,6 +122,9 @@ const cartSlice = createSlice({
       })
       .addCase(clearCart.fulfilled, (state) => {
         state.cart = null;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        state.cart = action.payload;
       });
   },
 });

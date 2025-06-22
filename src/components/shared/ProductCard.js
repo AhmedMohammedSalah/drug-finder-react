@@ -11,15 +11,17 @@ const ProductCard = ({ product, viewMode, loading }) => {
   const [adding, setAdding] = useState(false);
   const dispatch = useDispatch();
   const imageUrl = product.image
-    ? `http://localhost:8000/inventory/medicines/${product.image}` // or the correct media URL
-    : 'https://via.placeholder.com/300x200?text=No+Image';
+    ? `http://localhost:8000/inventory/medicines/${product.image}`
+    : 'https://placehold.co/300x200?text=No+Image'; // Use a reliable placeholder
 
   const handleAddToCart = async () => {
     setAdding(true);
     try {
+      // Dispatch just the product object, as expected by cartSlice
       await dispatch(addToCart(product));
     } catch (err) {
       console.error('Add to cart failed', err);
+      // Optionally, show a toast or notification here
     } finally {
       setAdding(false);
     }
@@ -37,8 +39,8 @@ const ProductCard = ({ product, viewMode, loading }) => {
         src={imageUrl}
         alt={product.generic_name || product.brand_name || 'Medicine'}
         onError={(e) => {
-          if (e.target.src !== 'https://via.placeholder.com/300x200?text=Image+Not+Found') {
-            e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+          if (e.target.src !== 'https://placehold.co/300x200?text=Image+Not+Found') {
+            e.target.src = 'https://placehold.co/300x200?text=Image+Not+Found';
           }
         }}
       />

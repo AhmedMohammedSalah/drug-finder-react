@@ -21,8 +21,7 @@ import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.jsx";
 import NotificationPage from "./components/notifications/notification-page.jsx";
 import CartPage from "./pages/cart.js";
-import CartSyncer from './features/cartSlice.js'
-
+// import CartSyncer from './features/cartSlice.js
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
@@ -47,7 +46,7 @@ function App() {
   }, []);
   return (
     <>
-      <CartSyncer />
+     
       <Router>
         <Routes>
           <Route path="/cart" element={<CartPage />}></Route>
