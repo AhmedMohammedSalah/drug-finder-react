@@ -1,45 +1,17 @@
-
-
-import axios from 'axios';
-import { useState, useEffect } from 'react';
 import ProductCard from '../shared/ProductCard';
-{/* [OKS *0-0*]  ProductList shows pharmacy products >*/}
 
-const ProductList = ({ viewMode, toggleViewMode }) => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('http://localhost:3001/products');
-        setProducts(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-
+const ProductList = ({ products = [], viewMode, toggleViewMode, loading }) => {
   const sortedProducts = products;
 
-
   if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-      <div className="text-center py-8">Loading products...</div>
+    <div className="flex items-center justify-center min-h-[200px]">
+      <img src="/images/1496.gif" alt="Loading..." className="h-16 w-16" />
     </div>
   );
 
-
-  if (error) return (
+  if (!products.length) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-      <div className="text-red-500 text-center py-8">Error: {error}</div>
+      <div className="text-center py-8">No products found.</div>
     </div>
   );
 
@@ -53,7 +25,6 @@ const ProductList = ({ viewMode, toggleViewMode }) => {
           <div className="flex gap-4">
             <select
               className="border border-blue-500 px-3 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
-              
             >
               <option value="latest">Latest</option>
               <option value="price-asc">Price: Low to High</option>
