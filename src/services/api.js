@@ -152,6 +152,10 @@ const apiEndpoints = {
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
   },
+  pharmacies: {
+    findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
+  },
+  
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     // You can add getDevices or other inventory endpoints here as needed

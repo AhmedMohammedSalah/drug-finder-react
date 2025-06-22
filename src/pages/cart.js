@@ -1,6 +1,7 @@
 // src/pages/CartPage.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   fetchCart,
   updateCartItems,
@@ -213,6 +214,14 @@ const CartPage = () => {
             </button>
           </div>
         </div>
+      </div>
+        {/*[OKS] add a checkout button */}
+      <div className="border-t pt-4 mt-4">
+        <Link to="/checkout" className="inline-block">
+         
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Checkout</button>
+             </Link>
+
       </div>
     </div>
   );
