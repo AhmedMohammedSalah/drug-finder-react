@@ -16,7 +16,10 @@ export default function Header() {
     navigate("/");
   };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const cartItems = useSelector((state) => state.cart.items);
+  // Always use array for cartItems to avoid undefined errors with backend cart
+  const cartItems = useSelector((state) =>
+    Array.isArray(state.cart.cart?.items) ? state.cart.cart.items : []
+  );
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
