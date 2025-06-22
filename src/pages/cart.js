@@ -28,7 +28,7 @@ const handleQuantityChange = (productId, change) => {
 
   dispatch(updateCartItems({
     cartId: cart.id,
-    items: [{ product: productId, quantity: change }], // ← أرسل الفرق فقط
+    items: [{ product: productId, quantity: change }],
   }));
 };
 
@@ -72,8 +72,8 @@ const handleQuantityChange = (productId, change) => {
 
       <div className="border-t pt-4 mt-4">
         <p>Shipping Cost: {cart.shipping_cost} Eg</p>
-        <p>Tax: {cart.tax} SAR</p>
-        <p className="font-bold text-lg">Total: {cart.total_price} SAR</p>
+        <p>Tax: {cart.tax} Eg</p>
+        <p className="font-bold text-lg">Total: {cart.total_price} Eg</p>
         <IconButton text={"🧹 Clear Cart"} onClick={handleClearCart} />
       </div>
     </div>

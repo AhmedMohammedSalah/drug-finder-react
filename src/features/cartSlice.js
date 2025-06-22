@@ -2,7 +2,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiEndpoints from '../services/api';
 import { toast } from 'react-toastify';
-
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import { confirmAlert } from 'react-confirm-alert';
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
   try {
     const res = await apiEndpoints.cart.getCart();
@@ -54,41 +55,85 @@ export const clearCart = createAsyncThunk('cart/clearCart', async (cartId, thunk
   }
 });
 
+
+
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async (product, thunkAPI) => {
     try {
-      // Get current cart from state
       const state = thunkAPI.getState();
       const cart = state.cart.cart;
       let res;
+
       if (!cart) {
-        // If no cart, create a new one with this product
         res = await apiEndpoints.cart.createCart({ items: [{ product: product.id, quantity: 1 }] });
       } else {
-        // If cart exists, add or update the product in the cart
-        // Check if product already in cart
         const existing = cart.items?.find(i => i.product === product.id);
-        let items;
-        if (existing) {
-          // Update quantity
-          items = cart.items.map(i =>
-            i.product === product.id
-              ? { product: i.product, quantity: i.quantity + 1 }
-              : { product: i.product, quantity: i.quantity }
-          );
-        } else {
-          // Add new product
-          items = [
-            ...cart.items.map(i => ({ product: i.product, quantity: i.quantity })),
-            { product: product.id, quantity: 1 },
-          ];
-        }
+        const items = existing
+          ? cart.items.map(i =>
+              i.product === product.id
+                ? { product: i.product, quantity: i.quantity + 1 }
+                : { product: i.product, quantity: i.quantity }
+            )
+          : [
+              ...cart.items.map(i => ({ product: i.product, quantity: i.quantity })),
+              { product: product.id, quantity: 1 },
+            ];
+
         res = await apiEndpoints.cart.updateItems(cart.id, items);
       }
+
       return res.data;
+
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data || 'Failed to add to cart');
+      const errorData = err.response?.data;
+
+      if (errorData?.requires_confirmation) {
+        return new Promise((resolve, reject) => {
+          confirmAlert({
+            customUI: ({ onClose }) => {
+              return (
+                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto text-center">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Confirm Cart Replacement</h2>
+                  <p className="text-gray-600 mb-6">
+                    {errorData.error || 'Your cart contains items from another store. Do you want to clear it and add this product?'}
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={async () => {
+                        onClose();
+                        try {
+                          const newRes = await apiEndpoints.cart.createCart({
+                            items: [{ product: product.id, quantity: 1 }],
+                            force_clear: true,
+                          });
+                          resolve(newRes.data);
+                        } catch (innerErr) {
+                          reject(innerErr.response?.data || innerErr.message);
+                        }
+                      }}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                    >
+                      Yes, clear & add
+                    </button>
+                    <button
+                      onClick={() => {
+                        onClose();
+                        reject("Action cancelled by user.");
+                      }}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+          });
+        });
+      }
+
+      return thunkAPI.rejectWithValue(errorData || 'Failed to add product to cart.');
     }
   }
 );
