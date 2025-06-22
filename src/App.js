@@ -25,6 +25,7 @@ import CartPage from "./pages/cart.js";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
+import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
 function App() {
   const dispatch = useDispatch();
@@ -68,7 +69,7 @@ function App() {
               <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
             </Route>
           {/* </Route> */}
-          
+          <Route path="MyProfile" element={<ProfilePage />} />
           <Route path="/pharmacy" element={<Pharmaciestlayout />}>
             <Route path="/pharmacy/drugs" element={<Drugs />} />
             <Route path="/pharmacy/drugs/add" element={<AddDrug />} />

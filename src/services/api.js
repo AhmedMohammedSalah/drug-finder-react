@@ -156,6 +156,7 @@ const apiEndpoints = {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     // You can add getDevices or other inventory endpoints here as needed
   },
+  // {amira} added cart endpoints
   cart: {
     getCart: () => {
       const result = api.get("cart/cart/");
@@ -169,6 +170,11 @@ const apiEndpoints = {
     removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
     deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
   },
+  // {amira}added client endpoints
+  client: {
+  getClientProfile: () => api.get("users/client/profile/"),
+  updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
+}
   // [AMS]
 //   notifications: {
 //     list: () => api.get("notifications/"),
