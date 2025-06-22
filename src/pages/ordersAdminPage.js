@@ -37,11 +37,13 @@ function OrdersAdminPage() {
   );
 
   // Add order handlers
+  // [SARA]: Add Order logic - allows admin to add a new order with all fields
   const handleAddChange = e => setAddForm({ ...addForm, [e.target.name]: e.target.value });
   const handleAddSubmit = async e => {
     e.preventDefault();
     setAddError(null);
     try {
+      // [SARA]: Send all order fields as JSON to backend
       const res = await fetch('http://localhost:8000/orders', {
         method: 'POST',
         headers: {
@@ -64,19 +66,24 @@ function OrdersAdminPage() {
   };
 
   // Edit order handlers
-  const handleEdit = order => { setEditOrder(order); setEditForm({ ...order }); };
+  // [SARA]: Only allow editing the status of the order
+  const handleEdit = order => {
+    setEditOrder(order);
+    setEditForm({ order_status: order.order_status });
+  };
   const handleEditChange = e => setEditForm({ ...editForm, [e.target.name]: e.target.value });
   const handleEditSubmit = async e => {
     e.preventDefault();
     if (!editOrder || !editOrder.id) return;
     try {
+      // [SARA]: Only send the status field to backend
       const res = await fetch(`http://localhost:8000/orders/${editOrder.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify({ order_status: editForm.order_status })
       });
       if (res.ok) {
         const updatedOrder = await res.json();
@@ -109,12 +116,12 @@ function OrdersAdminPage() {
             placeholder="Search by order ID or status..."
             className="flex-1 border border-gray-300 rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
           />
-          <button
+          {/* <button
             className="ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap"
             onClick={() => setShowAddModal(true)}
           >
             Add New Order
-          </button>
+          </button> */}
         </div>
       </div>
       {/* Orders grid */}
@@ -170,11 +177,7 @@ function OrdersAdminPage() {
       {editOrder && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <form onSubmit={handleEditSubmit} className="bg-white rounded-lg p-8 shadow-lg flex flex-col gap-4 min-w-[350px] max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-2">Edit Order</h2>
-            <input name="client" value={editForm.client || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Client ID" required />
-            <input name="store" value={editForm.store || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Store ID" required />
-            <textarea name="items" value={editForm.items || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder='Items (JSON: [{"item_id":1,"ordered_quantity":2}])' required />
-            <input name="shipping_location" value={editForm.shipping_location || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Shipping Location" required />
+            <h2 className="text-xl font-bold mb-2">Edit Order Status</h2>
             <select name="order_status" value={editForm.order_status || ''} onChange={handleEditChange} className="border p-2 rounded" required>
               <option value="">Select Status</option>
               <option value="pending">Pending</option>
@@ -183,15 +186,6 @@ function OrdersAdminPage() {
               <option value="shipping">Shipping</option>
               <option value="delivered">Delivered</option>
             </select>
-            <select name="payment_method" value={editForm.payment_method || ''} onChange={handleEditChange} className="border p-2 rounded" required>
-              <option value="">Select Payment Method</option>
-              <option value="cash">Cash</option>
-              <option value="card">Card</option>
-              <option value="wallet">Wallet</option>
-            </select>
-            <input name="shipping_cost" value={editForm.shipping_cost || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Shipping Cost" type="number" step="0.01" required />
-            <input name="tax" value={editForm.tax || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Tax" type="number" step="0.01" required />
-            <input name="total_price" value={editForm.total_price || ''} onChange={handleEditChange} className="border p-2 rounded" placeholder="Total Price" type="number" step="0.01" required />
             <div className="flex gap-2 mt-2">
               <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
               <button type="button" className="bg-gray-300 px-4 py-2 rounded" onClick={() => setEditOrder(null)}>Cancel</button>
