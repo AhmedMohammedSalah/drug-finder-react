@@ -173,6 +173,15 @@ const apiEndpoints = {
     removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
     deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
   },
+  // [OKS] Order endpoints
+  orders:{
+ createOrder: (data) => api.post("orders/", data),
+ // Custom action endpoint
+  updateOrderStatus: (orderId, newStatus) => api.post(
+    `orders/${orderId}/update_status/`, 
+    { status: 'paid' }
+  ),
+  }
   // [AMS]
 //   notifications: {
 //     list: () => api.get("notifications/"),

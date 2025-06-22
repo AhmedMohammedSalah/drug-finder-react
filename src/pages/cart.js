@@ -209,20 +209,16 @@ const CartPage = () => {
 
            
             {/* Checkout Button */}
+              <Link to="/checkout">
             <button className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
               PROCEED TO CHECKOUT
             </button>
+          </Link>
+
           </div>
         </div>
       </div>
-        {/*[OKS] add a checkout button */}
-      <div className="border-t pt-4 mt-4">
-        <Link to="/checkout" className="inline-block">
-         
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Checkout</button>
-             </Link>
-
-      </div>
+      
     </div>
   );
 };

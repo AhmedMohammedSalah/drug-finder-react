@@ -9,6 +9,7 @@ import PharmacyList from "./pages/pharamcieslist";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import Checkout from "./pages/checkout.js";
+import OrderSuccess from "./pages/ordersucess.js";
 import {
   RequireAuth,
   RequireNoRole,
@@ -52,6 +53,7 @@ function App() {
         <Routes>
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/checkout" element={<Checkout />}></Route>
+          <Route path="/order-success" element={<OrderSuccess />}></Route>
           {/* [AMS] default layout for guest */}
           {/* <Route element={<RequireNoRole />}> */}
             <Route path="/login" element={<LoginPage />} />
