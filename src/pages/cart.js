@@ -76,6 +76,10 @@ const handleQuantityChange = (productId, change) => {
         <p className="font-bold text-lg">Total: {cart.total_price} Eg</p>
         <IconButton text={"🧹 Clear Cart"} onClick={handleClearCart} />
       </div>
+        {/*[OKS] add a checkout button */}
+      <div className="border-t pt-4 mt-4">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Checkout</button>
+      </div>
     </div>
   );
 };
