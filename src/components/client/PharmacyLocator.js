@@ -19,7 +19,46 @@ const PharmacyLocator = () => {
     headers: { 'Content-Type': 'application/json' }
   });
 
-  
+  // Rename useDefaultLocation to setDefaultLocation to avoid React hook naming confusion
+  const setDefaultLocation = () => {
+    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
+    setUserLocation(cairoLocation);
+    setMapCenter(cairoLocation);
+    fetchPharmacies();
+  };
+
+  // Add refreshLocation function at the top level
+  const refreshLocation = () => {
+    setLocationError(null);
+    setLoading(true);
+    // Try to get location again
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          setUserLocation(newLocation);
+          setMapCenter(newLocation);
+          setLocationError(null);
+          fetchPharmacies();
+        },
+        (error) => {
+          handleLocationError(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      setLocationError('Geolocation is not supported by this browser.');
+      setDefaultLocation();
+    }
+  };
+
   useEffect(() => {
     const getLocation = () => {
       if (navigator.geolocation) {
@@ -45,7 +84,7 @@ const PharmacyLocator = () => {
         );
       } else {
         setLocationError('Geolocation is not supported by this browser.');
-        useDefaultLocation();
+        setDefaultLocation();
       }
     };
 
@@ -71,14 +110,7 @@ const PharmacyLocator = () => {
     }
     
     setLocationError(errorMessage);
-    useDefaultLocation();
-  };
-
-  const useDefaultLocation = () => {
-    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
-    setUserLocation(cairoLocation);
-    setMapCenter(cairoLocation);
-    fetchPharmacies();
+    setDefaultLocation();
   };
 
   const fetchPharmacies = async () => {

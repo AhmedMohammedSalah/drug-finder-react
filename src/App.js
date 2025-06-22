@@ -8,6 +8,14 @@ import Orders from "./pages/ordersPage";
 import PharmacyList from "./pages/pharamcieslist";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
+
+import DashboardLayout from "./components/layout/admin-layout";
+import Users from "./pages/usersAdminPage.js";
+import Medicines from "./pages/medicineAdminPage.js";
+import Stores from "./pages/storesAdminPage.js";
+import Requests from "./pages/requestsAdminPage.js";
+import OrdersAd from "./pages/ordersAdminPage.js";
+
 import {
   RequireAuth,
   RequireNoRole,
@@ -77,6 +85,17 @@ function App() {
             element={<NotificationPage />}
           />
         </Route>
+
+
+        <Route path="/admin" element={<DashboardLayout />}>
+          <Route path="/admin" element={<Users />} />
+          <Route path="/admin/medicines" element={<Medicines />} />
+          <Route path="/admin/stores" element={<Stores />} />
+          <Route path="/admin/orders" element={<OrdersAd />} />
+          <Route path="/admin/requests" element={<Requests />} />
+        </Route>
+
+        
       </Routes>
     </Router>
   );
