@@ -9,6 +9,7 @@ import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx'
+import ClientLayout from './components/layout/client-layout.jsx'
 import {
   RequireAuth,
   RequireNoRole,
@@ -55,16 +56,19 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* [AMS] this is default layout for guest / client */}
           <Route path="/" element={<DefaultLayout />}>
-            {/*[AMS] any route here will have auto header and footer */}
             <Route path="" element={<Home/>} />
-            <Route path="/pharmacies" element={<PharmacyList />} />
-            <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
+          </Route>
+
+          {/* [AMS] this is default layout for guest / client */}
+          <Route path="/client" element={<ClientLayout />}>
+            {/*[AMS] any route here will have auto header and footer */}
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             {/* [AMS] 🔔 notification page  */}
-            <Route path="/notifications" element={<NotificationPage />} />
-            <Route path="/PharmacyPage" element={<PharmacyPage />} />
-            <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
+            <Route path="notifications" element={<NotificationPage />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />
+            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
         {/* </Route> */}
         
@@ -76,6 +80,7 @@ function App() {
           <Route path="orders" element={<Orders />} />                    {/* for pharmacist */}
           <Route path="profile" element={<PharmacistProfile/>} />
         </Route>
+        
       </Routes>
     </Router>
   );
