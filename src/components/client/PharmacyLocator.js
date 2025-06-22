@@ -467,7 +467,7 @@ const PharmacyLocator = () => {
           </div>
 
           {/* [OKS] Pharmacy List with improved scrolling */}
-          <div className="h-[400px] md:h-[500px] flex flex-col p-2">
+          <div className="h-[400px] md:h-[500px] flex flex-col">
             <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 flex-1 flex flex-col">
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center">
                 <MapPin className="h-5 w-5 md:h-6 md:w-6 text-blue-600 mr-2" />
