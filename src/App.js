@@ -5,9 +5,10 @@ import Pharmaciestlayout from "./components/layout/pharmaciest-layout";
 import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
 import Orders from "./pages/ordersPage";
-import PharmacyList from "./pages/pharamcieslist";
+import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
+import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx'
 import {
   RequireAuth,
   RequireNoRole,
@@ -45,6 +46,7 @@ function App() {
     }
   }, []);
   return (
+    
     <Router>
       <Routes>
         <Route path="/cart" element={<CartPage />}></Route>
@@ -61,21 +63,18 @@ function App() {
             <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
             {/* [AMS] 🔔 notification page  */}
             <Route path="/notifications" element={<NotificationPage />} />
-            <Route path="/pharmacies" element={<PharmacyList />} />
             <Route path="/PharmacyPage" element={<PharmacyPage />} />
             <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
         {/* </Route> */}
         
-        <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-          <Route path="/pharmacy/drugs" element={<Drugs />} />
-          <Route path="/pharmacy/drugs/add" element={<AddDrug />} />
-          <Route path="/pharmacy/orders" element={<Orders />} />
-          {/* [AMS] 🔔 notification page  */}
-          <Route
-            path="/pharmacy/notifications"
-            element={<NotificationPage />}
-          />
+
+        {/* interpretation: pharamcy layout */}
+        <Route path="/pharmacy" element={<Pharmaciestlayout />}>  
+          <Route path="drugs" element={<Drugs />} />                      {/* for pharmacist */}
+          <Route path="drugs/add" element={<AddDrug />} />                {/* for pharmacist */}
+          <Route path="orders" element={<Orders />} />                    {/* for pharmacist */}
+          <Route path="profile" element={<PharmacistProfile/>} />
         </Route>
       </Routes>
     </Router>
