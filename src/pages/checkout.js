@@ -20,6 +20,8 @@ const CheckoutForm = ({
   const elements = useElements();
   const [localLoading, setLocalLoading] = useState(false);
   const [localError, setLocalError] = useState(null);
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +57,8 @@ const CheckoutForm = ({
         if (paymentIntent.status === 'succeeded') {
           // [OKS]  Update order status to paid
           await apiEndpoints.orders.updateOrderStatus(orderResponse.order.id, { status: 'paid' });
+            // [OKS] Navigate to success page
+            navigate('/order-success', { state: { orderId: orderResponse.order.id } });
         }
       }
       
@@ -151,8 +155,8 @@ const Checkout = () => {
     shipping_location: '',
     order_status: 'pending',
     payment_method: 'card',
-    shipping_cost: '0.00',
-    tax: '0.00',
+    shipping_cost: '20.00',
+    tax: '5.00',
     total_price: '0.00',
   });
 
@@ -212,7 +216,7 @@ const Checkout = () => {
       const response = await apiEndpoints.orders.createOrder(orderPayload);
       
       if (response.data) {
-        //  [OKS] Navigate to success page for cash payments
+        //  [OKS]Navigate to success page for cash payments
         if (orderPayload.payment_method === 'cash') {
           navigate('/order-success', { state: { orderId: response.data.order.id } });
         }
