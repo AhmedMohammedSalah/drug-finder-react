@@ -1,3 +1,5 @@
+// Sidebar.jsx
+
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -29,11 +31,7 @@ const Sidebar = ({ role = 'client' }) => {
     const fetchUser = async () => {
       try {
         const res = await apiEndpoints.users.getCurrentUser();
-
-        let avatar = '/avatar.jpg';
-        if (res.data.image_profile) {
-          avatar = res.data.image_profile;
-        }
+        let avatar = res.data.image_profile || '/avatar.jpg';
 
         setUser({
           name: res.data.name || 'Unknown',
@@ -57,11 +55,11 @@ const Sidebar = ({ role = 'client' }) => {
   // === ROLE-BASED MENU ITEMS ===
   const menuItems = {
     admin: [
-      { label: 'Users', icon: Users, to: '/admin', end: true },
+      { label: 'Requests', icon: FileQuestion, to: '/admin', end: true }, // ✅ Points to /admin
+      { label: 'Users', icon: Users, to: '/admin/users' },
       { label: 'Medicines', icon: ClipboardList, to: '/admin/medicines' },
       { label: 'Stores', icon: WarehouseIcon, to: '/admin/stores' },
       { label: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
-      { label: 'Requests', icon: FileQuestion, to: '/admin/requests' },
     ],
     pharmacist: [
       { label: 'Home', icon: Home, to: '/pharmacy/home' },
@@ -95,7 +93,7 @@ const Sidebar = ({ role = 'client' }) => {
           <NavLink
             key={index}
             to={to}
-            end={end} // only match exact path when specified
+            end={end}
             className={({ isActive }) =>
               `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
                 isActive ? 'bg-blue-900 font-semibold' : 'hover:bg-blue-800'
@@ -145,7 +143,6 @@ const Sidebar = ({ role = 'client' }) => {
           <p className="text-xs text-blue-200 capitalize">{role}</p>
         </div>
       </div>
-
     </div>
   );
 };
