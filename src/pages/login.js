@@ -34,6 +34,9 @@ export default function LoginPage() {
     
           // Login and unwrap the result to get the user payload
           const result = await dispatch(loginUser({ email, password })).unwrap();
+
+
+          console.log("results = ", result)
     
           const role = result?.user?.role?.toLowerCase(); // assuming backend returns user.role
     
@@ -41,7 +44,19 @@ export default function LoginPage() {
           if (role === 'admin') {
             navigate('/admin');
           } else if (role === 'pharmacist') {
-            navigate('/pharmacy');
+              const hasStore = result?.user?.pharmacist?.has_store;
+              console.log("hasStore = ", hasStore)
+              
+              // [SENU]: SKIP LOGIC UNTIL FINSIH PRESENTING
+              //===========================================
+              // if (hasStore === false) {
+              //   navigate('/pharmacy/create-store'); // redirect to store creation page
+              // } else {
+                navigate('/pharmacy'); //  go to pharmacist dashboard as usual
+              // }
+
+            //============================================================================
+
           } else if (role === 'client') {
             navigate('/client');
           } else {

@@ -151,6 +151,10 @@ const apiEndpoints = {
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
+
+    // [SENU]: fetch pharmacist profile to determine has_store
+    getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
+
   },
   pharmacies: {
     findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
