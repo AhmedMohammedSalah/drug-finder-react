@@ -6,6 +6,8 @@ import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
 import Orders from "./pages/ordersPage";
 import PharmacyList from "./pages/pharamcieslist";
+import { fetchNotifications } from "./features/notificationSlice";
+import { initWebSocket, closeWebSocket } from "./services/websocket";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import {
@@ -25,48 +27,76 @@ import CartPage from "./components/cart/cartPage.js";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
+import apiEndpoints from "./services/api.js";
 // import IconButton from './components/shared/iconButton';
 function App() {
   const dispatch = useDispatch();
+
+  const { isAuthenticated, user, accessToken } = useSelector(
+    (state) => state.auth
+  );
   useEffect(() => {
-    // [AMS] check if user is logged in and has role
-    const user = JSON.parse(localStorage.getItem("user"));
     const accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
-    // [AMS] if user is logged in, set user in redux store
-    if (user && accessToken && refreshToken) {
+    const user = localStorage.getItem("user");
+    if (accessToken && refreshToken) {
+      // Fetch user data
+      // apiEndpoints.users
+      //   .getCurrentUser()
+      //   .then((response) => {
+      //     dispatch(
+      //       setCredentials({
+      //         user: response.data,
+      //         access: accessToken,
+      //         refresh: refreshToken,
+      //       })
+      //     );
+      //   })
+      // .catch(() => {
+      //   localStorage.removeItem("access_token");
+      //   localStorage.removeItem("refresh_token");
+      // });
       dispatch(
         setCredentials({
           user: user,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+          access: accessToken,
+          refresh: refreshToken,
         })
       );
     }
-  }, []);
+  }, [dispatch]);
+  // Setup websocket
+  // useEffect(() => {
+  //   if (isAuthenticated && user?.id && accessToken) {
+  //     initWebSocket(user.id, accessToken);
+  //     dispatch(fetchNotifications());
+  //   }
+
+  //   return () => closeWebSocket();
+  // }, [isAuthenticated, user, accessToken, dispatch]);
   return (
     <Router>
       <Routes>
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
         {/* <Route element={<RequireNoRole />}> */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-          {/* [AMS] this is default layout for guest / client */}
-          <Route path="/" element={<DefaultLayout />}>
-            {/*[AMS] any route here will have auto header and footer */}
-            <Route path="" element={<Home/>} />
-            <Route path="/pharmacies" element={<PharmacyList />} />
-            <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
-            {/* [AMS] 🔔 notification page  */}
-            <Route path="/notifications" element={<NotificationPage />} />
-            <Route path="/pharmacies" element={<PharmacyList />} />
-            <Route path="/PharmacyPage" element={<PharmacyPage />} />
-            <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
-          </Route>
+        {/* [AMS] this is default layout for guest / client */}
+        <Route path="/" element={<DefaultLayout />}>
+          {/*[AMS] any route here will have auto header and footer */}
+          <Route path="" element={<Home />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
+          {/* [AMS] 🔔 notification page  */}
+          <Route path="/notifications" element={<NotificationPage />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />
+          <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
+        </Route>
         {/* </Route> */}
-        
+
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
           <Route path="/pharmacy/drugs" element={<Drugs />} />
           <Route path="/pharmacy/drugs/add" element={<AddDrug />} />

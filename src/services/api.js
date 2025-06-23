@@ -136,17 +136,17 @@ const apiEndpoints = {
   auth: {
     login: (credentials) => api.post("users/login/", credentials),
     refreshToken: (refreshToken) =>
-        api.post("login/refresh/", { refresh: refreshToken }),
+      api.post("login/refresh/", { refresh: refreshToken }),
     verifyEmail: (token) => api.get(`users/verify-email/${token}/`),
     googleAuth: (tokenData) => api.post("users/google-auth/", tokenData),
     // googleLogin: () => api.get("users/auth/google/"), // For server-side flow
   },
-//   profile: {
-//     getPatientProfile: () => api.get("patients/me/"),
-//     updatePatientProfile: (data) => api.put("patients/me/", data),
-//     getDoctorProfile: () => api.get("doctors/doctors/me"),
-//     updateDoctorProfile: (data) => api.put("doctors/doctors/me/", data),
-//   },
+  //   profile: {
+  //     getPatientProfile: () => api.get("patients/me/"),
+  //     updatePatientProfile: (data) => api.put("patients/me/", data),
+  //     getDoctorProfile: () => api.get("doctors/doctors/me"),
+  //     updateDoctorProfile: (data) => api.put("doctors/doctors/me/", data),
+  //   },
   users: {
     register: (userData) => apiFileUpload.post("users/users/", userData),
     getCurrentUser: () => api.get("users/me/"),
@@ -154,15 +154,15 @@ const apiEndpoints = {
     deleteUser: () => api.delete("users/me/"),
   },
   // [AMS]
-//   notifications: {
-//     list: () => api.get("notifications/"),
-//     detail: (id) => api.get(`notifications/${id}/`),
-//     markRead: (id) => api.patch(`notifications/${id}/`, { is_read: true }),
-//     delete: (id) => api.delete(`notifications/${id}/`),
-//     create: (notificationData) => api.post("notifications/", notificationData),
-//   },
+  // Add to apiEndpoints object
+  notifications: {
+    list: () => api.get("notification/"),
+    detail: (id) => api.get(`notification/${id}/`),
+    markRead: (id) => api.patch(`notification/${id}/`, { is_read: true }),
+    markAllRead: () => api.post("notification/mark_all_read/"),
+    delete: (id) => api.delete(`notification/${id}/`),
+  },
   // [AMS]Add other endpoints as needed
-
 };
 
 export default apiEndpoints;
