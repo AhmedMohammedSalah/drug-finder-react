@@ -83,7 +83,7 @@ const PharmacyLocator = () => {
     }
     
     setLocationError(errorMessage);
-    useDefaultLocation();
+    setDefaultLocation();
   };
 
   useEffect(() => {
@@ -118,7 +118,7 @@ const PharmacyLocator = () => {
     getLocation();
   }, []);
 
-  const useDefaultLocation = () => {
+  const setDefaultLocation = () => {
     const cairoLocation = { lat: 30.0444, lng: 31.2357 };
     setUserLocation(cairoLocation);
     setMapCenter(cairoLocation);
@@ -247,7 +247,7 @@ const PharmacyLocator = () => {
         }
       );
     } else {
-      useDefaultLocation();
+      setDefaultLocation();
     }
   };
 
