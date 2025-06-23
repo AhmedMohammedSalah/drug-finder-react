@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-/*
-AUTHOR:Amira,
 
-*/
 export const fetchPharmacies = createAsyncThunk(
   'pharmacy/fetchPharmacies',
-  async (_, thunkAPI) => {
+  async (params = {}, thunkAPI) => {
     try {
-      const response = await axios.get('http://localhost:3001/pharmacies');
-      return response.data; 
+      const query = new URLSearchParams(params).toString();
+      const response = await axios.get(`http://localhost:8000/medical_stores/?${query}`);
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -35,7 +33,7 @@ const pharmacySlice = createSlice({
       })
       .addCase(fetchPharmacies.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload; 
+        state.error = action.payload;
       });
   }
 });

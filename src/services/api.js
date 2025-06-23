@@ -179,6 +179,15 @@ const apiEndpoints = {
   getClientProfile: () => api.get("users/client/profile/"),
   updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
 }
+  // [OKS] Order endpoints
+  orders:{
+ createOrder: (data) => api.post("orders/", data),
+ // Custom action endpoint
+  updateOrderStatus: (orderId, newStatus) => api.post(
+    `orders/${orderId}/update_status/`, 
+    { status: 'paid' }
+  ),
+  }
   // [AMS]
 //   notifications: {
 //     list: () => api.get("notifications/"),
@@ -193,7 +202,12 @@ const apiEndpoints = {
 
 export default apiEndpoints;
 
+
+
+// [SENU]: solve the authorization problem
+//======="حسبي الله ونعم الوكيل"=====================
 // Example usage:
-apiEndpoints.inventory.getMedicines().then(response => {
+// apiEndpoints.inventory.getMedicines().then(response => {
   // response.data contains the list of medicines
-});
+// });
+//=====================================================

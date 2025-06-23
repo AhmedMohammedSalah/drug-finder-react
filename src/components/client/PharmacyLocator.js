@@ -111,7 +111,7 @@ const PharmacyLocator = () => {
         );
       } else {
         setLocationError('Geolocation is not supported by this browser.');
-        useDefaultLocation();
+        setDefaultLocation();
       }
     };
 

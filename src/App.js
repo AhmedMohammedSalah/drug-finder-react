@@ -5,29 +5,43 @@ import Pharmaciestlayout from "./components/layout/pharmaciest-layout";
 import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
 import Orders from "./pages/ordersPage";
-import PharmacyList from "./pages/pharamcieslist";
+import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
+
+// [SENU]: ADDED
+import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx'
+import ClientLayout from './components/layout/client-layout.jsx'
+
+// [SENU]: SARA ADDED THEM
+import DashboardLayout from "./components/layout/admin-layout";
+import Users from "./pages/usersAdminPage.js";
+import Medicines from "./pages/medicineAdminPage.js";
+import Stores from "./pages/storesAdminPage.js";
+import Requests from "./pages/requestsAdminPage.js";
+import OrdersAd from "./pages/ordersAdminPage.js";
+
 import Checkout from "./pages/checkout.js";
+import OrderSuccess from "./pages/ordersucess.js";
 import {
   RequireAuth,
   RequireNoRole,
   RequireRole,
 } from "./guards/authorization-guard.js";
-// import Login from './pages/loginPage';
-// import Register from './pages/registerPage';
-// import Dashboard from './pages/dashboardPage';
-// import Drugs from './pages/drugPage'
+
 import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.jsx";
 import NotificationPage from "./components/notifications/notification-page.jsx";
 import CartPage from "./pages/cart.js";
-// import CartSyncer from './features/cartSlice.js
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
+<<<<<<< HEAD
 import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
+=======
+
+>>>>>>> fefb65b4dc1dbacfa39cbaef7a82bc4057d75223
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -47,17 +61,18 @@ function App() {
     }
   }, []);
   return (
-    <>
-     
-      <Router>
-        <Routes>
-          <Route path="/cart" element={<CartPage />}></Route>
-          <Route path="/checkout" element={<Checkout />}></Route>
-          {/* [AMS] default layout for guest */}
-          {/* <Route element={<RequireNoRole />}> */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+    
+    <Router>
+      <Routes>
 
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+          {/* GUEST: with header and footer */}
+          <Route path="/" element={<DefaultLayout />}>
+            <Route path="" element={<Home/>} />
+
+<<<<<<< HEAD
             {/* [AMS] this is default layout for guest / client */}
             <Route path="/" element={<DefaultLayout />}>
               {/*[AMS] any route here will have auto header and footer */}
@@ -81,10 +96,45 @@ function App() {
               path="/pharmacy/notifications"
               element={<NotificationPage />}
             />
+=======
+>>>>>>> fefb65b4dc1dbacfa39cbaef7a82bc4057d75223
           </Route>
-        </Routes>
-      </Router>
-    </>
+
+          
+          {/* CLIENT*/}
+          <Route path="/client" element={<ClientLayout />}>
+            <Route path="cart" element={<CartPage />}></Route>
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
+            <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+            {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+          </Route>
+          
+         
+
+        {/* PHARMACIST */}
+        <Route path="/pharmacy" element={<Pharmaciestlayout />}> 
+          <Route path="drugs" element={<Drugs />} />                     
+          <Route path="drugs/add" element={<AddDrug />} />              
+          <Route path="orders" element={<Orders />} />                    
+          <Route path="profile" element={<PharmacistProfile/>} />
+          <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+        </Route>
+
+        {/* ADMIN */}
+        <Route path="/admin" element={<DashboardLayout />}>
+          <Route index element={<Users />} />
+          <Route path="medicines" element={<Medicines />} />
+          <Route path="stores" element={<Stores />} />
+          <Route path="orders" element={<OrdersAd />} />
+          <Route path="requests" element={<Requests />} />
+        </Route>
+
+        
+      </Routes>
+    </Router>
+   
   );
 }
 
