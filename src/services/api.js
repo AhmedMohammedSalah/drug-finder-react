@@ -153,7 +153,7 @@ const apiEndpoints = {
     deleteUser: () => api.delete("users/me/"),
   },
   pharmacies: {
-    findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
+    findNearbyPharmacist: () => api.get("/medical_stores"),
   },
   
   inventory: {

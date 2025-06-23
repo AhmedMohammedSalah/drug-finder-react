@@ -73,6 +73,8 @@ function App() {
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
             <Route path="cart" element={<CartPage />}></Route>
+            <Route path="checkout" element={<Checkout />}></Route>
+            <Route path="order-success" element={<OrderSuccess />}></Route>
             <Route path="pharmacies" element={<PharmacyList />} />
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
