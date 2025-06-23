@@ -169,16 +169,14 @@ const Checkout = () => {
           const cartData = response.data.results[0];
           setCart(cartData);
 
-          const storeId = cartData.items.length > 0
-            ? cartData.items[0].product.store
-            : null;
-
+          const storeId = cartData.store?.id || null;
+           
           setOrderData(prev => ({
             ...prev,
             store: storeId,
             client: cartData.user || null,
             items: cartData.items.map(item => ({
-              item_id: item.product.id,
+              item_id: item.product,
               ordered_quantity: item.quantity
             })),
             shipping_cost: cartData.shipping_cost.toString(),

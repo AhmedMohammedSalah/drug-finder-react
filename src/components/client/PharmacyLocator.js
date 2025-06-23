@@ -3,6 +3,8 @@ import { MapPin, Navigation, Phone, Clock, Star, RefreshCw, AlertCircle } from '
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
+import PharmacyCardLocator from '../../components/shared/PharmacyCardLocator';
+import apiEndpoints from '../../services/api'
 
 const PharmacyLocator = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -23,16 +25,13 @@ const PharmacyLocator = () => {
   const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoib21hcm9rc3RhciIsImEiOiJjbDYweWZnN2kxZDh2M2dvYWtsdWZmaXpkIn0.BgrSg2_-EDey-NBxWRKeTA';
   mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-  // API base URL
-  const API_BASE_URL = 'http://127.0.0.1:8000';
-
   // Fetch pharmacies from backend API
   const fetchPharmacies = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get(`${API_BASE_URL}/medical_stores/`);
+      const response = await apiEndpoints.pharmacies.findNearbyPharmacist();
       
       if (!response.data || !response.data.results) {
         throw new Error('Invalid API response structure');
@@ -327,87 +326,6 @@ const PharmacyLocator = () => {
     }))
     .sort((a, b) => a.distance - b.distance);
 
-  const PharmacyCard = ({ pharmacy, selected, onClick }) => (
-    <div 
-      className={`bg-white rounded-xl p-4 mb-4 cursor-pointer transition-all duration-300 hover:shadow-lg ${
-        selected ? 'ring-2 ring-blue-500 shadow-lg' : 'shadow-md hover:shadow-xl'
-      }`}
-      onClick={onClick}
-    >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
-          <div className="w-14 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
-            <img
-              src={pharmacy.store_logo_url}
-              alt={pharmacy.store_name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
-            />
-            <div className="hidden w-full h-full items-center justify-center">
-              <MapPin className="h-6 w-6 text-blue-500" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex-1 min-w-0 space-y-2">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-md font-semibold text-gray-900 line-clamp-1">{pharmacy.store_name}</h3>
-              <p className="text-xs text-gray-500 line-clamp-1">{pharmacy.description}</p>
-            </div>
-            <div className="flex items-center space-x-1 text-amber-500">
-              <Star className="h-3 w-3 fill-current" />
-              <span className="text-xs font-medium text-gray-700">{pharmacy.rating?.toFixed(1)}</span>
-            </div>
-          </div>
-          
-          <div className="text-xs space-y-1">
-            <div className="flex items-center text-gray-600">
-              <MapPin className="h-3 w-3 mr-1 text-gray-400" />
-              <span className="line-clamp-1 flex-1">{pharmacy.address}</span>
-              <span className="ml-2 text-blue-600 font-medium whitespace-nowrap">
-                {pharmacy.distance?.toFixed(1)} km
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center text-gray-600">
-                <Clock className="h-3 w-3 mr-1 text-gray-400" />
-                <span className="line-clamp-1">{pharmacy.hours}</span>
-              </div>
-              
-              <div className="flex space-x-1">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(`tel:${pharmacy.phone}`, '_self');
-                  }}
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-50 rounded-full hover:bg-green-100 transition-colors"
-                >
-                  <Phone className="h-3 w-3 mr-0.5" />
-                  Call
-                </button>
-                
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    getDirections(pharmacy);
-                  }}
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
-                >
-                  <Navigation className="h-3 w-3 mr-0.5" />
-                  Directions
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-4 md:p-6">
@@ -467,62 +385,72 @@ const PharmacyLocator = () => {
           </div>
 
           {/* [OKS] Pharmacy List with improved scrolling */}
-          <div className="h-[400px] md:h-[500px] flex flex-col">
-            <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 flex-1 flex flex-col">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center">
-                <MapPin className="h-5 w-5 md:h-6 md:w-6 text-blue-600 mr-2" />
-                Nearby Pharmacies
-              </h2>
-              
-              <div 
-                ref={pharmacyListRef}
-                className="flex-1 overflow-y-auto pr-2 -mr-2"
-                style={{ scrollbarWidth: 'thin' }}
-              >
-                {loading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600"></div>
-                  </div>
-                ) : error ? (
-                  <div className="text-center py-8 flex flex-col items-center justify-center h-full">
-                    <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
-                    <p className="text-red-600 font-medium mb-4">{error}</p>
-                    <button 
-                      onClick={fetchPharmacies}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      Try Again
-                    </button>
-                  </div>
-                ) : sortedPharmacies.length === 0 ? (
-                  <div className="text-center py-8 flex flex-col items-center justify-center h-full">
-                    <MapPin className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500">No pharmacies found near you</p>
-                    <button 
-                      onClick={refreshLocation}
-                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      Refresh Location
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {sortedPharmacies.map(pharmacy => (
-                      <PharmacyCard
-                        key={pharmacy.store_id}
-                        pharmacy={pharmacy}
-                        selected={selectedPharmacy?.store_id === pharmacy.store_id}
-                        onClick={() => handlePharmacyClick(pharmacy)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+  <div className="h-[320px] md:h-[400px] flex flex-col">
+  <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-3 md:p-4 flex flex-col h-full overflow-hidden border border-gray-100"> {/* Added subtle border */}
+    
+    {/* Header with subtle bottom border */}
+    <div className="px-2 pb-3 mb-1 border-b border-gray-100"> {/* Added border separator */}
+      <h2 className="text-lg md:text-xl font-semibold text-gray-800 flex items-center">
+        <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mr-2" />
+        Nearby Pharmacies
+      </h2>
+    </div>
+
+    
+    {/* Fixed height container with scroll */}
+    <div className="flex flex-col h-full">
+     <div 
+        ref={pharmacyListRef}
+        className="h-full overflow-y-auto pr-2 scrollbar-thin 
+                  scrollbar-thumb-blue-200 scrollbar-track-blue-50 
+                  hover:scrollbar-thumb-blue-300 transition-all 
+                  duration-300 scrollbar-thumb-rounded-full"
+      >
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600"></div>
           </div>
+        ) : error ? (
+          <div className="text-center py-8 flex flex-col items-center justify-center h-full">
+            <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
+            <p className="text-red-600 font-medium mb-4">{error}</p>
+            <button 
+              onClick={fetchPharmacies}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : sortedPharmacies.length === 0 ? (
+            <div className="text-center py-6 flex flex-col items-center justify-center h-full"> {/* Reduced padding */}            <MapPin className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+            <p className="text-gray-500">No pharmacies found near you</p>
+            <button 
+              onClick={refreshLocation}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            >
+              Refresh Location
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {sortedPharmacies.map(pharmacy => (
+              <PharmacyCardLocator
+                key={pharmacy.store_id}
+                pharmacy={pharmacy}
+                selected={selectedPharmacy?.store_id === pharmacy.store_id}
+                onClick={() => handlePharmacyClick(pharmacy)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
         </div>
 
-        {/* Selected Pharmacy Details with improved layout */}
+      </div>
+       {/* Selected Pharmacy Details with improved layout */}
         {selectedPharmacy && (
           <div className="mt-4 md:mt-6 bg-white rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6">
             <div className="flex items-center justify-between mb-3 md:mb-4">
@@ -599,8 +527,8 @@ const PharmacyLocator = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
+    
   );
 };
 

@@ -74,6 +74,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
 
         {/*===========================================================*/}
+<<<<<<< HEAD
           
           
         {/* Guest */}
@@ -89,11 +90,22 @@ function App() {
 
         {/*===========================================================*/}
 
+=======
+
+          {/* GUEST: with header and footer */}
+          <Route path="/" element={<DefaultLayout />}>
+            <Route path="" element={<Home/>} />
+          </Route>
+
+          <Route path="order-success" element={<OrderSuccess />}></Route>
+
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
           
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
             <Route index  element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />}></Route>
+<<<<<<< HEAD
             <Route path="checkout" element={<Checkout />}></Route> 
             <Route path="pharmacies" element={<PharmacyList />} />
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
@@ -118,6 +130,14 @@ function App() {
          {/*===========================================================*/}
 
           
+=======
+            <Route path="checkout" element={<Checkout />}></Route>
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
+            <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+          </Route>
+          
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
         {/* GUEST: with header and footer */}
         {/* <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
@@ -127,9 +147,12 @@ function App() {
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
         </Route> */}
         
+<<<<<<< HEAD
 
        {/*===========================================================*/}
 
+=======
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
         <Route path="MyProfile" element={<ProfilePage />} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
@@ -140,7 +163,10 @@ function App() {
           <Route path="profile" element={<PharmacistProfile />} />
           <Route path="notifications" element={<NotificationPage />} />
         </Route>
+<<<<<<< HEAD
         {/*===========================================================*/}
+=======
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
         {/* CLIENT */}
         {/* <Route path="/client" element={<ClientLayout />}> */}
           {/* <Route path="cart" element={<CartPage />} /> */}
@@ -150,9 +176,12 @@ function App() {
           {/* <Route path="PharmacyMapPage" element={<PharmacyMapPage />} /> */}
         {/*=======================================================================================*/}
         {/* </Route> */}
+<<<<<<< HEAD
 
         {/*===========================================================*/}
         
+=======
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
         {/* ADMIN */}
         <Route path="/admin" element={<DashboardLayout />}>
           <Route index element={<Requests />} />

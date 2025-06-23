@@ -151,15 +151,20 @@ const apiEndpoints = {
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
+
+    // [SENU]: fetch pharmacist profile to determine has_store
+    getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
+
   },
   pharmacies: {
-    findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
+    findNearbyPharmacist: () => api.get("/medical_stores"),
   },
   
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     // You can add getDevices or other inventory endpoints here as needed
   },
+  // {amira} added cart endpoints
   cart: {
     getCart: () => {
       const result = api.get("cart/cart/");
@@ -173,6 +178,11 @@ const apiEndpoints = {
     removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
     deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
   },
+  // {amira}added client endpoints
+  client: {
+  getClientProfile: () => api.get("users/client/profile/"),
+  updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
+},
   // [OKS] Order endpoints
   orders:{
  createOrder: (data) => api.post("orders/", data),
