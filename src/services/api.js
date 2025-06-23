@@ -181,6 +181,34 @@ const apiEndpoints = {
     `orders/${orderId}/update_status/`, 
     { status: 'paid' }
   ),
+ getMyOrders: () => api.get("orders/"),
+    getPaginatedOrders: (page = 1, pageSize = 10, filters = {}) => {
+      const params = new URLSearchParams({
+        page,
+        page_size: pageSize,
+        ...filters
+      });
+      return api.get(`orders/?${params.toString()}`);
+    },
+    getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
+    getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
+    
+    // Convenience methods
+    getOrdersByStatus: (status, page = 1, pageSize = 10) => 
+      apiEndpoints.orders.getPaginatedOrders(page, pageSize, { status }),
+    
+    getRecentOrders: (days = 7, page = 1, pageSize = 10) => {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return apiEndpoints.orders.getPaginatedOrders(
+        page, 
+        pageSize, 
+        { created_at_after: date.toISOString() }
+      );
+    }
+  }
+    
+  
   }
   // [AMS]
 //   notifications: {
@@ -192,7 +220,7 @@ const apiEndpoints = {
 //   },
   // [AMS]Add other endpoints as needed
 
-};
+
 
 export default apiEndpoints;
 

@@ -24,6 +24,8 @@ import OrdersAd from "./pages/ordersAdminPage.js";
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
 
+import OrderHistory from "./pages/orderhistory.js";
+
 import {
   RequireAuth,
   RequireNoRole,
@@ -71,20 +73,23 @@ function App() {
           {/* GUEST: with header and footer */}
           <Route path="/" element={<DefaultLayout />}>
             <Route path="" element={<Home/>} />
-
           </Route>
+          
+          {/*[OKS] order success page */}
+          <Route path="order-success" element={<OrderSuccess />}></Route>
+
 
           
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
             <Route path="cart" element={<CartPage />}></Route>
-            <Route path="checkout" element={<Checkout />}></Route>
-            <Route path="order-success" element={<OrderSuccess />}></Route>
+            <Route path="checkout" element={<Checkout />}></Route> 
             <Route path="pharmacies" element={<PharmacyList />} />
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
             {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+            <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
           </Route>
           
          
