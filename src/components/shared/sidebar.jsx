@@ -24,6 +24,9 @@ import { useSelector } from 'react-redux';
 
 const Sidebar = ({ role = 'client' }) => {
   const [user, setUser] = useState({ name: 'Loading...', avatar: '/avatar.jpg' });
+
+  // [SENU] TRACK WHETHER THE PHARMACIST HAS A STORE
+  const [hasStore, setHasStore] = useState(true); // Default true to show full menu
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.accessToken);
 
@@ -37,6 +40,12 @@ const Sidebar = ({ role = 'client' }) => {
           name: res.data.name || 'Unknown',
           avatar,
         });
+
+        // [SENU] IF ROLE IS PHARMACIST, FETCH WHETHER THEY HAVE A STORE
+        if (res.data.role === 'pharmacist') {
+          const pharmacistRes = await apiEndpoints.users.getPharmacistProfile();
+          setHasStore(pharmacistRes.data.has_store); // This field must exist in backend response
+        }
       } catch (err) {
         console.error('Failed to fetch user:', err);
       }
@@ -61,13 +70,21 @@ const Sidebar = ({ role = 'client' }) => {
       { label: 'Stores', icon: WarehouseIcon, to: '/admin/stores' },
       { label: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
     ],
-    pharmacist: [
-      { label: 'Home', icon: Home, to: '/pharmacy/home' },
-      { label: 'Store', icon: Store, to: '/pharmacy/store' },
-      { label: 'Profile', icon: User, to: '/pharmacy/profile' },
-      { label: 'Inventory', icon: Package, to: '/pharmacy/drugs' },
-      { label: 'Orders', icon: ShoppingBag, to: '/pharmacy/orders' },
-    ],
+
+    // [SENU] CONDITIONALLY SHOW PHARMACIST MENU BASED ON STORE AVAILABILITY
+    pharmacist: hasStore
+      ? [
+          { label: 'Home', icon: Home, to: '/pharmacy/home' },
+          { label: 'Store', icon: Store, to: '/pharmacy/store-profile' },
+          { label: 'Profile', icon: User, to: '/pharmacy/profile' },
+          { label: 'Inventory', icon: Package, to: '/pharmacy/drugs' },
+          { label: 'Orders', icon: ShoppingBag, to: '/pharmacy/orders' },
+        ]
+      : [
+          { label: 'Store', icon: Store, to: '/pharmacy/store-profile' },
+          { label: 'Profile', icon: User, to: '/pharmacy/profile' },
+        ],
+
     client: [
       { label: 'Search', icon: Home, to: '/client/PharmacyMapPage' },
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },

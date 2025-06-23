@@ -40,6 +40,7 @@ import { setCredentials } from "./features/authSlice.js";
 import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
+import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ function App() {
         <Route path="MyProfile" element={<ProfilePage />} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
+          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
