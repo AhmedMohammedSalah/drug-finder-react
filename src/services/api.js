@@ -186,7 +186,6 @@ const apiEndpoints = {
   // [OKS] Order endpoints
   orders:{
  createOrder: (data) => api.post("orders/", data),
- // Custom action endpoint
   updateOrderStatus: (orderId, newStatus) => api.post(
     `orders/${orderId}/update_status/`, 
     { status: 'paid' }
@@ -203,7 +202,7 @@ const apiEndpoints = {
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
     
-    // Convenience methods
+    //[OKS] Convenience methods
     getOrdersByStatus: (status, page = 1, pageSize = 10) => 
       apiEndpoints.orders.getPaginatedOrders(page, pageSize, { status }),
     
