@@ -164,7 +164,7 @@ export default function Header() {
               {user ? (
                 <>
                   <Link
-                    to="/cart"
+                    to="/client/cart"
                     className="relative flex items-center text-gray-700 hover:text-blue-600 font-medium transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >

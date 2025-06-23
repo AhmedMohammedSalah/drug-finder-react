@@ -178,7 +178,7 @@ const apiEndpoints = {
   client: {
   getClientProfile: () => api.get("users/client/profile/"),
   updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
-}
+},
   // [OKS] Order endpoints
   orders:{
  createOrder: (data) => api.post("orders/", data),

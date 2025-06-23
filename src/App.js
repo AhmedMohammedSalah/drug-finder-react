@@ -36,12 +36,9 @@ import CartPage from "./pages/cart.js";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
-<<<<<<< HEAD
 import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
-=======
 
->>>>>>> fefb65b4dc1dbacfa39cbaef7a82bc4057d75223
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -67,14 +64,12 @@ function App() {
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
+    {/* [AMS] this is default layout for guest / client */}
           {/* GUEST: with header and footer */}
           <Route path="/" element={<DefaultLayout />}>
             <Route path="" element={<Home/>} />
 
-<<<<<<< HEAD
-            {/* [AMS] this is default layout for guest / client */}
-            <Route path="/" element={<DefaultLayout />}>
+        
               {/*[AMS] any route here will have auto header and footer */}
               <Route path="" element={<Home/>} />
               <Route path="/pharmacies" element={<PharmacyList />} />
@@ -96,8 +91,6 @@ function App() {
               path="/pharmacy/notifications"
               element={<NotificationPage />}
             />
-=======
->>>>>>> fefb65b4dc1dbacfa39cbaef7a82bc4057d75223
           </Route>
 
           

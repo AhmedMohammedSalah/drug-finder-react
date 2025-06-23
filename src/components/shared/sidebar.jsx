@@ -73,7 +73,7 @@ const Sidebar = ({ role = 'client' }) => {
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
-      { label: 'Profile', icon: CircleUser, to: '/client/profile' },
+      { label: 'Profile', icon: CircleUser, to: '/MyProfile' },
     ],
   };
 

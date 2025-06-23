@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiEndpoints from '../services/api'; // Assuming this handles API calls
 import { toast } from 'react-toastify'; // For notifications
 import Header from '../components/home/header'; // Global header
+import Sidebar from '../components/shared/sidebar';
 // import Nav from '../components/pharmacist/dashboardNav'; // Dashboard navigation - uncomment if needed
 
 // Placeholder for a default profile image if none is provided
@@ -148,14 +149,14 @@ export default function ClientProfilePage() {
 
     return (
         <>
-            <Header />
+          <Sidebar />
 
             <div className="container mx-auto px-4 py-8">
                 {/* <Nav /> */}
 
                 <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6 md:p-8 mt-5">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-3xl font-extrabold text-gray-800">Your Client Profile</h2>
+                        <h3 className="text-3xl font-extrabold text-gray-800">welcome Back {form.name}</h3>
                         {!editMode && (
                             <button
                                 onClick={() => setEditMode(true)}
