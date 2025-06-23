@@ -39,7 +39,10 @@ import CartPage from "./pages/cart.js";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
+import ProfilePage from "./pages/profilePage.js";
+// import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
+import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -70,6 +73,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+<<<<<<< HEAD
+=======
+        {/*===========================================================*/}
+
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
           {/* GUEST: with header and footer */}
           <Route path="/" element={<DefaultLayout />}>
             <Route path="" element={<Home/>} />
@@ -79,10 +87,14 @@ function App() {
           <Route path="order-success" element={<OrderSuccess />}></Route>
 
 
+          <Route path="order-success" element={<OrderSuccess />}></Route>
+
           
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
+            <Route index  element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />}></Route>
+<<<<<<< HEAD
             <Route path="checkout" element={<Checkout />}></Route> 
             <Route path="pharmacies" element={<PharmacyList />} />
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
@@ -111,24 +123,44 @@ function App() {
         {/* Client */}
         <Route path="/client" element={<ClientLayout />}>
           <Route path="cart" element={<CartPage />} />
+=======
+            <Route path="checkout" element={<Checkout />}></Route>
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
+            <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+          </Route>
+          
+        {/* GUEST: with header and footer */}
+        {/* <Route path="/" element={<DefaultLayout />}>
+          <Route index element={<Home />} />
+>>>>>>> 872a5cf1f93843cfb021c4dec9b302d2aff46300
           <Route path="pharmacies" element={<PharmacyList />} />
           <Route path="PharmacyPage" element={<PharmacyPage />} />
           <Route path="notifications" element={<NotificationPage />} />
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
-        </Route>
-
-        {/* Pharmacist */}
+        </Route> */}
+        
+        <Route path="MyProfile" element={<ProfilePage />} />
+        {/* PHARMACY DASHBOARD */}
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
+          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
           <Route path="profile" element={<PharmacistProfile />} />
           <Route path="notifications" element={<NotificationPage />} />
         </Route>
-
-        {/* Admin */}
+        {/* CLIENT */}
+        {/* <Route path="/client" element={<ClientLayout />}> */}
+          {/* <Route path="cart" element={<CartPage />} /> */}
+          {/* <Route path="pharmacies" element={<PharmacyList />} /> */}
+          {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+          {/* <Route path="notifications" element={<NotificationPage />} /> */}
+          {/* <Route path="PharmacyMapPage" element={<PharmacyMapPage />} /> */}
+        {/*=======================================================================================*/}
+        {/* </Route> */}
+        {/* ADMIN */}
         <Route path="/admin" element={<DashboardLayout />}>
-          {/* ✅ Set default to requests */}
           <Route index element={<Requests />} />
           <Route path="requests" element={<Requests />} />
           <Route path="users" element={<Users />} />
