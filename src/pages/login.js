@@ -22,32 +22,42 @@ export default function LoginPage() {
     const [backendError, setBackendError] = useState("");
     const navigate = useNavigate();
 
-    const submit = async(e) => {
-        e.preventDefault();
-        const { valid, errors: validationErrors } = validateLoginForm(
-          email,
-          password
-        );
-        setErrors(validationErrors);
-        if (valid) {
-          try {
-            dispatch(clearError());
-            setBackendError("");
-            
-            // Dispatch login action
-            await dispatch(loginUser({ email, password })).unwrap();
-            navigate('/');
-          } catch (error) {
-            // Handle specific backend errors
-            if (error?.error === "email_not_verified") {
-              setBackendError("Please verify your email before logging in");
-              
-            } else {
-              setBackendError(error?.detail || "Invalid credentials. Please try again.");
-            }
+    const submit = async (e) => {
+      e.preventDefault();
+      const { valid, errors: validationErrors } = validateLoginForm(email, password);
+      setErrors(validationErrors);
+    
+      if (valid) {
+        try {
+          dispatch(clearError());
+          setBackendError("");
+    
+          // Login and unwrap the result to get the user payload
+          const result = await dispatch(loginUser({ email, password })).unwrap();
+    
+          const role = result?.user?.role?.toLowerCase(); // assuming backend returns user.role
+    
+          // [SENU] Redirect based on role
+          if (role === 'admin') {
+            navigate('/admin');
+          } else if (role === 'pharmacist') {
+            navigate('/pharmacy');
+          } else if (role === 'client') {
+            navigate('/client');
+          } else {
+            navigate('/'); // fallback if role unknown
+          }
+    
+        } catch (error) {
+          if (error?.error === "email_not_verified") {
+            setBackendError("Please verify your email before logging in");
+          } else {
+            setBackendError(error?.detail || "Invalid credentials. Please try again.");
           }
         }
+      }
     };
+    
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-100">
