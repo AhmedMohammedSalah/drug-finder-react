@@ -10,19 +10,20 @@ import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 
 // [SENU]: ADDED
-import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx'
-import ClientLayout from './components/layout/client-layout.jsx'
+import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx';
+import ClientLayout from './components/layout/client-layout.jsx';
 
 // [SENU]: SARA ADDED THEM
 import DashboardLayout from "./components/layout/admin-layout";
 import Users from "./pages/usersAdminPage.js";
 import Medicines from "./pages/medicineAdminPage.js";
 import Stores from "./pages/storesAdminPage.js";
-import Requests from "./pages/requestsAdminPage.js";
+import Requests from "./pages/admin/PharmacistRequestsPage.jsx";
 import OrdersAd from "./pages/ordersAdminPage.js";
 
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
+
 import {
   RequireAuth,
   RequireNoRole,
@@ -36,15 +37,19 @@ import CartPage from "./pages/cart.js";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
+import ProfilePage from "./pages/profilePage.js";
+// import IconButton from './components/shared/iconButton';
+import { Toaster } from "react-hot-toast";
+import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 
 function App() {
   const dispatch = useDispatch();
+
   useEffect(() => {
-    // [AMS] check if user is logged in and has role
     const user = JSON.parse(localStorage.getItem("user"));
     const accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
-    // [AMS] if user is logged in, set user in redux store
+
     if (user && accessToken && refreshToken) {
       dispatch(
         setCredentials({
@@ -55,57 +60,76 @@ function App() {
       );
     }
   }, []);
-  return (
-    
-    <Router>
-      <Routes>
 
+  return (
+    <Router>
+      {/* Toast Notifications */}
+      <Toaster position="top-right" reverseOrder={false} />
+
+      <Routes>
+        {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
+        {/*===========================================================*/}
 
           {/* GUEST: with header and footer */}
           <Route path="/" element={<DefaultLayout />}>
             <Route path="" element={<Home/>} />
-
           </Route>
+
+          <Route path="order-success" element={<OrderSuccess />}></Route>
 
           
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
+            <Route index  element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />}></Route>
             <Route path="checkout" element={<Checkout />}></Route>
-            <Route path="order-success" element={<OrderSuccess />}></Route>
             <Route path="pharmacies" element={<PharmacyList />} />
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
-            {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
-            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
           
-         
-
-        {/* PHARMACIST */}
-        <Route path="/pharmacy" element={<Pharmaciestlayout />}> 
-          <Route path="drugs" element={<Drugs />} />                     
-          <Route path="drugs/add" element={<AddDrug />} />              
-          <Route path="orders" element={<Orders />} />                    
-          <Route path="profile" element={<PharmacistProfile/>} />
-          <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+        {/* GUEST: with header and footer */}
+        {/* <Route path="/" element={<DefaultLayout />}>
+          <Route index element={<Home />} />
+          <Route path="pharmacies" element={<PharmacyList />} />
+          <Route path="PharmacyPage" element={<PharmacyPage />} />
+          <Route path="notifications" element={<NotificationPage />} />
+          <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+        </Route> */}
+        
+        <Route path="MyProfile" element={<ProfilePage />} />
+        {/* PHARMACY DASHBOARD */}
+        <Route path="/pharmacy" element={<Pharmaciestlayout />}>
+          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
+          <Route path="drugs" element={<Drugs />} />
+          <Route path="drugs/add" element={<AddDrug />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="profile" element={<PharmacistProfile />} />
+          <Route path="notifications" element={<NotificationPage />} />
         </Route>
-
+        {/* CLIENT */}
+        {/* <Route path="/client" element={<ClientLayout />}> */}
+          {/* <Route path="cart" element={<CartPage />} /> */}
+          {/* <Route path="pharmacies" element={<PharmacyList />} /> */}
+          {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+          {/* <Route path="notifications" element={<NotificationPage />} /> */}
+          {/* <Route path="PharmacyMapPage" element={<PharmacyMapPage />} /> */}
+        {/*=======================================================================================*/}
+        {/* </Route> */}
         {/* ADMIN */}
         <Route path="/admin" element={<DashboardLayout />}>
-          <Route index element={<Users />} />
+          <Route index element={<Requests />} />
+          <Route path="requests" element={<Requests />} />
+          <Route path="users" element={<Users />} />
           <Route path="medicines" element={<Medicines />} />
           <Route path="stores" element={<Stores />} />
           <Route path="orders" element={<OrdersAd />} />
-          <Route path="requests" element={<Requests />} />
         </Route>
-
-        
       </Routes>
     </Router>
-   
   );
 }
 
