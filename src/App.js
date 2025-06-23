@@ -18,7 +18,7 @@ import DashboardLayout from "./components/layout/admin-layout";
 import Users from "./pages/usersAdminPage.js";
 import Medicines from "./pages/medicineAdminPage.js";
 import Stores from "./pages/storesAdminPage.js";
-import Requests from "./pages/requestsAdminPage.js";
+import Requests from "./pages/admin/PharmacistRequestsPage.jsx";
 import OrdersAd from "./pages/ordersAdminPage.js";
 
 import Checkout from "./pages/checkout.js";

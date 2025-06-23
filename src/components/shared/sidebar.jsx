@@ -14,6 +14,8 @@ import {
   CircleUser,
   WarehouseIcon,
   FileQuestion,
+  Power,
+  ShieldCheck,
 } from 'lucide-react';
 import apiEndpoints from '../../../src/services/api';
 import { useSelector } from 'react-redux';
@@ -116,17 +118,34 @@ const Sidebar = ({ role = 'client' }) => {
       </nav>
 
       {/* USER PROFILE */}
-      <div className="border-t border-blue-500 p-4 flex items-center gap-3">
-        <img
-          src={user.avatar}
-          alt="User Avatar"
-          className="w-10 h-10 rounded-full object-cover border-2 border-white"
-        />
+      <div className="border-t border-blue-500 p-4 flex items-center gap-3 relative">
+        <div className="relative">
+          {role === 'admin' ? (
+            <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full border-2 border-yellow-400">
+              <ShieldCheck size={20} className="text-yellow-500" title="Admin" />
+            </div>
+          ) : (
+            <img
+              src={user.avatar}
+              alt="User Avatar"
+              className="w-10 h-10 rounded-full object-cover border-2 border-white"
+            />
+          )}
+
+          {role === 'admin' && (
+            <ShieldCheck
+              size={16}
+              className="absolute -bottom-1 -right-1 bg-blue-700 text-yellow-400 rounded-full p-0.5"
+              title="Admin"
+            />
+          )}
+        </div>
         <div className="text-sm">
           <p className="font-semibold truncate">{user.name}</p>
-          <p className="text-xs text-blue-200">{role}</p>
+          <p className="text-xs text-blue-200 capitalize">{role}</p>
         </div>
       </div>
+
     </div>
   );
 };
