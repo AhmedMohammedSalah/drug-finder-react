@@ -24,6 +24,8 @@ import OrdersAd from "./pages/ordersAdminPage.js";
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
 
+import OrderHistory from "./pages/orderhistory.js";
+
 import {
   RequireAuth,
   RequireNoRole,
@@ -40,6 +42,7 @@ import { setCredentials } from "./features/authSlice.js";
 import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
+import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -69,31 +72,87 @@ function App() {
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        {/* GUEST: with header and footer */}
+
+        {/*===========================================================*/}
+          
+          
+        {/* Guest */}
         <Route path="/" element={<DefaultLayout />}>
+          <Route index element={<Home />} />
+        </Route>
+
+        {/*===========================================================*/}
+
+          
+          {/*[OKS] order success page */}
+          <Route path="order-success" element={<OrderSuccess />}></Route>
+
+        {/*===========================================================*/}
+
+          
+          {/* CLIENT*/}
+          <Route path="/client" element={<ClientLayout />}>
+            <Route index  element={<PharmacyMapPage />} />
+            <Route path="cart" element={<CartPage />}></Route>
+            <Route path="checkout" element={<Checkout />}></Route> 
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
+            <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+            {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+            <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
+          </Route>
+          
+        {/*===========================================================*/}
+
+
+        {/* PHARMACIST */}
+        <Route path="/pharmacy" element={<Pharmaciestlayout />}> 
+          <Route path="drugs" element={<Drugs />} />                     
+          <Route path="drugs/add" element={<AddDrug />} />              
+          <Route path="orders" element={<Orders />} />                    
+          <Route path="profile" element={<PharmacistProfile/>} />
+          <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+        </Route>
+ 
+         {/*===========================================================*/}
+
+          
+        {/* GUEST: with header and footer */}
+        {/* <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
           <Route path="PharmacyPage" element={<PharmacyPage />} />
           <Route path="notifications" element={<NotificationPage />} />
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
-        </Route>
+        </Route> */}
+        
+
+       {/*===========================================================*/}
+
         <Route path="MyProfile" element={<ProfilePage />} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
+          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
           <Route path="profile" element={<PharmacistProfile />} />
           <Route path="notifications" element={<NotificationPage />} />
         </Route>
+        {/*===========================================================*/}
         {/* CLIENT */}
-        <Route path="/client" element={<ClientLayout />}>
-          <Route path="cart" element={<CartPage />} />
-          <Route path="pharmacies" element={<PharmacyList />} />
-          <Route path="PharmacyPage" element={<PharmacyPage />} />
-          <Route path="notifications" element={<NotificationPage />} />
-          <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
-        </Route>
+        {/* <Route path="/client" element={<ClientLayout />}> */}
+          {/* <Route path="cart" element={<CartPage />} /> */}
+          {/* <Route path="pharmacies" element={<PharmacyList />} /> */}
+          {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+          {/* <Route path="notifications" element={<NotificationPage />} /> */}
+          {/* <Route path="PharmacyMapPage" element={<PharmacyMapPage />} /> */}
+        {/*=======================================================================================*/}
+        {/* </Route> */}
+
+        {/*===========================================================*/}
+        
         {/* ADMIN */}
         <Route path="/admin" element={<DashboardLayout />}>
           <Route index element={<Requests />} />
