@@ -208,6 +208,6 @@ export default apiEndpoints;
 //======="حسبي الله ونعم الوكيل"=====================
 // Example usage:
 // apiEndpoints.inventory.getMedicines().then(response => {
-  // response.data contains the list of medicines
+//   response.data contains the list of medicines
 // });
 //=====================================================
