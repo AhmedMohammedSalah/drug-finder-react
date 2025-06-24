@@ -1,4 +1,4 @@
-// src/features/cart/cartSlice.js
+// src/features/cartSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiEndpoints from '../services/api';
 import { toast } from 'react-toastify';
