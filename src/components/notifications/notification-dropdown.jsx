@@ -141,12 +141,12 @@ const NotificationDropdown = () => {
           </div>
 
           <div className="p-2 border-t bg-gray-50 text-center">
-            <a
+            {/* <a
               href="/notifications"
               className="text-xs text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center"
             >
               View all notifications <ChevronDown size={14} className="ml-1" />
-            </a>
+            </a> */}
           </div>
         </div>
       )}
