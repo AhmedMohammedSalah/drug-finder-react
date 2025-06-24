@@ -8,10 +8,6 @@ import Orders from "./pages/ordersPage";
 import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
-<<<<<<< HEAD
-import Checkout from "./pages/checkout.js";
-=======
->>>>>>> main
 
 // [SENU]: ADDED
 import PharmacistProfile from './pages/pharmacist_pages/PharmacistProfile.jsx'
@@ -25,11 +21,8 @@ import Stores from "./pages/storesAdminPage.js";
 import Requests from "./pages/requestsAdminPage.js";
 import OrdersAd from "./pages/ordersAdminPage.js";
 
-<<<<<<< HEAD
-=======
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
->>>>>>> main
 import {
   RequireAuth,
   RequireNoRole,
@@ -75,8 +68,6 @@ function App() {
             <Route path="" element={<Home/>} />
 
           </Route>
-<<<<<<< HEAD
-=======
 
           
           {/* CLIENT*/}
@@ -99,7 +90,6 @@ function App() {
           <Route path="profile" element={<PharmacistProfile/>} />
           <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
         </Route>
->>>>>>> main
 
         {/* ADMIN */}
         <Route path="/admin" element={<DashboardLayout />}>
@@ -111,15 +101,9 @@ function App() {
         </Route>
 
         
-<<<<<<< HEAD
-        </Routes>
-      </Router>
-    </>
-=======
       </Routes>
     </Router>
    
->>>>>>> main
   );
 }
 

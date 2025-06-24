@@ -213,7 +213,7 @@ function OrdersAdminPage() {
             <h2 className="text-xl font-bold mb-2">Order Details</h2>
             <div><b>ID:</b> {detailsOrder.id}</div>
             <div><b>Client:</b> {typeof detailsOrder.client === 'object' ? (detailsOrder.client.id || JSON.stringify(detailsOrder.client)) : detailsOrder.client}</div>
-            <div><b>Store:</b> {typeof detailsOrder.store === 'object' ? (detailsOrder.store.id || JSON.stringify(detailsOrder.store)) : detailsOrder.store}</div>
+            <div><b>Store:</b> {detailsOrder.store == null ? 'N/A' : (typeof detailsOrder.store === 'object' ? (detailsOrder.store.id || JSON.stringify(detailsOrder.store)) : detailsOrder.store)}</div>
             <div><b>Status:</b> {detailsOrder.order_status}</div>
             <div><b>Payment Method:</b> {detailsOrder.payment_method}</div>
             <div><b>Shipping Location:</b> {detailsOrder.shipping_location}</div>

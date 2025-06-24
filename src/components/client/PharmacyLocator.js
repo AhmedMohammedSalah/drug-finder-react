@@ -64,6 +64,14 @@ const PharmacyLocator = () => {
     }
   };
 
+  // Use a regular function name, not a hook name
+  const setDefaultLocation = () => {
+    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
+    setUserLocation(cairoLocation);
+    setMapCenter(cairoLocation);
+    fetchPharmacies();
+  };
+
   const handleLocationError = (error) => {
     console.error('Location error:', error);
     let errorMessage = 'Location access denied. Using default location.';
@@ -83,7 +91,7 @@ const PharmacyLocator = () => {
     }
     
     setLocationError(errorMessage);
-    useDefaultLocation();
+    setDefaultLocation();
   };
 
   useEffect(() => {
@@ -117,13 +125,6 @@ const PharmacyLocator = () => {
 
     getLocation();
   }, []);
-
-  const useDefaultLocation = () => {
-    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
-    setUserLocation(cairoLocation);
-    setMapCenter(cairoLocation);
-    fetchPharmacies();
-  };
 
   // Initialize Mapbox Map
   useEffect(() => {
