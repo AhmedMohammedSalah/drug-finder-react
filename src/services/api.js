@@ -151,15 +151,20 @@ const apiEndpoints = {
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
+
+    // [SENU]: fetch pharmacist profile to determine has_store
+    getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
+
   },
   pharmacies: {
-    findNearbyPharmacist: () => api.get("PharmacyMapPage/"),
+    findNearbyPharmacist: () => api.get("/medical_stores"),
   },
   
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     // You can add getDevices or other inventory endpoints here as needed
   },
+  // {amira} added cart endpoints
   cart: {
     getCart: () => {
       const result = api.get("cart/cart/");
@@ -173,14 +178,46 @@ const apiEndpoints = {
     removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
     deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
   },
+  // {amira}added client endpoints
+  client: {
+  getClientProfile: () => api.get("users/client/profile/"),
+  updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
+},
   // [OKS] Order endpoints
   orders:{
  createOrder: (data) => api.post("orders/", data),
- // Custom action endpoint
   updateOrderStatus: (orderId, newStatus) => api.post(
     `orders/${orderId}/update_status/`, 
     { status: 'paid' }
   ),
+ getMyOrders: () => api.get("orders/"),
+    getPaginatedOrders: (page = 1, pageSize = 10, filters = {}) => {
+      const params = new URLSearchParams({
+        page,
+        page_size: pageSize,
+        ...filters
+      });
+      return api.get(`orders/?${params.toString()}`);
+    },
+    getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
+    getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
+    
+    //[OKS] Convenience methods
+    getOrdersByStatus: (status, page = 1, pageSize = 10) => 
+      apiEndpoints.orders.getPaginatedOrders(page, pageSize, { status }),
+    
+    getRecentOrders: (days = 7, page = 1, pageSize = 10) => {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return apiEndpoints.orders.getPaginatedOrders(
+        page, 
+        pageSize, 
+        { created_at_after: date.toISOString() }
+      );
+    }
+  }
+    
+  
   }
   // [AMS]
 //   notifications: {
@@ -192,7 +229,7 @@ const apiEndpoints = {
 //   },
   // [AMS]Add other endpoints as needed
 
-};
+
 
 export default apiEndpoints;
 
