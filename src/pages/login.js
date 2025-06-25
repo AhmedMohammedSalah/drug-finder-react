@@ -49,11 +49,11 @@ export default function LoginPage() {
               
               // [SENU]: SKIP LOGIC UNTIL FINSIH PRESENTING
               //===========================================
-              // if (hasStore === false) {
-              //   navigate('/pharmacy/create-store'); // redirect to store creation page
-              // } else {
+              if (hasStore === false) {
+                navigate('/pharmacy/store'); // redirect to store creation page
+              } else {
                 navigate('/pharmacy'); //  go to pharmacist dashboard as usual
-              // }
+              }
 
             //============================================================================
 
