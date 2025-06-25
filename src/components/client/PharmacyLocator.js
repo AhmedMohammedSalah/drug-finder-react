@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import PharmacyCardLocator from '../../components/shared/PharmacyCardLocator';
 import apiEndpoints from '../../services/api'
+import PharmaCapsuleLoader from '../../components/PharmaCapsuleLoader';
 
 const PharmacyLocator = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -299,7 +300,7 @@ const PharmacyLocator = () => {
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
                 <MapPin className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-blue-600" />
               </div>
-              <span className="mt-4 text-lg font-medium text-gray-700">Getting your location...</span>
+             <span className=" mt-4 text-lg font-medium text-gray-700">Getting your location...</span>
               <p className="text-sm text-gray-500 mt-2">This helps us find nearby pharmacies</p>
             </div>
             {locationError && (
@@ -371,16 +372,14 @@ const PharmacyLocator = () => {
               />
               
               {!mapLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center">
-                  <div className="text-center p-4 md:p-6">
-                    <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg">
-                      <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-3 md:mb-4"></div>
-                      <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-1 md:mb-2">Loading Map...</h3>
-                      <p className="text-xs md:text-sm text-gray-600">Please wait while we load the map</p>
-                    </div>
-                  </div>
+           <div className="min-h-screen bg-white">
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                <div className="flex flex-col items-center justify-center">
+                 <PharmaCapsuleLoader />
                 </div>
-              )}
+                </div>
+           </div>
+                  )}
             </div>
           </div>
 
