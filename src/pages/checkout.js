@@ -169,7 +169,8 @@ const Checkout = () => {
           const cartData = response.data.results[0];
           setCart(cartData);
 
-          const storeId = cartData.store?.id || null;
+          const storeId = cartData.store;
+          console.log('Store ID:', storeId);
            
           setOrderData(prev => ({
             ...prev,
