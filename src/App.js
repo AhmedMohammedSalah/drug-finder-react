@@ -40,6 +40,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
 import ProfilePage from "./pages/profilePage.js";
+import apiEndpoints from "./services/api.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
 import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
@@ -47,17 +48,33 @@ import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePag
 function App() {
   const dispatch = useDispatch();
 
+  
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
     const accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
-
-    if (user && accessToken && refreshToken) {
+    const user = localStorage.getItem("user");
+    if (accessToken && refreshToken) {
+      // Fetch user data
+      // apiEndpoints.users
+      //   .getCurrentUser()
+      //   .then((response) => {
+      //     dispatch(
+      //       setCredentials({
+      //         user: response.data,
+      //         access: accessToken,
+      //         refresh: refreshToken,
+      //       })
+      //     );
+      //   })
+      // .catch(() => {
+      //   localStorage.removeItem("access_token");
+      //   localStorage.removeItem("refresh_token");
+      // });
       dispatch(
         setCredentials({
           user: user,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+          access: accessToken,
+          refresh: refreshToken,
         })
       );
     }
@@ -132,6 +149,26 @@ function App() {
 
         <Route path="MyProfile" element={<ProfilePage />} />
         {/* PHARMACY DASHBOARD */}
+        <Route path="/cart" element={<CartPage />}></Route>
+        {/* [AMS] default layout for guest */}
+        {/* <Route element={<RequireNoRole />}> */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* [AMS] this is default layout for guest / client */}
+        <Route path="/" element={<DefaultLayout />}>
+          {/*[AMS] any route here will have auto header and footer */}
+          <Route path="" element={<Home />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
+          {/* [AMS] 🔔 notification page  */}
+          <Route path="/notifications" element={<NotificationPage />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />
+          <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
+        </Route>
+        {/* </Route> */}
+
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
           <Route path="create-store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
