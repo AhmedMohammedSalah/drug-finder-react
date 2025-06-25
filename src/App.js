@@ -25,7 +25,7 @@ import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
 
 import OrderHistory from "./pages/orderhistory.js";
-
+import AI_ChatPage from "./pages/Ai_chatpage.js";
 import {
   RequireAuth,
   RequireNoRole,
@@ -43,6 +43,7 @@ import ProfilePage from "./pages/profilePage.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
 import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
+import ChatIcon from "./components/shared/AI_chatIcon.js";
 
 function App() {
   const dispatch = useDispatch();
@@ -67,7 +68,7 @@ function App() {
     <Router>
       {/* Toast Notifications */}
       <Toaster position="top-right" reverseOrder={false} />
-
+       <ChatIcon />
       <Routes>
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -88,8 +89,9 @@ function App() {
           <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/*===========================================================*/}
+         
+          <Route path="/chat" element={<AI_ChatPage />} />
 
-          
           {/* CLIENT*/}
           <Route path="/client" element={<ClientLayout />}>
             <Route index  element={<PharmacyMapPage />} />
