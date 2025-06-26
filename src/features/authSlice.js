@@ -10,7 +10,6 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.error("Login error:", error);
-      // Return full error response instead of just detail
       return rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -27,15 +26,19 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
-
-export const googleAuth = createAsyncThunk(
-  "auth/googleAuth",
+export const loginWithGoogle = createAsyncThunk(
+  "auth/loginWithGoogle",
   async (tokenData, { rejectWithValue }) => {
     try {
       const response = await api.auth.googleAuth(tokenData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      if (error.response?.data?.error === "Invalid token") {
+        return rejectWithValue("Invalid Google token. Please try again.");
+      }
+      return rejectWithValue(
+        error.response?.data || "Google authentication failed"
+      );
     }
   }
 );
@@ -144,28 +147,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Registration failed";
       })
-
-      // Google Auth
-      .addCase(googleAuth.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(googleAuth.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user || { email: action.payload.email };
-        state.accessToken = action.payload.access;
-        state.refreshToken = action.payload.refresh;
-        state.emailVerified = true; // Google-authenticated emails are verified
-        state.isAuthenticated = true;
-        localStorage.setItem("access_token", action.payload.access);
-        localStorage.setItem("refresh_token", action.payload.refresh);
-      })
-      .addCase(googleAuth.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Google authentication failed";
-        state.isAuthenticated = false;
-      })
-
       // Email Verification
       .addCase(verifyEmail.pending, (state) => {
         state.loading = true;
@@ -198,6 +179,27 @@ const authSlice = createSlice({
           localStorage.setItem("refresh_token", action.payload.refresh);
         }
       })
+      .addCase(loginWithGoogle.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.accessToken = action.payload.access;
+        state.refreshToken = action.payload.refresh;
+        state.emailVerified = true;
+        state.isAuthenticated = true;
+        localStorage.setItem("access_token", action.payload.access);
+        localStorage.setItem("refresh_token", action.payload.refresh);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Google authentication failed";
+        state.isAuthenticated = false;
+      })
+
       .addCase(refreshToken.rejected, (state) => {
         state.loading = false;
         state.accessToken = null;
