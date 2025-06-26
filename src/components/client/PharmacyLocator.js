@@ -127,24 +127,18 @@ const PharmacyLocator = () => {
                 break;
             }
             setLocationError(errorMessage);
-            useDefaultLocation();
+            setDefaultLocation();
           },
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
         setLocationError('Geolocation is not supported by this browser.');
-        useDefaultLocation();
+        setDefaultLocation();
       }
     };
 
     getLocation();
   }, []);
-
-  const useDefaultLocation = () => {
-    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
-    setUserLocation(cairoLocation);
-    setMapCenter(cairoLocation);
-  };
 
   // Initialize Mapbox Map
   useEffect(() => {
@@ -327,7 +321,20 @@ useEffect(() => {
           setLocationError(null);
         },
         (error) => {
-          handleLocationError(error);
+          let errorMessage = 'Location access denied. Using default location.';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'Location access was denied. Using default location.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Location information is unavailable. Using default location.';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'The request to get location timed out. Using default location.';
+              break;
+          }
+          setLocationError(errorMessage);
+          setDefaultLocation();
         }
       );
     } else {
