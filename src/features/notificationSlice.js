@@ -59,7 +59,25 @@ const notificationSlice = createSlice({
     error: null,
   },
   reducers: {
-    // Reset state
+    addNotification: (state, action) => {
+      // Prevent duplicates
+      const exists = state.items.some((item) => item.id === action.payload.id);
+      if (!exists) {
+        state.items.unshift(action.payload);
+        if (!action.payload.is_read) {
+          state.unreadCount += 1;
+        }
+      }
+    },
+    markOneAsRead: (state, action) => {
+      const notification = state.items.find(
+        (item) => item.id === action.payload
+      );
+      if (notification && !notification.is_read) {
+        notification.is_read = true;
+        state.unreadCount = Math.max(0, state.unreadCount - 1);
+      }
+    },
     resetNotifications: (state) => {
       state.items = [];
       state.unreadCount = 0;
@@ -119,5 +137,6 @@ const notificationSlice = createSlice({
   },
 });
 
-export const { resetNotifications } = notificationSlice.actions;
+export const { addNotification, markOneAsRead, resetNotifications } =
+  notificationSlice.actions;
 export default notificationSlice.reducer;
