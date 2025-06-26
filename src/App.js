@@ -26,6 +26,8 @@ import OrderSuccess from "./pages/ordersucess.js";
 
 import OrderHistory from "./pages/orderhistory.js";
 
+// [OKS] add drug search page
+import MedicineSearchPage from "./pages/MedicineSearchPage.js";
 import {
   RequireAuth,
   RequireNoRole,
@@ -116,6 +118,7 @@ function App() {
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
             {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+            <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
             <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
           </Route>
