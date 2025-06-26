@@ -35,6 +35,9 @@ const PharmacistRequestsPage = () => {
         });
         const data = res.data.results;
 
+
+        console.log('Fetched pharmacists:', data);
+
         setPharmacists(data);
         setFilteredPharmacists(data);
         updateStatistics(data);
@@ -88,21 +91,41 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
-  const handleUpdatePharmacist = (id, newStatus, rejectMessage = '') => {
-    const updated = pharmacists.map(pharmacist =>
-      pharmacist.id === id
-        ? {
-            ...pharmacist,
-            license_status: newStatus,
-            reject_message: rejectMessage,
-          }
-        : pharmacist
-    );
-
-    setPharmacists(updated);
-    setFilteredPharmacists(updated);
-    updateStatistics(updated);
+  const handleUpdatePharmacist = async (id, newStatus, rejectMessage = '') => {
+    try {
+      const token = localStorage.getItem('access_token');
+  
+      await axios.patch(
+        `http://localhost:8000/users/pharmacists/${id}/`,
+        {
+          license_status: newStatus,
+          ...(newStatus === 'rejected' ? { reject_message: rejectMessage } : {}),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      // Now update the local state to reflect the change
+      const updated = pharmacists.map(pharmacist =>
+        pharmacist.id === id
+          ? {
+              ...pharmacist,
+              license_status: newStatus,
+              reject_message: rejectMessage,
+            }
+          : pharmacist
+      );
+  
+      setPharmacists(updated);
+      setFilteredPharmacists(updated);
+      updateStatistics(updated);
+    } catch (err) {
+      console.error('Failed to update pharmacist status:', err);
+      alert('Something went wrong while updating the status.');
+    }
   };
+  
 
   const handlePageChange = (page) => {
     setPagination(prev => ({
