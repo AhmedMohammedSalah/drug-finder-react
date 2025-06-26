@@ -169,7 +169,9 @@ const apiEndpoints = {
   
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
-    // You can add getDevices or other inventory endpoints here as needed
+    createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
+    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`), 
   },
   // {amira} added cart endpoints
   cart: {

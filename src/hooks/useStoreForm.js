@@ -12,6 +12,10 @@ const useStoreForm = () => {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
+  // for approva logic
+  const [licenseStatus, setLicenseStatus] = useState(null);
+
+
   const [showMapModal, setShowMapModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -44,6 +48,10 @@ const useStoreForm = () => {
           setLatLng({ lat: store.latitude, lng: store.longitude });
           setStartTime(store.start_time || '');
           setEndTime(store.end_time || '');
+
+          // for approvla logic
+          setLicenseStatus(pharmacist.license_status);
+
   
           if (store.store_logo) {
             const fullLogoUrl = store.store_logo.startsWith("http")
@@ -153,7 +161,8 @@ const useStoreForm = () => {
     isEditMode,
     setIsEditMode,
     hasStore,
-    isLoading, // ✅ You must check this before showing the form
+    isLoading, 
+    licenseStatus, // for approval logic
   };
 };
 
