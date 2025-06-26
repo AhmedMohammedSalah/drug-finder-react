@@ -5,9 +5,9 @@ import MapSection from '../../components/pharamcieslist/pharamStoreCreation/MapS
 import ProfileImageSection from '../../components/pharamcieslist/pharamStoreCreation/ProfileImageSection';
 import InputSection from '../../components/pharamcieslist/pharamStoreCreation/InputSection';
 import MapLoadingOverlay from '../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay';
+import { Pencil } from 'lucide-react';
 
 const StoreProfileForm = () => {
-  
   const {
     logoImage, setLogoImage,
     storeName, setStoreName,
@@ -21,56 +21,100 @@ const StoreProfileForm = () => {
     handleLatChange,
     handleLngChange,
     handleSubmit,
-    errors 
+    errors,
+    isEditMode,
+    setIsEditMode,
+    hasStore,
+    startTime, setStartTime,
+    endTime, setEndTime,
+    isLoading,  // ✅ NEW
   } = useStoreForm();
-  
+
+  const canEdit = isEditMode || !hasStore;
+
+  if (hasStore && isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[400px] text-gray-500">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+        <span className="ml-4 text-lg">Loading store data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative z-0 p-6 max-w-7xl mx-auto border rounded-2xl bg-white">
       {mapLoading && <MapLoadingOverlay />}
-      
-      <div className="flex flex-col lg:flex-row mt-6 gap-8 items-stretch">
-        {!isSubmitted && (
-          <ProfileImageSection
-            logoImage={logoImage}
-            setLogoImage={setLogoImage}
-          />
-        )}
 
-        <div className="flex-1 space-y-4">
-        <InputSection
-          isSubmitted={isSubmitted}
-          storeName={storeName}
-          setStoreName={setStoreName}
-          address={address}
-          setAddress={setAddress}
-          phone={phone}
-          setPhone={setPhone}
-          description={description}
-          setDescription={setDescription}
-          errors={errors} 
-        />
+      {hasStore && !isEditMode && (
+        <div className="text-right">
+          <button
+            onClick={() => setIsEditMode(true)}
+            className="text-blue-500 flex items-center gap-1 hover:underline"
+          >
+            <Pencil size={18} />
+          </button>
+        </div>
+      )}
 
+      {/* Two-column layout with equal width */}
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* LEFT COLUMN */}
+        <div className="flex flex-col h-full">
+          <div className="flex gap-4 items-start">
+            {/* LOGO */}
+            <div className="w-40 flex-shrink-0">
+              <ProfileImageSection
+                logoImage={logoImage}
+                setLogoImage={canEdit ? setLogoImage : undefined}
+              />
+            </div>
+
+            {/* INPUT FIELDS */}
+            <div className="flex-1 overflow-hidden">
+              <InputSection
+                isSubmitted={!canEdit}
+                storeName={storeName}
+                setStoreName={canEdit ? setStoreName : undefined}
+                address={address}
+                setAddress={canEdit ? setAddress : undefined}
+                phone={phone}
+                setPhone={canEdit ? setPhone : undefined}
+                description={description}
+                setDescription={canEdit ? setDescription : undefined}
+                startTime={startTime}
+                setStartTime={canEdit ? setStartTime : undefined}
+                endTime={endTime}
+                setEndTime={canEdit ? setEndTime : undefined}
+                errors={errors}
+                isReadOnly={!canEdit}
+              />
+            </div>
+          </div>
         </div>
 
-        <MapSection
-          latLng={latLng}
-          setLatLng={setLatLng}
-          handleLatChange={handleLatChange}
-          handleLngChange={handleLngChange}
-          showMapModal={showMapModal}
-          setShowMapModal={setShowMapModal}
-        />
+        {/* RIGHT COLUMN */}
+        <div className="h-full">
+          <MapSection
+            latLng={latLng}
+            setLatLng={canEdit ? setLatLng : () => {}}
+            handleLatChange={canEdit ? handleLatChange : () => {}}
+            handleLngChange={canEdit ? handleLngChange : () => {}}
+            showMapModal={showMapModal}
+            setShowMapModal={canEdit ? setShowMapModal : () => {}}
+            canEdit={canEdit}
+          />
+        </div>
       </div>
 
-      {!isSubmitted && (
+      {/* BUTTON */}
+      {canEdit && (
         <div className="text-right mt-6">
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
           >
-            {isSubmitting ? 'Saving...' : 'Save'}
+            {isSubmitting ? 'Saving...' : hasStore ? 'Update' : 'Save'}
           </button>
         </div>
       )}

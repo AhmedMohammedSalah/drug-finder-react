@@ -74,10 +74,10 @@ const Sidebar = ({ role = 'client' }) => {
     // [SENU] CONDITIONALLY SHOW PHARMACIST MENU BASED ON STORE AVAILABILITY
     pharmacist: hasStore
       ? [
-          { label: 'Home', icon: Home, to: '/pharmacy/home' },
+          // { label: 'Home', icon: Home, to: '/pharmacy/home' },
           { label: 'Store', icon: Store, to: '/pharmacy/store' },
           { label: 'Profile', icon: User, to: '/pharmacy/profile' },
-          { label: 'Inventory', icon: Package, to: '/pharmacy/drugs' },
+          // { label: 'Inventory', icon: Package, to: '/pharmacy/drugs' },
           { label: 'Orders', icon: ShoppingBag, to: '/pharmacy/orders' },
         ]
       : [

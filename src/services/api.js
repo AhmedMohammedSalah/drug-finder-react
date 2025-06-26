@@ -152,12 +152,19 @@ const apiEndpoints = {
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
 
+    // [SENU]: update for the pharmacist store profile
+    updatePharmacist: (id, data) => api.patch(`users/pharmacists/${id}/`, data),
+
     // [SENU]: fetch pharmacist profile to determine has_store
     getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
 
   },
   pharmacies: {
     findNearbyPharmacist: () => api.get("/medical_stores"),
+    createStore: (data) => apiFileUpload.post("/medical_stores/", data),
+    updateStore: (id, data) => apiFileUpload.patch(`/medical_stores/${id}/`, data),
+
+
   },
   
   inventory: {
