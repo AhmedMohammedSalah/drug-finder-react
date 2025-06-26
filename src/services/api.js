@@ -157,7 +157,8 @@ const apiEndpoints = {
 
   },
   pharmacies: {
-    findNearbyPharmacist: () => api.get("/medical_stores"),
+ findPharmaciesWithMedicine: (medicineName) => api.get(`/medical_stores/with-medicine.json?medicine_name=${medicineName}`),
+getAllPharmacies: (config = {}) => api.get("medical_stores/", config),
   },
   
   inventory: {
@@ -215,6 +216,9 @@ const apiEndpoints = {
         { created_at_after: date.toISOString() }
       );
     }
+
+
+    
   },
     
   
