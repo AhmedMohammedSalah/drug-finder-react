@@ -1,283 +1,181 @@
-import { useState, useRef, useEffect } from "react";
-import {
-  Bell,
-  X,
-  Clock,
-  User,
-  Pill,
-  AlertCircle,
-  ArrowRight,
-} from "lucide-react";
-import apiEndpoints from "../../services/api";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Bell, CheckCircle, ChevronLeft, Loader2, X } from "lucide-react";
+import NotificationItem from "./NotificationItem";
+import api from "../../services/api";
+import { toast } from "react-hot-toast";
+import { getSocket } from "../../services/socket";
+import { useSelector } from "react-redux";
 
-export default function NotificationDropdown() {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const buttonRef = useRef(null);
-  const [error, setError] = useState(null);
+const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useSelector((state) => state.auth);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const socket = getSocket();
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
+  const fetchNotifications = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.notifications.list();
+      setNotifications(response.data);
+      const count = response.data.filter((n) => !n.is_read).length;
+      setUnreadCount(count);
+    } catch (err) {
+      setError("Failed to load notifications");
+      toast.error("Failed to load notifications");
+      console.error("Error fetching notifications:", err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Fetch notifications with comprehensive handling
   useEffect(() => {
-    if (isOpen && user?.id) {
-      const fetchData = async () => {
-        try {
-          setLoading(true);
-          const response = await apiEndpoints.notifications.list();
-          const fetchedNotifications = response.data;
+    fetchNotifications();
 
-          setNotifications(fetchedNotifications);
-          setUnreadCount(fetchedNotifications.filter((n) => !n.is_read).length);
-          setError(null);
-        } catch (error) {
-          console.error("Failed to fetch notifications:", error);
-          setError("Failed to load notifications");
-        } finally {
-          setLoading(false);
-        }
+    if (user && user.id) {
+      // Setup socket listeners
+      const handleNewNotification = (notification) => {
+        setNotifications((prev) => {
+          if (prev.some((n) => n.id === notification.id)) {
+            return prev;
+          }
+          return [notification, ...prev];
+        });
+        setUnreadCount((prev) => prev + 1);
       };
 
-      fetchData();
-    }
-  }, [isOpen, user]);
+      const handleNotificationRead = (notificationId) => {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, is_read: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      };
 
-  // Mark notification as read
-  const handleMarkAsRead = async (id) => {
-    try {
-      await apiEndpoints.notifications.markRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("Failed to mark as read:", error);
-      setError("Failed to update notification");
-    }
-  };
+      socket.on("new_notification", handleNewNotification);
+      socket.on("notification_read", handleNotificationRead);
 
-  // Mark all as read
-  const handleMarkAllAsRead = async () => {
+      return () => {
+        socket.off("new_notification", handleNewNotification);
+        socket.off("notification_read", handleNotificationRead);
+      };
+    }
+  }, [user]);
+
+  const handleMarkAllRead = async () => {
     try {
-      await apiEndpoints.notifications.markAllRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      await api.notifications.markAllRead();
+      const updatedNotifications = notifications.map((n) => ({
+        ...n,
+        is_read: true,
+      }));
+      setNotifications(updatedNotifications);
       setUnreadCount(0);
-    } catch (error) {
-      console.error("Failed to mark all as read:", error);
-      setError("Failed to update notifications");
+
+      // Notify server
+      notifications
+        .filter((n) => !n.is_read)
+        .forEach((n) => {
+          socket.emit("mark_read", n.id);
+        });
+
+      toast.success("All notifications marked as read");
+    } catch (err) {
+      toast.error("Failed to mark all as read");
+      console.error("Error marking all as read:", err);
     }
   };
 
-  // Get recent 5 notifications
-  const recentNotifications = notifications.slice(0, 5);
-
-  // Function to get icon and color based on notification type
-  const getIconDetails = (notification) => {
-    const iconMap = {
-      pharmacy: {
-        icon: Pill,
-        color: "text-blue-500",
-        bg: "bg-blue-50",
-      },
-      patient: {
-        icon: User,
-        color: "text-green-500",
-        bg: "bg-green-50",
-      },
-      alert: {
-        icon: AlertCircle,
-        color: "text-red-500",
-        bg: "bg-red-50",
-      },
-      system: {
-        icon: Bell,
-        color: "text-purple-500",
-        bg: "bg-purple-50",
-      },
-    };
-
-    return (
-      iconMap[notification.type] || {
-        icon: Bell,
-        color: "text-gray-500",
-        bg: "bg-gray-50",
-      }
+  const handleMarkedRead = (id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await api.notifications.delete(id);
+      const deletedNotification = notifications.find((n) => n.id === id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+      if (deletedNotification && !deletedNotification.is_read) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+
+      toast.success("Notification deleted");
+    } catch (err) {
+      toast.error("Failed to delete notification");
+      console.error("Error deleting notification:", err);
+    }
   };
 
   return (
-    <div className="relative">
-      {/* Bell Icon Button */}
-      <button
-        ref={buttonRef}
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-full hover:bg-gray-100"
-      >
-        <Bell className="w-6 h-6" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
-        )}
-      </button>
-
-      {/* Notification Dropdown */}
-      {isOpen && (
-        <div
-          ref={dropdownRef}
-          className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-hidden"
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-6">
+        <Link
+          to="/"
+          className="flex items-center text-emerald-600 hover:text-emerald-700"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Notifications
-            </h3>
-            <div className="flex items-center gap-2">
-              {unreadCount > 0 && (
-                <button
-                  onClick={handleMarkAllAsRead}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Mark all read
-                </button>
-              )}
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            </div>
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <div className="p-3 bg-red-50 text-red-600 text-sm flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              {error}
-            </div>
+          <ChevronLeft size={20} className="mr-1" /> Back
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-800">Notifications</h1>
+        <div>
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-emerald-500 hover:bg-emerald-600 text-white rounded-full"
+            >
+              <CheckCircle size={16} />
+              Mark all read
+            </button>
           )}
+        </div>
+      </div>
 
-          {/* Notifications List */}
-          <div className="max-h-80 overflow-y-auto">
-            {loading ? (
-              <div className="p-8 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading notifications...</p>
-              </div>
-            ) : recentNotifications.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {recentNotifications.map((notification) => {
-                  const iconDetails = getIconDetails(notification);
-                  const IconComponent = iconDetails.icon;
-                  return (
-                    <div
-                      key={notification.id}
-                      onClick={() => handleMarkAsRead(notification.id)}
-                      className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                        !notification.is_read ? "bg-blue-50/50" : ""
-                      }`}
-                    >
-                      <div className="flex gap-3">
-                        <div
-                          className={`${iconDetails.bg} p-2 rounded-lg flex-shrink-0`}
-                        >
-                          <IconComponent
-                            className={`w-4 h-4 ${iconDetails.color}`}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h4
-                                  className={`text-sm font-medium ${
-                                    !notification.is_read
-                                      ? "text-gray-900"
-                                      : "text-gray-700"
-                                  }`}
-                                >
-                                  {notification.title || "Notification"}
-                                </h4>
-                                <span
-                                  className={`text-xs px-2 py-1 rounded-full capitalize ${
-                                    notification.type === "pharmacy"
-                                      ? "bg-blue-100 text-blue-700"
-                                      : notification.type === "patient"
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-gray-100 text-gray-700"
-                                  }`}
-                                >
-                                  {notification.type}
-                                </span>
-                              </div>
-                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                {notification.message}
-                              </p>
-                              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {new Date(
-                                  notification.created_at
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </p>
-                            </div>
-                            {!notification.is_read && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="p-8 text-center">
-                <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No notifications yet</p>
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          {notifications.length > 5 && (
-            <div className="p-4 border-t border-gray-100">
-              <button
-                onClick={() => {
-                  // Implement navigation to full notifications page
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-medium py-2 hover:bg-blue-50 rounded-lg transition-colors"
-              >
-                View All Notifications
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="animate-spin text-emerald-500 size-8" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-10 text-red-500">
+          {error}.{" "}
+          <button
+            onClick={fetchNotifications}
+            className="text-emerald-600 hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="text-center py-10">
+          <Bell className="mx-auto text-gray-300 size-16 mb-4" />
+          <h3 className="text-lg font-medium text-gray-500">
+            No notifications yet
+          </h3>
+          <p className="text-gray-400">
+            We'll notify you when there's something new.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+          {notifications.map((notification) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkedRead={handleMarkedRead}
+              onDelete={handleDelete}
+              showDelete={true}
+            />
+          ))}
         </div>
       )}
     </div>
   );
-}
+};
+
+export default NotificationPage;

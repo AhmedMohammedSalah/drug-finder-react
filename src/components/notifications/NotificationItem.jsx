@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import api from "../../services/api";
 import { toast } from "react-hot-toast";
+import { getSocket } from "../../services/socket";
 
 const getIcon = (type) => {
   const iconConfig = {
@@ -23,17 +24,31 @@ const getIcon = (type) => {
   return <Icon className={`${color} size-5`} />;
 };
 
-const NotificationItem = ({ notification, onMarkedRead, onDelete }) => {
+const NotificationItem = ({
+  notification,
+  onMarkedRead,
+  onDelete,
+  showDelete = true,
+}) => {
   const [isRead, setIsRead] = useState(notification.is_read);
   const [isLoading, setIsLoading] = useState(false);
-  const { notification_type, message, created_at, data, id } = notification;
+  const { type, message, created_at, data, id } = notification;
+  const socket = getSocket();
 
   const handleMarkAsRead = async () => {
+    if (isRead) return;
+
     setIsLoading(true);
     try {
       await api.notifications.markRead(id);
       setIsRead(true);
       if (onMarkedRead) onMarkedRead(id);
+
+      // Notify server
+      if (socket) {
+        socket.emit("mark_read", id);
+      }
+
       toast.success("Notification marked as read");
     } catch (err) {
       toast.error("Failed to mark as read");
@@ -65,27 +80,29 @@ const NotificationItem = ({ notification, onMarkedRead, onDelete }) => {
           : "bg-gradient-to-r from-emerald-50 to-white border-emerald-200"
       } hover:shadow-md group`}
     >
-      <button
-        onClick={handleDelete}
-        className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <Loader2 className="animate-spin size-4" />
-        ) : (
-          <X size={16} />
-        )}
-      </button>
+      {showDelete && (
+        <button
+          onClick={handleDelete}
+          className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="animate-spin size-4" />
+          ) : (
+            <X size={16} />
+          )}
+        </button>
+      )}
 
       <div className="flex flex-col items-center pt-1">
-        {getIcon(notification_type)}
+        {getIcon(type)}
         {!isRead && <Circle className="text-emerald-500 mt-2 size-2.5" />}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="font-semibold capitalize text-gray-800 truncate">
-            {notification_type}
+            {type}
           </span>
           {!isRead && (
             <span className="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-700 rounded-full font-medium shrink-0">
