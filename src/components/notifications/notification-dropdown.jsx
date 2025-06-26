@@ -1,34 +1,41 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell, Loader2, CheckCircle, X, ChevronDown } from "lucide-react";
-import api from "../../services/api";
 import NotificationItem from "./NotificationItem";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchNotifications,
+  markAllNotificationsRead,
+} from "../../features/notificationSlice";
+import { initWebSocket, closeWebSocket } from "../../services/websocket";
 
 const NotificationDropdown = () => {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
-
-  const fetchNotifications = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.notifications.list();
-      setNotifications(response.data);
-    } catch (err) {
-      setError("Failed to load notifications");
-      toast.error("Failed to load notifications");
-      console.error("Error fetching notifications:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
+  const notifications = useSelector((state) => state.notifications.items);
+  const unreadCount = useSelector((state) => state.notifications.unreadCount);
+  const status = useSelector((state) => state.notifications.status);
+  const error = useSelector((state) => state.notifications.error);
 
   useEffect(() => {
-    if (open) fetchNotifications();
-  }, [open]);
+    if (open) {
+      dispatch(fetchNotifications());
+    }
+  }, [open, dispatch]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const accessToken = localStorage.getItem("access_token");
+
+    if (user && accessToken) {
+      initWebSocket(user.id, accessToken);
+    }
+
+    return () => {
+      closeWebSocket();
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,12 +48,9 @@ const NotificationDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
-
   const handleMarkAllRead = async () => {
     try {
-      await api.notifications.markAllRead();
-      setNotifications(notifications.map((n) => ({ ...n, is_read: true })));
+      await dispatch(markAllNotificationsRead()).unwrap();
       toast.success("All notifications marked as read");
     } catch (err) {
       toast.error("Failed to mark all as read");
@@ -55,13 +59,11 @@ const NotificationDropdown = () => {
   };
 
   const handleMarkedRead = (id) => {
-    setNotifications(
-      notifications.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-    );
+    // Handled by Redux slice
   };
 
   const handleDelete = (id) => {
-    setNotifications(notifications.filter((n) => n.id !== id));
+    // Handled by Redux slice
   };
 
   return (
@@ -103,7 +105,7 @@ const NotificationDropdown = () => {
           </div>
 
           <div className="max-h-[400px] overflow-y-auto">
-            {loading ? (
+            {status === "loading" ? (
               <div className="flex flex-col items-center justify-center py-8">
                 <Loader2 className="animate-spin text-gray-400 size-6 mb-2" />
                 <p className="text-gray-500">Loading notifications...</p>
@@ -112,7 +114,7 @@ const NotificationDropdown = () => {
               <div className="p-4 text-center text-red-500">
                 {error}.{" "}
                 <button
-                  onClick={fetchNotifications}
+                  onClick={() => dispatch(fetchNotifications())}
                   className="text-emerald-600 hover:underline"
                 >
                   Try again
@@ -141,12 +143,7 @@ const NotificationDropdown = () => {
           </div>
 
           <div className="p-2 border-t bg-gray-50 text-center">
-            {/* <a
-              href="/notifications"
-              className="text-xs text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center"
-            >
-              View all notifications <ChevronDown size={14} className="ml-1" />
-            </a> */}
+            {/* View all notifications link if needed */}
           </div>
         </div>
       )}
