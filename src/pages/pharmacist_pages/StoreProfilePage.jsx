@@ -6,7 +6,8 @@ import InputSection from '../../components/pharamcieslist/pharamStoreCreation/In
 import MapLoadingOverlay from '../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay';
 import { Pencil } from 'lucide-react';
 import MedicineManager from "../../components/medicine/MedicineManager";
-
+import PendingLicenseCard from '../../components/medicine/PendingLicenseCard'; 
+import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
 
 const StoreProfileForm = () => {
   const {
@@ -29,7 +30,7 @@ const StoreProfileForm = () => {
     startTime, setStartTime,
     endTime, setEndTime,
     isLoading,
-    licenseStatus, // for approval logic
+    licenseStatus,
   } = useStoreForm();
 
   const canEdit = isEditMode || !hasStore;
@@ -44,7 +45,6 @@ const StoreProfileForm = () => {
   }
 
   return (
-
     <>
       <div className="relative z-0 p-6 max-w-7xl mx-auto border rounded-2xl bg-white">
         {mapLoading && <MapLoadingOverlay />}
@@ -60,12 +60,9 @@ const StoreProfileForm = () => {
           </div>
         )}
 
-        {/* Two-column layout with equal width */}
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* LEFT COLUMN */}
           <div className="flex flex-col h-full">
             <div className="flex gap-4 items-start">
-              {/* LOGO */}
               <div className="w-40 flex-shrink-0">
                 <ProfileImageSection
                   logoImage={logoImage}
@@ -73,7 +70,6 @@ const StoreProfileForm = () => {
                 />
               </div>
 
-              {/* INPUT FIELDS */}
               <div className="flex-1 overflow-hidden">
                 <InputSection
                   isSubmitted={!canEdit}
@@ -96,7 +92,6 @@ const StoreProfileForm = () => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
           <div className="h-full">
             <MapSection
               latLng={latLng}
@@ -110,7 +105,6 @@ const StoreProfileForm = () => {
           </div>
         </div>
 
-        {/* BUTTON */}
         {canEdit && (
           <div className="text-right mt-6">
             <button
@@ -124,15 +118,21 @@ const StoreProfileForm = () => {
         )}
       </div>
 
-        {/* medciinse manager */}
-
-
-      {hasStore && !isEditMode && licenseStatus === 'approved' && (
-      <div  className="max-w-7xl mx-auto">
-        <MedicineManager />
-      </div>)}
-
-
+      {/* Medicine Manager or Pending License Card */}
+      {hasStore && !isEditMode && (
+        <div className="max-w-7xl mx-auto mt-6">
+          {licenseStatus === 'approved' ? (
+            <MedicineManager />
+          ) : licenseStatus === 'pending' ? (
+            <PendingLicenseCard />
+          ) : licenseStatus === 'rejected' ? (
+            <RejectedLicenseCard 
+              adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
+              appealLink="/pharmacy/profile/"
+            />
+          ) : null}
+        </div>
+      )}
     </>
   );
 };

@@ -240,8 +240,7 @@ const apiEndpoints = {
   // Add to apiEndpoints object
 
 
-export default apiEndpoints;
-
+  export { api, apiFileUpload, apiEndpoints as default };
 
 
 // [SENU]: solve the authorization problem

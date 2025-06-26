@@ -93,36 +93,26 @@ const PharmacistRequestsPage = () => {
 
   const handleUpdatePharmacist = async (id, newStatus, rejectMessage = '') => {
     try {
-      const token = localStorage.getItem('access_token');
-  
-      await axios.patch(
+      const response = await axios.patch(
         `http://localhost:8000/users/pharmacists/${id}/`,
         {
           license_status: newStatus,
-          ...(newStatus === 'rejected' ? { reject_message: rejectMessage } : {}),
+          ...(newStatus === 'rejected' && { reject_message: rejectMessage })
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json' 
+          }
         }
       );
   
-      // Now update the local state to reflect the change
-      const updated = pharmacists.map(pharmacist =>
-        pharmacist.id === id
-          ? {
-              ...pharmacist,
-              license_status: newStatus,
-              reject_message: rejectMessage,
-            }
-          : pharmacist
-      );
-  
-      setPharmacists(updated);
-      setFilteredPharmacists(updated);
-      updateStatistics(updated);
+      // Update local state
+      setPharmacists(prev => prev.map(p => 
+        p.id === id ? { ...p, license_status: newStatus } : p
+      ));
+      
     } catch (err) {
-      console.error('Failed to update pharmacist status:', err);
-      alert('Something went wrong while updating the status.');
     }
   };
   
