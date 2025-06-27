@@ -118,7 +118,7 @@ function App() {
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
             {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
-            <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
+            <Route path="MedicineSearchPage" element={<MedicineSearchPage />} /> {/* [OKS] MedicineSearchPage Page */}
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
             <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
           </Route>
@@ -173,7 +173,7 @@ function App() {
         {/* </Route> */}
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
+          <Route path="store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
