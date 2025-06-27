@@ -86,7 +86,7 @@ const Sidebar = ({ role = 'client' }) => {
         ],
 
     client: [
-      { label: 'Search', icon: Home, to: '/client', end: true },
+      { label: 'Search', icon: Home, to: '/client/MedicineSearchPage', end: true },
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
