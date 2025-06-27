@@ -86,7 +86,7 @@ const Sidebar = ({ role = 'client' }) => {
         ],
 
     client: [
-      { label: 'Search', icon: Home, to: '/client', end: true },
+      { label: 'Search', icon: Home, to: '/client/MedicineSearchPage', end: true },
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
@@ -100,7 +100,7 @@ const Sidebar = ({ role = 'client' }) => {
     <div className="h-screen w-64 bg-blue-700 text-white flex flex-col shadow-lg fixed left-0 top-0">
       {/* LOGO */}
       <div className="flex items-center gap-3 p-5 border-b border-blue-500">
-        <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
+        <img src="/l.png" alt="Logo" className="w-14 h-14 object-contain" />
         <h1 className="text-xl font-semibold">Drug Finder</h1>
       </div>
 
