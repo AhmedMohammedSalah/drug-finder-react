@@ -87,6 +87,30 @@ const PharmacyLocator = () => {
     fetchPharmacies();
   };
 
+<<<<<<< HEAD
+=======
+  const handleLocationError = (error) => {
+    console.error('Location error:', error);
+    let errorMessage = 'Location access denied. Using default location.';
+    
+    switch(error.code) {
+      case error.PERMISSION_DENIED:
+        errorMessage = 'Location access was denied. Using default location.';
+        break;
+      case error.POSITION_UNAVAILABLE:
+        errorMessage = 'Location information is unavailable. Using default location.';
+        break;
+      case error.TIMEOUT:
+        errorMessage = 'The request to get location timed out. Using default location.';
+        break;
+      default:
+        errorMessage = 'An unknown error occurred. Using default location.';
+    }
+    
+    setLocationError(errorMessage);
+    setDefaultLocation();
+  };
+>>>>>>> main
   // Handle initial search from URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -140,6 +164,15 @@ const PharmacyLocator = () => {
     getLocation();
   }, []);
 
+<<<<<<< HEAD
+=======
+  const useDefaultLocation = () => {
+    const cairoLocation = { lat: 30.0444, lng: 31.2357 };
+    setUserLocation(cairoLocation);
+    setMapCenter(cairoLocation);
+  };
+
+>>>>>>> main
   // Initialize Mapbox Map
   useEffect(() => {
     if (!mapCenter || !mapContainer.current || map.current) return;

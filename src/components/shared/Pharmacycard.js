@@ -1,117 +1,80 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  BuildingStorefrontIcon,
-  MapPinIcon,
-  PhoneIcon,
-  ClockIcon,
-  StarIcon
-} from '@heroicons/react/24/outline';
-import { motion } from 'framer-motion';
-
-// Optional: text color map (for store type)
-const textColorMap = {
-  hospital: "text-yellow-800",
-  clinic: "text-sky-800",
-  "medical devices": "text-purple-800",
-  wellness: "text-green-800",
-  default: "text-blue-800",
-};
-
-const iconMap = {
-  hospital: <BuildingStorefrontIcon className="w-24 h-24 text-yellow-100" />,
-  clinic: <MapPinIcon className="w-24 h-24 text-sky-100" />,
-  'medical devices': <PhoneIcon className="w-24 h-24 text-purple-100" />,
-  wellness: <ClockIcon className="w-24 h-24 text-green-100" />,
-  default: <BuildingStorefrontIcon className="w-24 h-24 text-gray-200" />
-};
-
-const getTextColor = (type) => textColorMap[type?.toLowerCase()] || textColorMap.default;
-const getIcon = (type) => iconMap[type?.toLowerCase()] || iconMap.default;
+import { MapPinIcon, PhoneIcon } from '@heroicons/react/24/outline';
 
 const PharmacyCard = ({ pharmacy }) => {
-  const textColor = getTextColor(pharmacy.store_type);
-  const Icon = getIcon(pharmacy.store_type);
-
-  const rating = Math.round((Math.random() * 2 + 3) * 10) / 10;
-  const reviewCount = Math.floor(Math.random() * 100) + 5;
-
   return (
-    <Link to="/client/PharmacyPage" className="block">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        whileHover={{ y: -5, boxShadow: '0 15px 30px -5px rgba(0, 0, 0, 0.15)' }}
-        className="relative rounded-2xl p-6 shadow-lg bg-white h-96 flex flex-col overflow-hidden group transition-all duration-300"
-      >
-        {/* Top section: Logo and rating */}
-        <div className="flex justify-between items-start mb-5 z-10">
-          {pharmacy.store_logo_url ? (
-            <div className="w-20 h-20 rounded-xl bg-white p-2 shadow-md border border-gray-200 group-hover:scale-105 transition-transform">
-              <img
-                src={pharmacy.store_logo_url}
-                alt={`${pharmacy.store_name} logo`}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          ) : (
-            <div className="w-20 h-20 rounded-xl bg-white p-4 shadow-md border border-gray-200 flex items-center justify-center">
-              <BuildingStorefrontIcon className="w-10 h-10 text-gray-500" />
-            </div>
-          )}
-
-          <div className="flex items-center bg-gray-50/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
-            <StarIcon className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-            <span className="text-sm font-semibold ml-1">{rating}</span>
-            <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
+    <div className="group relative flex flex-col items-center rounded-xl border border-gray-300 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md mt-">
+      {/* Circular Logo - Large and centered */}
+      <div className="relative -mt-3 mb-4 h-50 w-50 rounded-full border-4 border-blue-600 bg-white shadow-md">
+        {pharmacy.store_logo ? (
+          <img 
+            src={pharmacy.store_logo} 
+            alt={`${pharmacy.store_name} logo`}
+            className="h-full w-full rounded-full object-cover"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentElement.innerHTML = `
+                <div class="h-full w-full rounded-full bg-blue-50 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+              `;
+            }}
+          />
+        ) : (
+          <div className="h-full w-full rounded-full bg-blue-50 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Content */}
-        <div className="flex flex-col flex-grow z-10">
-          <h3 className={`text-2xl font-bold ${textColor} mb-2 group-hover:text-opacity-90 transition-colors`}>
-            {pharmacy.store_name}
-          </h3>
+      {/* Store Name - Single line with truncation */}
+      <h3 className="w-full text-xl font-semibold text-gray-900 truncate ">
+        {pharmacy.store_name}
+      </h3>
 
-          <p className="text-sm text-gray-700 mb-4 leading-relaxed line-clamp-3">
-            {pharmacy.description || 'No description available.'}
+      {/* Description - Single line with truncation */}
+      {pharmacy.description && (
+        <p className="w-full text-sm text-gray-500 truncate mt-1">
+          {pharmacy.description}
+        </p>
+      )}
+
+      {/* Address with icon */}
+      {pharmacy.store_address && (
+        <div className="mt-4 flex items-center w-full">
+          <MapPinIcon className="flex-shrink-0 h-5 w-5 text-blue-600" />
+          <p className="ml-2 text-sm text-gray-600 truncate">
+            {pharmacy.store_address}
           </p>
-
-          <div className="mt-auto space-y-2">
-            <div className="flex items-center gap-2">
-              <PhoneIcon className="h-5 w-5 text-gray-600" />
-              <a
-                href={`tel:${pharmacy.phone}`}
-                className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {pharmacy.phone || 'N/A'}
-              </a>
-            </div>
-
-            <div className="flex items-start gap-2">
-              <MapPinIcon className="h-5 w-5 text-gray-600 mt-0.5" />
-              <span className="text-sm text-gray-700 flex-1">
-                {pharmacy.address || 'N/A'}
-              </span>
-            </div>
-          </div>
         </div>
+      )}
 
-        {/* Background icon */}
-        <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-30 transition-opacity duration-300">
-          {React.cloneElement(Icon, { className: "w-28 h-28" })}
+      {/* Phone with clickable link */}
+      {pharmacy.phone && (
+        <div className="mt-2 flex items-center w-full">
+          <PhoneIcon className="flex-shrink-0 h-5 w-5 text-blue-600" />
+          <a 
+            href={`tel:${pharmacy.phone.replace(/\D/g, '')}`}
+            className="ml-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline truncate"
+          >
+            {pharmacy.phone}
+          </a>
         </div>
+      )}
 
-        <div className="absolute bottom-5 right-5 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-300">
-          {Icon}
-        </div>
-
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity rounded-xl"></div>
-      </motion.div>
-    </Link>
+      {/* View Button */}
+      <Link
+        to={`/pharmacies/${pharmacy.id}`}
+        className="mt-6 w-full text-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+      >
+        View Store
+      </Link>
+    </div>
   );
 };
 
