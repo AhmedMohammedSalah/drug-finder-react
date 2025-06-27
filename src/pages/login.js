@@ -37,27 +37,27 @@ export default function LoginPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-  
+
     const { valid, errors: validationErrors } = validateLoginForm(email, password);
     setErrors(validationErrors);
-  
+
     if (valid) {
       try {
         dispatch(clearError());
         setBackendError("");
-  
+
         const result = await dispatch(loginUser({ email, password })).unwrap();
-  
+
         const role = result?.user?.role?.toLowerCase();
-  
+
         if (role === "admin") {
           navigate("/admin");
         } else if (role === "pharmacist") {
           const hasStore = result?.user?.pharmacist?.has_store;
-  
+
           // ✅ Debug output (optional)
           console.log("hasStore =", hasStore);
-  
+
           if (hasStore === false) {
             navigate("/pharmacy/store"); // redirect to store creation page
           } else {
@@ -68,7 +68,7 @@ export default function LoginPage() {
         } else {
           navigate("/");
         }
-  
+
       } catch (error) {
         if (error?.error === "email_not_verified") {
           setBackendError("Please verify your email before logging in");
@@ -78,7 +78,7 @@ export default function LoginPage() {
       }
     }
   };
-  
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       dispatch(clearError());
@@ -97,8 +97,8 @@ export default function LoginPage() {
       console.error("Google login error:", error);
       setBackendError(
         error.message ||
-          error.payload ||
-          "Google login failed. Please try again."
+        error.payload ||
+        "Google login failed. Please try again."
       );
     }
   };
@@ -110,9 +110,9 @@ export default function LoginPage() {
       }
       redirectUri="http://localhost:3000"
     >
-      <div className="min-h-screen flex items-center justify-center bg-blue-100">
-        <div className="bg-white shadow-md grid grid-cols-2 w-[1000px] border border-gray-300 rounded-lg">
-          {/* LEFT-COL - Form */}
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white min-h-screen flex items-center justify-center shadow-md grid grid-cols-2 w-[1000px] border border-gray-300 rounded-lg">
+        
           <FormWrapper className="p-10 flex flex-col gap-10" onSubmit={submit}>
             {backendError && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
@@ -120,14 +120,15 @@ export default function LoginPage() {
               </div>
             )}
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-2">Welcome back</h1>
-              <h1 className="text-2xl text-gray-500">
+              <h1 className="text-4xl font-bold text-blue-600 mb-2">Welcome back</h1>
+              <h1 className="text-2xl mb-5 text-blue-500">
                 Find your Medicine with no time
               </h1>
             </div>
 
             {/* EMAIL */}
             <InputField
+            className="mt-5"
               label="Email"
               type="email"
               placeholder="Enter your email"
@@ -156,11 +157,11 @@ export default function LoginPage() {
             </div>
 
             {/* SUBMIT [BIG BUTTON] */}
-            <BigBtn text="Login" onClick={submit} />
+            <BigBtn text="Login" bg-blue-500 onClick={submit} />
 
             {/* SEPARATOR */}
             <div className="flex items-center">
-              <div className="flex-grow border-t border-gray-300"></div>
+              <div className="flex-grow border-t mt-5 border-gray-300"></div>
               <span className="mx-4 text-gray-500">Or Continue with</span>
               <div className="flex-grow border-t border-gray-300"></div>
             </div>
@@ -197,13 +198,7 @@ export default function LoginPage() {
           </FormWrapper>
 
           {/* RGHT-Col - IMG */}
-          <div className="bg-gray-200 h-full w-full">
-            <img
-              src="./images/login/drugLogin.png"
-              alt="Login illustration"
-              className="w-full h-full object-cover rounded-r-md"
-            />
-          </div>
+         
         </div>
       </div>
     </GoogleOAuthProvider>

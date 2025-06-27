@@ -15,7 +15,7 @@ export default function BigBtn({ text, onClick }) {
     // BUTTON
     <button onClick={onClick}
             className=" w-full
-                        bg-black
+                        bg-blue-500
                         text-white
                         py-2
                         rounded-lg
