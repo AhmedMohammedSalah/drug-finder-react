@@ -19,13 +19,17 @@ function UsersAdminPage() {
   // [SARA]: State for search query
   const [search, setSearch] = useState('');
   // [SARA]: State for details modal
-  const [detailsUser, setDetailsUser] = useState(null);
+  const [detailsUserId, setDetailsUserId] = useState(null);
   // [SARA]: State for role filter
   const [roleFilter, setRoleFilter] = useState('');
   // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize] = useState(9); // 9 per page for 3x3 grid
   const [totalPages, setTotalPages] = useState(1);
+
+  // [SARA]: State for profile forms
+  const [editProfileForm, setEditProfileForm] = useState({ info_disease: '', image_profile: '', has_store: false });
+  const [addProfileForm, setAddProfileForm] = useState({ info_disease: '', image_profile: '', has_store: false });
 
   // [SARA]: Get token from localStorage for authentication
   const token = localStorage.getItem('access_token') || localStorage.getItem('access_token');
@@ -49,41 +53,46 @@ function UsersAdminPage() {
       });
   }, [token, page, pageSize]);
 
-  // Fetch extra profile data for users (client/pharmacist)
+  // On-demand fetch for profile in details modal
+  const [detailsProfileLoading, setDetailsProfileLoading] = useState(false);
   useEffect(() => {
-    async function fetchProfiles() {
-      const updatedUsers = await Promise.all(users.map(async user => {
-        if (user.role === 'pharmacist') {
-          try {
-            const res = await fetch(`http://localhost:8000/users/pharmacists/${user.id}/`, {
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-              const profile = await res.json();
-              console.log('[SARA]: Fetching pharmacist profile for pharmacist:', { ...user, pharmacist_profile: profile });
-
-              return { ...user, pharmacist_profile: profile };
-            }
-          } catch {}
-        } else if (user.role === 'client') {
-          try {
-            const res = await fetch(`http://localhost:8000/users/clients/${user.id}/`, {
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-              const profile = await res.json();
-              console.log('[SARA]: Fetching client profile for client:', { ...user, client_profile: profile });
-              return { ...user, client_profile: profile };
-            }
-          } catch {}
+    let isMounted = true;
+    async function fetchProfileOnDemand() {
+      if (!detailsUserId) return;
+      const user = users.find(u => u.id === detailsUserId);
+      if (!user) return;
+      if (user.role === 'pharmacist' && !user.pharmacist_profile) {
+        setDetailsProfileLoading(true);
+        try {
+          const res = await fetch(`http://localhost:8000/users/pharmacists/${user.id}/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok && isMounted) {
+            const profile = await res.json();
+            setUsers(prev => prev.map(u => u.id === user.id ? { ...u, pharmacist_profile: profile } : u));
+          }
+        } finally {
+          if (isMounted) setDetailsProfileLoading(false);
         }
-        return user;
-      }));
-      setUsers(updatedUsers);
+      } else if (user.role === 'client' && !user.client_profile) {
+        setDetailsProfileLoading(true);
+        try {
+          const res = await fetch(`http://localhost:8000/users/clients/${user.id}/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok && isMounted) {
+            const profile = await res.json();
+            setUsers(prev => prev.map(u => u.id === user.id ? { ...u, client_profile: profile } : u));
+          }
+        } finally {
+          if (isMounted) setDetailsProfileLoading(false);
+        }
+      }
     }
-    if (users.length > 0) fetchProfiles();
+    fetchProfileOnDemand();
+    return () => { isMounted = false; };
     // eslint-disable-next-line
-  }, [users.length]);
+  }, [detailsUserId, users]);
 
   // [SARA]: Delete user by id
   const handleDelete = async (id) => {
@@ -107,11 +116,33 @@ function UsersAdminPage() {
     }
     setEditUser({ ...user, id: userId });
     setEditForm({ name: user.name, email: user.email, role: user.role });
+    // When opening edit modal, populate profile fields
+    if (user.role === 'client' && user.client_profile) {
+      setEditProfileForm({
+        info_disease: user.client_profile.info_disease || '',
+        image_profile: user.client_profile.image_profile || '',
+        has_store: false
+      });
+    } else if (user.role === 'pharmacist' && user.pharmacist_profile) {
+      setEditProfileForm({
+        info_disease: '',
+        image_profile: '',
+        has_store: user.pharmacist_profile.has_store || false
+      });
+    } else {
+      setEditProfileForm({ info_disease: '', image_profile: '', has_store: false });
+    }
   };
 
   // [SARA]: Handle changes in edit form fields
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  // Handle changes in edit profile form
+  const handleEditProfileChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditProfileForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   // [SARA]: Submit edit form and update user (no reload, update state)
@@ -121,6 +152,7 @@ function UsersAdminPage() {
       alert('User ID is missing. Cannot update user.');
       return;
     }
+    // Update user
     const res = await fetch(`http://localhost:8000/users/users/${editUser.id}/`, {
       method: 'PATCH',
       headers: {
@@ -129,11 +161,37 @@ function UsersAdminPage() {
       },
       body: JSON.stringify(editForm)
     });
+    let updatedUser = editUser;
     if (res.ok) {
-      const updatedUser = await res.json();
+      updatedUser = await res.json();
       setUsers(users.map(u => (u.id === updatedUser.id ? updatedUser : u)));
-      setEditUser(null);
     }
+    // Update profile
+    if (editForm.role === 'client') {
+      await fetch(`http://localhost:8000/users/clients/${editUser.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          info_disease: editProfileForm.info_disease,
+          image_profile: editProfileForm.image_profile
+        })
+      });
+    } else if (editForm.role === 'pharmacist') {
+      await fetch(`http://localhost:8000/users/pharmacists/${editUser.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          has_store: editProfileForm.has_store
+        })
+      });
+    }
+    setEditUser(null);
   };
 
   // [SARA]: Open delete confirmation modal
@@ -167,11 +225,18 @@ function UsersAdminPage() {
     setAddForm({ ...addForm, [e.target.name]: e.target.value });
   };
 
+  // Handle changes in add profile form
+  const handleAddProfileChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setAddProfileForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
+
   // [SARA]: Submit add form and create user (no reload, update state)
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     setAddError(null);
     try {
+      // Create user
       const res = await fetch('http://localhost:8000/users/users/', {
         method: 'POST',
         headers: {
@@ -183,8 +248,34 @@ function UsersAdminPage() {
       if (res.ok) {
         const newUser = await res.json();
         setUsers([...users, newUser]);
+        // Create profile
+        if (addForm.role === 'client') {
+          await fetch(`http://localhost:8000/users/clients/${newUser.id}/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              info_disease: addProfileForm.info_disease,
+              image_profile: addProfileForm.image_profile
+            })
+          });
+        } else if (addForm.role === 'pharmacist') {
+          await fetch(`http://localhost:8000/users/pharmacists/${newUser.id}/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              has_store: addProfileForm.has_store
+            })
+          });
+        }
         setShowAddModal(false);
         setAddForm({ name: '', email: '', password: '', role: 'client' });
+        setAddProfileForm({ info_disease: '', image_profile: '', has_store: false });
       } else {
         let data;
         try {
@@ -258,7 +349,7 @@ function UsersAdminPage() {
             <div className="flex gap-2 mt-2 justify-end">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow transition-all"
-                onClick={() => setDetailsUser(user)}
+                onClick={() => setDetailsUserId(user.id)}
               >
                 Details
               </button>
@@ -299,62 +390,76 @@ function UsersAdminPage() {
         </div>
       </div>
       {/* Details Modal */}
-      {detailsUser && (
-        <>
-          <div className="fixed inset-0 z-40 bg-white bg-opacity-70 backdrop-blur-sm transition-all duration-300" />
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col gap-6 min-w-[350px] max-w-[95vw] max-h-[90vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn">
-              <div className="flex flex-col items-center justify-center rounded-t-3xl bg-gradient-to-r from-blue-500 to-blue-400 p-6">
-                <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border-4 border-blue-200 mb-2 shadow-lg">
-                  <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                </span>
-                <h2 className="text-2xl font-extrabold text-blue-800 mb-0 tracking-wide">User Details</h2>
-              </div>
-              <div className="flex flex-col gap-2 p-4">
-                {console.log('[DEBUG detailsUser]:', detailsUser)}
-                <div><b>Name:</b> {detailsUser.name}</div>
-                <div><b>Email:</b> {detailsUser.email}</div>
-                <div><b>Role:</b> {detailsUser.role}</div>
-                <div><b>Created:</b> {detailsUser.created_at ? new Date(detailsUser.created_at).toLocaleString() : 'N/A'}</div>
-                <div><b>Updated:</b> {detailsUser.updated_at ? new Date(detailsUser.updated_at).toLocaleString() : 'N/A'}</div> 
-                {/* Pharmacist/Client extra data */}
-                {detailsUser.role === 'pharmacist' && detailsUser.pharmacist_profile && (
-                  <>
-                    <div className="text-blue-700 font-semibold mt-2">Pharmacist Info</div>
-                    <div><b>Has Store:</b> {detailsUser.pharmacist_profile.has_store? "Yes" : 'No'}</div>
-                    {/* <div><b>Store Name:</b> {detailsUser.pharmacist_profile.store_name || 'N/A'}</div> */}
-                    {/* <div><b>Degree:</b> {detailsUser.pharmacist_profile.degree || 'N/A'}</div>
-                    <div><b>Graduation:</b> {detailsUser.pharmacist_profile.graduation_year || 'N/A'}</div>
-                    <div><b>Workplace:</b> {detailsUser.pharmacist_profile.workplace || 'N/A'}</div> */}
-                  </>
-                )}
-                {detailsUser.role === 'client' && detailsUser.client_profile && (
-                  <>
-                    <div className="text-blue-700 font-semibold mt-2">Client Info</div>
-                    <div><b>Disease:</b> {detailsUser.client_profile.info_disease || 'N/A'}</div>
-                    <div><b>Insurance Provider:</b> {detailsUser.client_profile.insurance_provider || 'N/A'}</div>
-                    <div><b>Emergency Contact:</b> {detailsUser.client_profile.emergency_contact || 'N/A'}</div>
-                  </>
-                )}
-              </div>
-              <button
-                type="button"
-                className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-3xl font-bold focus:outline-none transition-all duration-150"
-                onClick={() => setDetailsUser(null)}
-                aria-label="Close"
-              >&times;</button>
-              <div className="flex gap-4 mt-2 justify-end px-8 pb-2">
+      {detailsUserId && (() => {
+        const detailsUser = users.find(u => u.id === detailsUserId);
+        return (
+          <>
+            <div className="fixed inset-0 z-40 bg-white bg-opacity-70 backdrop-blur-sm transition-all duration-300" />
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col gap-6 min-w-[350px] max-w-[95vw] max-h-[90vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn">
+                <div className="flex flex-col items-center justify-center rounded-t-3xl bg-gradient-to-r from-blue-500 to-blue-400 p-6">
+                  <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border-4 border-blue-200 mb-2 shadow-lg">
+                    <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                  </span>
+                  <h2 className="text-2xl font-extrabold text-blue-800 mb-0 tracking-wide">User Details</h2>
+                </div>
+                <div className="flex flex-col gap-2 p-4">
+                  {console.log('[DEBUG detailsUser]:', detailsUser)}
+                  {detailsUser ? (
+                    <>
+                      <div><b>Name:</b> {detailsUser.name}</div>
+                      <div><b>Email:</b> {detailsUser.email}</div>
+                      <div><b>Role:</b> {detailsUser.role}</div>
+                      {/* <div><b>Created:</b> {detailsUser.created_at ? new Date(detailsUser.created_at).toLocaleString() : 'N/A'}</div>
+                      <div><b>Updated:</b> {detailsUser.updated_at ? new Date(detailsUser.updated_at).toLocaleString() : 'N/A'}</div> */}
+                      {/* Pharmacist/Client extra data */}
+                      {detailsUser.role === 'pharmacist' && detailsUser.pharmacist_profile ? (
+                        <>
+                          <div className="text-blue-700 font-semibold mt-2">Pharmacist Info</div>
+                          <div><b>Has Store:</b> {detailsUser.pharmacist_profile.has_store ? "Yes" : 'No'}</div>
+                          {/* <div><b>Created:</b> {detailsUser.pharmacist_profile.created_at ? new Date(detailsUser.pharmacist_profile.created_at).toLocaleString() : 'N/A'}</div>
+                          <div><b>Updated:</b> {detailsUser.pharmacist_profile.updated_at ? new Date(detailsUser.pharmacist_profile.updated_at).toLocaleString() : 'N/A'}</div> */}
+                        </>
+                      ) : detailsUser.role === 'pharmacist' ? (
+                        <div className="text-gray-500">Loading pharmacist profile...</div>
+                      ) : null}
+                      {detailsUser.role === 'client' && detailsUser.client_profile ? (
+                        <>
+                          <div className="text-blue-700 font-semibold mt-2">Client Info</div>
+                          <div><b>Disease:</b> {detailsUser.client_profile.info_disease || 'N/A'}</div>
+                          <div><b>Profile Image:</b> {detailsUser.client_profile.image_profile ? (
+                            <img src={detailsUser.client_profile.image_profile} alt="Client Profile" className="w-24 h-24 rounded-full border mt-2 mb-2 object-cover" />
+                          ) : 'No image'}</div>
+                          {/* <div><b>Insurance Provider:</b> {detailsUser.client_profile.insurance_provider || 'N/A'}</div>
+                          <div><b>Emergency Contact:</b> {detailsUser.client_profile.emergency_contact || 'N/A'}</div> */}
+                        </>
+                      ) : detailsUser.role === 'client' ? (
+                        <div className="text-gray-500">Loading client profile...</div>
+                      ) : null}
+                    </>
+                  ) : (
+                    <div className="text-gray-500">Loading user details...</div>
+                  )}
+                </div>
                 <button
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-xl font-semibold shadow transition-all focus:outline-none"
-                  onClick={() => setDetailsUser(null)}
-                >
-                  Close
-                </button>
+                  type="button"
+                  className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-3xl font-bold focus:outline-none transition-all duration-150"
+                  onClick={() => setDetailsUserId(null)}
+                  aria-label="Close"
+                >&times;</button>
+                <div className="flex gap-4 mt-2 justify-end px-8 pb-2">
+                  <button
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-xl font-semibold shadow transition-all focus:outline-none"
+                    onClick={() => setDetailsUserId(null)}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        );
+      })()}
       {/* Edit user modal */}
       {editUser && (
         <>
@@ -375,6 +480,19 @@ function UsersAdminPage() {
                   <option value="pharmacist">Pharmacist</option>
                   <option value="admin">Admin</option>
                 </select>
+                {/* Extra fields for client */}
+                {editForm.role === 'client' && (
+                  <>
+                    <input name="info_disease" value={editProfileForm.info_disease} onChange={handleEditProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Disease" />
+                    <input name="image_profile" value={editProfileForm.image_profile} onChange={handleEditProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Profile Image URL" />
+                  </>
+                )}
+                {/* Extra fields for pharmacist */}
+                {editForm.role === 'pharmacist' && (
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" name="has_store" checked={editProfileForm.has_store} onChange={handleEditProfileChange} /> Has Store
+                  </label>
+                )}
                 <div className="flex gap-4 mt-2 justify-end">
                   <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">Save</button>
                   <button type="button" className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-xl font-semibold shadow transition-all focus:outline-none" onClick={() => setEditUser(null)}>Cancel</button>
@@ -430,6 +548,19 @@ function UsersAdminPage() {
                   <option value="pharmacist">Pharmacist</option>
                   <option value="admin">Admin</option>
                 </select>
+                {/* Extra fields for client */}
+                {addForm.role === 'client' && (
+                  <>
+                    <input name="info_disease" value={addProfileForm.info_disease} onChange={handleAddProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Disease" />
+                    <input name="image_profile" value={addProfileForm.image_profile} onChange={handleAddProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Profile Image URL" />
+                  </>
+                )}
+                {/* Extra fields for pharmacist */}
+                {addForm.role === 'pharmacist' && (
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" name="has_store" checked={addProfileForm.has_store} onChange={handleAddProfileChange} /> Has Store
+                  </label>
+                )}
                 {addError && <div className="text-red-500 text-sm">{addError}</div>}
                 <div className="flex gap-4 mt-2 justify-end">
                   <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">Add</button>
