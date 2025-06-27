@@ -31,6 +31,10 @@ function UsersAdminPage() {
   const [editProfileForm, setEditProfileForm] = useState({ info_disease: '', image_profile: '', has_store: false });
   const [addProfileForm, setAddProfileForm] = useState({ info_disease: '', image_profile: '', has_store: false });
 
+  // [SARA]: Add to state for pharmacist images
+  const [editPharmacistImages, setEditPharmacistImages] = useState({ image_profile: null, image_license: null });
+  const [addPharmacistImages, setAddPharmacistImages] = useState({ image_profile: null, image_license: null });
+
   // [SARA]: Get token from localStorage for authentication
   const token = localStorage.getItem('access_token') || localStorage.getItem('access_token');
 
@@ -132,6 +136,10 @@ function UsersAdminPage() {
     } else {
       setEditProfileForm({ info_disease: '', image_profile: '', has_store: false });
     }
+    // [SARA]: Also reset editPharmacistImages
+    if (user.role === 'pharmacist' && user.pharmacist_profile) {
+      setEditPharmacistImages({ image_profile: null, image_license: null });
+    }
   };
 
   // [SARA]: Handle changes in edit form fields
@@ -168,27 +176,52 @@ function UsersAdminPage() {
     }
     // Update profile
     if (editForm.role === 'client') {
-      await fetch(`http://localhost:8000/users/clients/${editUser.id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          info_disease: editProfileForm.info_disease,
-          image_profile: editProfileForm.image_profile
-        })
-      });
+      // [SARA]: Use FormData if image_profile is a File
+      let isFile = editProfileForm.image_profile instanceof File;
+      if (isFile) {
+        const formData = new FormData();
+        formData.append('info_disease', editProfileForm.info_disease);
+        formData.append('image_profile', editProfileForm.image_profile);
+        await fetch(`http://localhost:8000/users/clients/${editUser.id}/`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+      } else {
+        await fetch(`http://localhost:8000/users/clients/${editUser.id}/`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            info_disease: editProfileForm.info_disease,
+            image_profile: editProfileForm.image_profile
+          })
+        });
+      }
     } else if (editForm.role === 'pharmacist') {
+      // Always include image_profile and image_license if available
+      let pharmacistProfile = editUser.pharmacist_profile || {};
+      // If missing, fetch the latest profile from backend
+      if (!pharmacistProfile.image_profile || !pharmacistProfile.image_license) {
+        try {
+          const res = await fetch(`http://localhost:8000/users/pharmacists/${editUser.id}/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            pharmacistProfile = await res.json();
+          }
+        } catch {}
+      }
+      const formData = new FormData();
+      formData.append('has_store', editProfileForm.has_store);
+      if (editPharmacistImages.image_profile) formData.append('image_profile', editPharmacistImages.image_profile);
+      if (editPharmacistImages.image_license) formData.append('image_license', editPharmacistImages.image_license);
       await fetch(`http://localhost:8000/users/pharmacists/${editUser.id}/`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          has_store: editProfileForm.has_store
-        })
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
       });
     }
     setEditUser(null);
@@ -236,59 +269,98 @@ function UsersAdminPage() {
     e.preventDefault();
     setAddError(null);
     try {
-      // Create user
-      const res = await fetch('http://localhost:8000/users/users/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(addForm)
-      });
-      if (res.ok) {
-        const newUser = await res.json();
-        setUsers([...users, newUser]);
-        // Create profile
-        if (addForm.role === 'client') {
-          await fetch(`http://localhost:8000/users/clients/${newUser.id}/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              info_disease: addProfileForm.info_disease,
-              image_profile: addProfileForm.image_profile
-            })
-          });
-        } else if (addForm.role === 'pharmacist') {
-          await fetch(`http://localhost:8000/users/pharmacists/${newUser.id}/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              has_store: addProfileForm.has_store
-            })
-          });
+      let newUser = null;
+      if (addForm.role === 'pharmacist') {
+        // Pharmacist: send all fields and images in FormData
+        const formData = new FormData();
+        formData.append('name', addForm.name);
+        formData.append('email', addForm.email);
+        formData.append('password', addForm.password);
+        formData.append('role', addForm.role);
+        // Pharmacist-specific fields
+        formData.append('has_store', addProfileForm.has_store);
+        if (addPharmacistImages.image_profile instanceof File) {
+          formData.append('image_profile', addPharmacistImages.image_profile);
         }
-        setShowAddModal(false);
-        setAddForm({ name: '', email: '', password: '', role: 'client' });
-        setAddProfileForm({ info_disease: '', image_profile: '', has_store: false });
+        if (addPharmacistImages.image_license instanceof File) {
+          formData.append('image_license', addPharmacistImages.image_license);
+        }
+        const res = await fetch('http://localhost:8000/users/users/', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (res.ok) {
+          newUser = await res.json();
+          setUsers([...users, newUser]);
+          // Optionally PATCH pharmacist profile for any extra fields (if needed)
+        } else {
+          let data;
+          try { data = await res.json(); } catch { data = {}; }
+          console.error('User creation error:', data);
+          setAddError(
+            (data && (data.detail || data.error || data.non_field_errors || JSON.stringify(data))) ||
+            'Failed to add user (check required fields and backend validation)'
+          );
+          return;
+        }
       } else {
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          data = {};
+        // Client or admin: send JSON
+        const res = await fetch('http://localhost:8000/users/users/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(addForm)
+        });
+        if (res.ok) {
+          newUser = await res.json();
+          setUsers([...users, newUser]);
+        } else {
+          let data;
+          try { data = await res.json(); } catch { data = {}; }
+          console.error('User creation error:', data);
+          setAddError(
+            (data && (data.detail || data.error || data.non_field_errors || JSON.stringify(data))) ||
+            'Failed to add user (check required fields and backend validation)'
+          );
+          return;
         }
-        // [SARA]: Show full error message for debugging
-        setAddError(
-          (data && (data.detail || data.error || JSON.stringify(data))) ||
-          'Failed to add user (check required fields and backend validation)'
-        );
       }
+      // Create or update profile for client
+      if (addForm.role === 'client' && newUser) {
+        const formData = new FormData();
+        formData.append('info_disease', addProfileForm.info_disease || '');
+        if (addProfileForm.image_profile instanceof File) {
+          formData.append('image_profile', addProfileForm.image_profile);
+        }
+        await fetch(`http://localhost:8000/users/clients/${newUser.id}/`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+      }
+      // --- PHARMACIST FORM SUBMIT ---
+      if (addForm.role === 'pharmacist' && newUser) {
+        const formData = new FormData();
+        formData.append('has_store', addProfileForm.has_store);
+        if (addPharmacistImages.image_profile instanceof File) {
+          formData.append('image_profile', addPharmacistImages.image_profile);
+        }
+        if (addPharmacistImages.image_license instanceof File) {
+          formData.append('image_license', addPharmacistImages.image_license);
+        }
+        await fetch(`http://localhost:8000/users/pharmacists/${newUser.id}/`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+      }
+      setShowAddModal(false);
+      setAddForm({ name: '', email: '', password: '', role: 'client' });
+      setAddProfileForm({ info_disease: '', image_profile: '', has_store: false });
+      setAddPharmacistImages({ image_profile: null, image_license: null });
     } catch {
       setAddError('Failed to add user');
     }
@@ -484,14 +556,22 @@ function UsersAdminPage() {
                 {editForm.role === 'client' && (
                   <>
                     <input name="info_disease" value={editProfileForm.info_disease} onChange={handleEditProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Disease" />
-                    <input name="image_profile" value={editProfileForm.image_profile} onChange={handleEditProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Profile Image URL" />
+                    <input name="image_profile" type="file" accept="image/*" onChange={e => setEditProfileForm(prev => ({ ...prev, image_profile: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
                   </>
                 )}
                 {/* Extra fields for pharmacist */}
                 {editForm.role === 'pharmacist' && (
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" name="has_store" checked={editProfileForm.has_store} onChange={handleEditProfileChange} /> Has Store
-                  </label>
+                  <>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" name="has_store" checked={editProfileForm.has_store} onChange={handleEditProfileChange} /> Has Store
+                    </label>
+                    <label className="block mt-2">Profile Image:
+                      <input type="file" accept="image/*" onChange={e => setEditPharmacistImages(prev => ({ ...prev, image_profile: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
+                    </label>
+                    <label className="block mt-2">License Image:
+                      <input type="file" accept="image/*" onChange={e => setEditPharmacistImages(prev => ({ ...prev, image_license: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
+                    </label>
+                  </>
                 )}
                 <div className="flex gap-4 mt-2 justify-end">
                   <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">Save</button>
@@ -552,14 +632,31 @@ function UsersAdminPage() {
                 {addForm.role === 'client' && (
                   <>
                     <input name="info_disease" value={addProfileForm.info_disease} onChange={handleAddProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Disease" />
-                    <input name="image_profile" value={addProfileForm.image_profile} onChange={handleAddProfileChange} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" placeholder="Profile Image URL" />
+                    <input name="image_profile" type="file" accept="image/*" onChange={e => setAddProfileForm(prev => ({ ...prev, image_profile: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
+                    {addProfileForm.image_profile && typeof addProfileForm.image_profile === 'object' && (
+                      <div className="text-xs text-blue-700 mt-1">Selected: {addProfileForm.image_profile.name}</div>
+                    )}
                   </>
                 )}
                 {/* Extra fields for pharmacist */}
                 {addForm.role === 'pharmacist' && (
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" name="has_store" checked={addProfileForm.has_store} onChange={handleAddProfileChange} /> Has Store
-                  </label>
+                  <>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" name="has_store" checked={addProfileForm.has_store} onChange={handleAddProfileChange} /> Has Store
+                    </label>
+                    <label className="block mt-2">Profile Image:
+                      <input type="file" accept="image/*" onChange={e => setAddPharmacistImages(prev => ({ ...prev, image_profile: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
+                      {addPharmacistImages.image_profile && typeof addPharmacistImages.image_profile === 'object' && (
+                        <div className="text-xs text-blue-700 mt-1">Selected: {addPharmacistImages.image_profile.name}</div>
+                      )}
+                    </label>
+                    <label className="block mt-2">License Image:
+                      <input type="file" accept="image/*" onChange={e => setAddPharmacistImages(prev => ({ ...prev, image_license: e.target.files[0] }))} className="border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400" />
+                      {addPharmacistImages.image_license && typeof addPharmacistImages.image_license === 'object' && (
+                        <div className="text-xs text-blue-700 mt-1">Selected: {addPharmacistImages.image_license.name}</div>
+                      )}
+                    </label>
+                  </>
                 )}
                 {addError && <div className="text-red-500 text-sm">{addError}</div>}
                 <div className="flex gap-4 mt-2 justify-end">
