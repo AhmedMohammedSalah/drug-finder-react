@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiEndpoints from '../services/api';
 
 export const fetchPharmacies = createAsyncThunk(
   'pharmacy/fetchPharmacies',
   async (params = {}, thunkAPI) => {
     try {
       const query = new URLSearchParams(params).toString();
-      const response = await axios.get(`http://localhost:8000/medical_stores/?${query}`);
+      const response = await apiEndpoints.pharmacies.getAllPharmacies(query);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);

@@ -37,30 +37,48 @@ export default function LoginPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-    const { valid, errors: validationErrors } = validateLoginForm(
-      email,
-      password
-    );
+  
+    const { valid, errors: validationErrors } = validateLoginForm(email, password);
     setErrors(validationErrors);
-
+  
     if (valid) {
       try {
         dispatch(clearError());
         setBackendError("");
+  
         const result = await dispatch(loginUser({ email, password })).unwrap();
-        handleLoginSuccess(result);
+  
+        const role = result?.user?.role?.toLowerCase();
+  
+        if (role === "admin") {
+          navigate("/admin");
+        } else if (role === "pharmacist") {
+          const hasStore = result?.user?.pharmacist?.has_store;
+  
+          // ✅ Debug output (optional)
+          console.log("hasStore =", hasStore);
+  
+          if (hasStore === false) {
+            navigate("/pharmacy/store"); // redirect to store creation page
+          } else {
+            navigate("/pharmacy"); // go to pharmacist dashboard
+          }
+        } else if (role === "client") {
+          navigate("/client");
+        } else {
+          navigate("/");
+        }
+  
       } catch (error) {
         if (error?.error === "email_not_verified") {
           setBackendError("Please verify your email before logging in");
         } else {
-          setBackendError(
-            error?.detail || "Invalid credentials. Please try again."
-          );
+          setBackendError(error?.detail || "Invalid credentials. Please try again.");
         }
       }
     }
   };
-
+  
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       dispatch(clearError());

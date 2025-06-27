@@ -35,6 +35,9 @@ const PharmacistRequestsPage = () => {
         });
         const data = res.data.results;
 
+
+        console.log('Fetched pharmacists:', data);
+
         setPharmacists(data);
         setFilteredPharmacists(data);
         updateStatistics(data);
@@ -88,21 +91,31 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
-  const handleUpdatePharmacist = (id, newStatus, rejectMessage = '') => {
-    const updated = pharmacists.map(pharmacist =>
-      pharmacist.id === id
-        ? {
-            ...pharmacist,
-            license_status: newStatus,
-            reject_message: rejectMessage,
+  const handleUpdatePharmacist = async (id, newStatus, rejectMessage = '') => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/users/pharmacists/${id}/`,
+        {
+          license_status: newStatus,
+          ...(newStatus === 'rejected' && { reject_message: rejectMessage })
+        },
+        {
+          headers: { 
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json' 
           }
-        : pharmacist
-    );
-
-    setPharmacists(updated);
-    setFilteredPharmacists(updated);
-    updateStatistics(updated);
+        }
+      );
+  
+      // Update local state
+      setPharmacists(prev => prev.map(p => 
+        p.id === id ? { ...p, license_status: newStatus } : p
+      ));
+      
+    } catch (err) {
+    }
   };
+  
 
   const handlePageChange = (page) => {
     setPagination(prev => ({

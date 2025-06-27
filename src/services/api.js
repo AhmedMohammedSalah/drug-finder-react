@@ -154,10 +154,18 @@ const apiEndpoints = {
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
 
+    // [SENU]: update for the pharmacist store profile
+    updatePharmacist: (id, data) => api.patch(`users/pharmacists/${id}/`, data),
+
     // [SENU]: fetch pharmacist profile to determine has_store
     getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
   },
   pharmacies: {
+    findNearbyPharmacist: () => api.get("/medical_stores"),
+    createStore: (data) => apiFileUpload.post("/medical_stores/", data),
+    updateStore: (id, data) => apiFileUpload.patch(`/medical_stores/${id}/`, data),
+
+
     findPharmaciesWithMedicine: (medicineName) =>
       api.get(
         `/medical_stores/with-medicine.json?medicine_name=${medicineName}`
@@ -167,7 +175,9 @@ const apiEndpoints = {
 
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
-    // You can add getDevices or other inventory endpoints here as needed
+    createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
+    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`), 
   },
   // {amira} added cart endpoints
   cart: {
@@ -237,7 +247,8 @@ aiChat: {
 // [AMS]
 // Add to apiEndpoints object
 
-export default apiEndpoints;
+  export { api, apiFileUpload, apiEndpoints as default };
+
 
 // [SENU]: solve the authorization problem
 //======="حسبي الله ونعم الوكيل"=====================

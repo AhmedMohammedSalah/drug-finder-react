@@ -20,7 +20,14 @@ function MedicineAdminPage() {
     if (apiEndpoints.inventory && apiEndpoints.inventory.getMedicines) {
       apiEndpoints.inventory.getMedicines()
         .then(res => {
-          setMedicines(res.data);
+          // Ensure medicines is always an array
+          if (Array.isArray(res.data)) {
+            setMedicines(res.data);
+          } else if (res.data && Array.isArray(res.data.results)) {
+            setMedicines(res.data.results);
+          } else {
+            setMedicines([]);
+          }
           setLoading(false);
         })
         .catch(() => {
@@ -36,7 +43,14 @@ function MedicineAdminPage() {
       })
         .then(res => res.json())
         .then(data => {
-          setMedicines(Array.isArray(data) ? data : data.results || []);
+          // Ensure medicines is always an array
+          if (Array.isArray(data)) {
+            setMedicines(data);
+          } else if (data && Array.isArray(data.results)) {
+            setMedicines(data.results);
+          } else {
+            setMedicines([]);
+          }
           setLoading(false);
         })
         .catch(() => {

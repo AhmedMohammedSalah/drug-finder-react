@@ -199,7 +199,7 @@ function App() {
         {/* </Route> */}
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
+          <Route path="store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
