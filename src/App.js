@@ -36,7 +36,7 @@ import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.jsx";
 import NotificationPage from "./components/notifications/notification-page.jsx";
 import CartPage from "./pages/cart.js";
-import { useEffect } from "react";
+import { useEffect ,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
 import ProfilePage from "./pages/profilePage.js";
@@ -44,8 +44,12 @@ import ProfilePage from "./pages/profilePage.js";
 import { Toaster } from "react-hot-toast";
 import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 import ChatIcon from "./components/shared/AI_chatIcon.js";
-
+import { MessageSquare } from "lucide-react";
+import ChatBox from "./pages/AI_chatBox.js";
+import { MessageCircle, X ,Bot} from "lucide-react";
 function App() {
+  const [showChat, setShowChat] = useState(false);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -68,7 +72,30 @@ function App() {
     <Router>
       {/* Toast Notifications */}
       <Toaster position="top-right" reverseOrder={false} />
-       <ChatIcon />
+       {/* <ChatIcon /> */}
+      <div className="fixed bottom-6 right-6 z-50">
+ {showChat ? (
+  <div className="w-[380px] h-[600px] bg-white rounded-xl shadow-lg flex flex-col border border-gray-200">
+    <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-t-xl flex justify-between items-center">
+      <button onClick={() => setShowChat(false)}>
+        <X size={18} />
+      </button>
+    </div>
+    <div className="flex-1 overflow-hidden">
+      <ChatBox onClose={() => setShowChat(false)} />
+    </div>
+  </div>
+) : (
+  <button
+    onClick={() => setShowChat(true)}
+    className="bg-white text-blue-600 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all"
+  >
+    <Bot size={24} />
+  </button>
+)}
+
+</div>
+
       <Routes>
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
