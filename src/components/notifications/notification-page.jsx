@@ -1,346 +1,181 @@
-"use client";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Bell, CheckCircle, ChevronLeft, Loader2, X } from "lucide-react";
+import NotificationItem from "./NotificationItem";
+import api from "../../services/api";
+import { toast } from "react-hot-toast";
+import { getSocket } from "../../services/socket";
+import { useSelector } from "react-redux";
 
-import { useState } from "react";
-import {
-  Bell,
-  Filter,
-  Search,
-  Clock,
-  User,
-  Pill,
-  AlertCircle,
-  CheckCircle,
-  Trash2,
-} from "lucide-react";
+const NotificationPage = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useSelector((state) => state.auth);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const socket = getSocket();
 
-// Extended mock notification data
-const allNotifications = [
-  {
-    id: 1,
-    type: "pharmacy",
-    title: "Low Stock Alert",
-    message:
-      "Amoxicillin 500mg is running low (5 units remaining). Please reorder immediately to avoid stockouts.",
-    time: "2 minutes ago",
-    date: "2024-01-15",
-    read: false,
-    icon: AlertCircle,
-    iconColor: "text-red-500",
-    bgColor: "bg-red-50",
-    priority: "high",
-  },
-  {
-    id: 2,
-    type: "patient",
-    title: "New Prescription",
-    message:
-      "John Doe has submitted a new prescription for review. Please verify and process the medication request.",
-    time: "15 minutes ago",
-    date: "2024-01-15",
-    read: false,
-    icon: User,
-    iconColor: "text-blue-500",
-    bgColor: "bg-blue-50",
-    priority: "medium",
-  },
-  {
-    id: 3,
-    type: "pharmacy",
-    title: "Order Delivered",
-    message:
-      "Medication order #12345 has been successfully delivered to the patient. Delivery confirmation received.",
-    time: "1 hour ago",
-    date: "2024-01-15",
-    read: true,
-    icon: CheckCircle,
-    iconColor: "text-green-500",
-    bgColor: "bg-green-50",
-    priority: "low",
-  },
-  {
-    id: 4,
-    type: "patient",
-    title: "Prescription Ready",
-    message:
-      "Sarah Wilson's prescription is ready for pickup. Patient has been notified via SMS and email.",
-    time: "2 hours ago",
-    date: "2024-01-15",
-    read: true,
-    icon: Pill,
-    iconColor: "text-purple-500",
-    bgColor: "bg-purple-50",
-    priority: "medium",
-  },
-  {
-    id: 5,
-    type: "pharmacy",
-    title: "System Update",
-    message:
-      "Pharmacy management system will be updated tonight at 2 AM. Expected downtime: 30 minutes.",
-    time: "3 hours ago",
-    date: "2024-01-15",
-    read: true,
-    icon: AlertCircle,
-    iconColor: "text-orange-500",
-    bgColor: "bg-orange-50",
-    priority: "medium",
-  },
-  {
-    id: 6,
-    type: "patient",
-    title: "Appointment Reminder",
-    message:
-      "Michael Brown has an appointment tomorrow at 10 AM for medication consultation.",
-    time: "4 hours ago",
-    date: "2024-01-15",
-    read: true,
-    icon: Clock,
-    iconColor: "text-indigo-500",
-    bgColor: "bg-indigo-50",
-    priority: "low",
-  },
-  {
-    id: 7,
-    type: "pharmacy",
-    title: "Inventory Update",
-    message:
-      "Weekly inventory count completed. 15 items need attention for restocking.",
-    time: "1 day ago",
-    date: "2024-01-14",
-    read: true,
-    icon: AlertCircle,
-    iconColor: "text-yellow-500",
-    bgColor: "bg-yellow-50",
-    priority: "medium",
-  },
-  {
-    id: 8,
-    type: "patient",
-    title: "Insurance Verification",
-    message:
-      "Insurance verification completed for Emma Davis. Coverage confirmed for prescribed medications.",
-    time: "2 days ago",
-    date: "2024-01-13",
-    read: true,
-    icon: CheckCircle,
-    iconColor: "text-green-500",
-    bgColor: "bg-green-50",
-    priority: "low",
-  },
-];
-
-export default function NotificationPage() {
-  const [notifications, setNotifications] = useState(allNotifications);
-  const [filter, setFilter] = useState("all"); // all, pharmacy, patient, unread
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Filter notifications
-  const filteredNotifications = notifications.filter((notification) => {
-    const matchesFilter =
-      filter === "all" ||
-      filter === notification.type ||
-      (filter === "unread" && !notification.read);
-
-    const matchesSearch =
-      notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notification.message.toLowerCase().includes(searchTerm.toLowerCase());
-
-    return matchesFilter && matchesSearch;
-  });
-
-  // Mark notification as read
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
+  const fetchNotifications = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.notifications.list();
+      setNotifications(response.data);
+      const count = response.data.filter((n) => !n.is_read).length;
+      setUnreadCount(count);
+    } catch (err) {
+      setError("Failed to load notifications");
+      toast.error("Failed to load notifications");
+      console.error("Error fetching notifications:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Mark all as read
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
-    );
+  useEffect(() => {
+    fetchNotifications();
+
+    if (user && user.id) {
+      // Setup socket listeners
+      const handleNewNotification = (notification) => {
+        setNotifications((prev) => {
+          if (prev.some((n) => n.id === notification.id)) {
+            return prev;
+          }
+          return [notification, ...prev];
+        });
+        setUnreadCount((prev) => prev + 1);
+      };
+
+      const handleNotificationRead = (notificationId) => {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, is_read: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      };
+
+      socket.on("new_notification", handleNewNotification);
+      socket.on("notification_read", handleNotificationRead);
+
+      return () => {
+        socket.off("new_notification", handleNewNotification);
+        socket.off("notification_read", handleNotificationRead);
+      };
+    }
+  }, [user]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.notifications.markAllRead();
+      const updatedNotifications = notifications.map((n) => ({
+        ...n,
+        is_read: true,
+      }));
+      setNotifications(updatedNotifications);
+      setUnreadCount(0);
+
+      // Notify server
+      notifications
+        .filter((n) => !n.is_read)
+        .forEach((n) => {
+          socket.emit("mark_read", n.id);
+        });
+
+      toast.success("All notifications marked as read");
+    } catch (err) {
+      toast.error("Failed to mark all as read");
+      console.error("Error marking all as read:", err);
+    }
   };
 
-  // Delete notification
-  const deleteNotification = (id) => {
+  const handleMarkedRead = (id) => {
     setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== id)
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const handleDelete = async (id) => {
+    try {
+      await api.notifications.delete(id);
+      const deletedNotification = notifications.find((n) => n.id === id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+      if (deletedNotification && !deletedNotification.is_read) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+
+      toast.success("Notification deleted");
+    } catch (err) {
+      toast.error("Failed to delete notification");
+      console.error("Error deleting notification:", err);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Bell className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
-          </div>
-          <p className="text-gray-600">
-            Stay updated with your pharmacy operations and patient activities
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search notifications..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Filters and Actions */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-gray-500" />
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Notifications</option>
-                  <option value="unread">Unread ({unreadCount})</option>
-                  <option value="pharmacy">Pharmacy</option>
-                  <option value="patient">Patient</option>
-                </select>
-              </div>
-
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Mark All Read
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Notifications List */}
-        <div className="space-y-4">
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map((notification) => {
-              const IconComponent = notification.icon;
-              return (
-                <div
-                  key={notification.id}
-                  className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all ${
-                    !notification.read ? "ring-2 ring-blue-100" : ""
-                  }`}
-                >
-                  <div className="flex gap-4">
-                    <div
-                      className={`${notification.bgColor} p-3 rounded-xl flex-shrink-0`}
-                    >
-                      <IconComponent
-                        className={`w-6 h-6 ${notification.iconColor}`}
-                      />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3
-                              className={`text-lg font-semibold ${
-                                !notification.read
-                                  ? "text-gray-900"
-                                  : "text-gray-700"
-                              }`}
-                            >
-                              {notification.title}
-                            </h3>
-                            <span
-                              className={`text-xs px-3 py-1 rounded-full font-medium ${
-                                notification.type === "pharmacy"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-green-100 text-green-700"
-                              }`}
-                            >
-                              {notification.type === "pharmacy"
-                                ? "Pharmacy"
-                                : "Patient"}
-                            </span>
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                notification.priority === "high"
-                                  ? "bg-red-100 text-red-700"
-                                  : notification.priority === "medium"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-gray-100 text-gray-700"
-                              }`}
-                            >
-                              {notification.priority}
-                            </span>
-                            {!notification.read && (
-                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                            )}
-                          </div>
-
-                          <p className="text-gray-600 mb-3 leading-relaxed">
-                            {notification.message}
-                          </p>
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {notification.time}
-                            </div>
-                            <div>{notification.date}</div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {!notification.read && (
-                            <button
-                              onClick={() => markAsRead(notification.id)}
-                              className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
-                            >
-                              Mark Read
-                            </button>
-                          )}
-                          <button
-                            onClick={() => deleteNotification(notification.id)}
-                            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-              <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No notifications found
-              </h3>
-              <p className="text-gray-500">
-                {searchTerm
-                  ? "Try adjusting your search terms"
-                  : "You're all caught up!"}
-              </p>
-            </div>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-6">
+        <Link
+          to="/"
+          className="flex items-center text-emerald-600 hover:text-emerald-700"
+        >
+          <ChevronLeft size={20} className="mr-1" /> Back
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-800">Notifications</h1>
+        <div>
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-emerald-500 hover:bg-emerald-600 text-white rounded-full"
+            >
+              <CheckCircle size={16} />
+              Mark all read
+            </button>
           )}
         </div>
       </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="animate-spin text-emerald-500 size-8" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-10 text-red-500">
+          {error}.{" "}
+          <button
+            onClick={fetchNotifications}
+            className="text-emerald-600 hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="text-center py-10">
+          <Bell className="mx-auto text-gray-300 size-16 mb-4" />
+          <h3 className="text-lg font-medium text-gray-500">
+            No notifications yet
+          </h3>
+          <p className="text-gray-400">
+            We'll notify you when there's something new.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+          {notifications.map((notification) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkedRead={handleMarkedRead}
+              onDelete={handleDelete}
+              showDelete={true}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default NotificationPage;

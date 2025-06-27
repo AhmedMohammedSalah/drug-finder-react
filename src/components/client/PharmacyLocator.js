@@ -1,43 +1,59 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { MapPin, Navigation, Phone, Clock, Star, RefreshCw, AlertCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { MapPin,ShoppingCart ,Navigation, Phone, Clock, Star, RefreshCw, AlertCircle } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import axios from 'axios';
+import DrugFinderSearchBar from '../../components/client/DrugFinderSearchBar';
 import PharmacyCardLocator from '../../components/shared/PharmacyCardLocator';
-import apiEndpoints from '../../services/api'
+import apiEndpoints from '../../services/api';
+import PharmaCapsuleLoader from '../../components/PharmaCapsuleLoader';
+import { Link  } from 'react-router-dom';
 
+/* [OKS] will improve design and reusability*/ 
 const PharmacyLocator = () => {
+  const location = useLocation();
   const [userLocation, setUserLocation] = useState(null);
   const [pharmacies, setPharmacies] = useState([]);
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(null);
-  const [zoom, setZoom] = useState(15);
   const [error, setError] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const[searchTerm, setSearchTerm] = useState('');
+  
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markers = useRef([]);
   const pharmacyListRef = useRef(null);
 
-  // Mapbox configuration
+  //  [OKS] Mapbox configuration
   const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoib21hcm9rc3RhciIsImEiOiJjbDYweWZnN2kxZDh2M2dvYWtsdWZmaXpkIn0.BgrSg2_-EDey-NBxWRKeTA';
   mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-  // Fetch pharmacies from backend API
-  const fetchPharmacies = async () => {
+  //[OKS] Fetch pharmacies from backend API
+  const fetchPharmacies = async (medicineName = '') => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await apiEndpoints.pharmacies.findNearbyPharmacist();
-      
-      if (!response.data || !response.data.results) {
+      let response;
+      if (medicineName) {
+        setIsSearching(true);
+        response = await apiEndpoints.pharmacies.findPharmaciesWithMedicine(medicineName);
+      } else {
+        setIsSearching(false);
+        response = await apiEndpoints.pharmacies.getAllPharmacies();
+      }
+
+      if (!response.data || (!response.data.results && !Array.isArray(response.data))) {
         throw new Error('Invalid API response structure');
       }
 
-      const transformedPharmacies = response.data.results.map(pharmacy => ({
+      const pharmaciesData = response.data.results || response.data;
+      const transformedPharmacies = pharmaciesData.map(pharmacy => ({
         store_id: pharmacy.id,
         store_name: pharmacy.store_name,
         description: pharmacy.description || 'Pharmacy services',
@@ -46,45 +62,36 @@ const PharmacyLocator = () => {
           lat: parseFloat(pharmacy.latitude),
           lng: parseFloat(pharmacy.longitude)
         },
-        phone: 'Not available', // Update if your API provides phone numbers
-        hours: '9:00 AM - 9:00 PM', // Update if your API provides hours
-        rating: 4.0, // Update if your API provides ratings
+        phone: 'Not available',
+        hours: '9:00 AM - 9:00 PM',
+        rating: 4.0,
         store_logo_url: pharmacy.store_logo || 'https://i.pinimg.com/originals/89/70/d0/8970d0b80833a20fc173b2b86fc66c03.png',
         store_type: pharmacy.store_type,
         license_expiry_date: pharmacy.license_expiry_date
       }));
 
       setPharmacies(transformedPharmacies);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching pharmacies:', error);
       setError(error.response?.data?.message || error.message || 'Failed to load pharmacies. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleLocationError = (error) => {
-    console.error('Location error:', error);
-    let errorMessage = 'Location access denied. Using default location.';
-    
-    switch(error.code) {
-      case error.PERMISSION_DENIED:
-        errorMessage = 'Location access was denied. Using default location.';
-        break;
-      case error.POSITION_UNAVAILABLE:
-        errorMessage = 'Location information is unavailable. Using default location.';
-        break;
-      case error.TIMEOUT:
-        errorMessage = 'The request to get location timed out. Using default location.';
-        break;
-      default:
-        errorMessage = 'An unknown error occurred. Using default location.';
+  // Handle initial search from URL
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const medicineParam = queryParams.get('medicine');
+    if (medicineParam) {
+      setSearchQuery(medicineParam);
+      fetchPharmacies(medicineParam);
+    } else {
+      fetchPharmacies();
     }
-    
-    setLocationError(errorMessage);
-    useDefaultLocation();
-  };
+  }, [location.search]);
 
+  // Get user location
   useEffect(() => {
     const getLocation = () => {
       if (navigator.geolocation) {
@@ -97,20 +104,28 @@ const PharmacyLocator = () => {
             setUserLocation(newLocation);
             setMapCenter(newLocation);
             setLocationError(null);
-            fetchPharmacies();
           },
           (error) => {
-            handleLocationError(error);
+            let errorMessage = 'Location access denied. Using default location.';
+            switch(error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage = 'Location access was denied. Using default location.';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage = 'Location information is unavailable. Using default location.';
+                break;
+              case error.TIMEOUT:
+                errorMessage = 'The request to get location timed out. Using default location.';
+                break;
+            }
+            setLocationError(errorMessage);
+            useDefaultLocation();
           },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
         setLocationError('Geolocation is not supported by this browser.');
-        setDefaultLocation();
+        useDefaultLocation();
       }
     };
 
@@ -121,7 +136,6 @@ const PharmacyLocator = () => {
     const cairoLocation = { lat: 30.0444, lng: 31.2357 };
     setUserLocation(cairoLocation);
     setMapCenter(cairoLocation);
-    fetchPharmacies();
   };
 
   // Initialize Mapbox Map
@@ -132,18 +146,13 @@ const PharmacyLocator = () => {
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [mapCenter.lng, mapCenter.lat],
-      zoom: zoom
+      zoom: 15
     });
 
     map.current.on('load', () => {
       setMapLoaded(true);
-      
-      // Add user location marker
       if (userLocation) {
-        new mapboxgl.Marker({
-          color: '#4285F4',
-          scale: 0.8
-        })
+        new mapboxgl.Marker({ color: '#4285F4', scale: 0.8 })
           .setLngLat([userLocation.lng, userLocation.lat])
           .setPopup(new mapboxgl.Popup().setHTML('<h3>Your Location</h3>'))
           .addTo(map.current);
@@ -156,73 +165,142 @@ const PharmacyLocator = () => {
         map.current = null;
       }
     };
-  }, [mapCenter]);
+  }, [mapCenter, userLocation]);
 
-  // Update map markers when pharmacies change
-  useEffect(() => {
-    if (!map.current || !mapLoaded || pharmacies.length === 0) return;
+useEffect(() => {
+  if (!map.current || !mapLoaded || pharmacies.length === 0) return;
 
-    // Clear existing markers
-    markers.current.forEach(marker => marker.remove());
-    markers.current = [];
+  markers.current.forEach(marker => marker.remove());
+  markers.current = [];
 
-    // Add pharmacy markers
-    pharmacies.forEach(pharmacy => {
-      const el = document.createElement('div');
-      el.className = 'pharmacy-marker';
-      el.style.backgroundImage = `url(${pharmacy.store_logo_url})`;
-      el.style.backgroundSize = 'cover';
-      el.style.width = '40px';
-      el.style.height = '40px';
-      el.style.borderRadius = '50%';
-      el.style.border = '2px solid white';
-      el.style.cursor = 'pointer';
+  pharmacies.forEach(pharmacy => {
+    const markerEl = document.createElement('div');
+    markerEl.className = 'pharmacy-marker';
+    markerEl.style.backgroundImage = `url(${pharmacy.store_logo_url})`;
+    markerEl.style.backgroundSize = 'cover';
+    markerEl.style.width = '40px';
+    markerEl.style.height = '40px';
+    markerEl.style.borderRadius = '50%';
+    markerEl.style.border = '2px solid white';
+    markerEl.style.cursor = 'pointer';
+    markerEl.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
 
-      const marker = new mapboxgl.Marker({
-        element: el,
-        anchor: 'bottom'
-      })
-        .setLngLat([pharmacy.location.lng, pharmacy.location.lat])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <div style="padding: 10px; max-width: 250px;">
-                <h3 style="margin: 0 0 5px 0; color: #333;">${pharmacy.store_name}</h3>
-                <p style="margin: 0 0 5px 0; font-size: 12px; color: #666;">${pharmacy.description}</p>
-                <p style="margin: 0 0 5px 0; font-size: 12px;"><strong>Address:</strong> ${pharmacy.address}</p>
-                <p style="margin: 0 0 5px 0; font-size: 12px;"><strong>Hours:</strong> ${pharmacy.hours}</p>
-                <p style="margin: 0 0 10px 0; font-size: 12px;"><strong>Rating:</strong> ${pharmacy.rating?.toFixed(1)}/5</p>
-                <div style="text-align: center;">
-                  <button onclick="window.open('tel:${pharmacy.phone}')" style="background: #10b981; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 4px; cursor: pointer;">Call</button>
-                  <button onclick="window.open('https://www.mapbox.com/directions/?from=${userLocation?.lng},${userLocation?.lat}&to=${pharmacy.location.lng},${pharmacy.location.lat}')" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; margin: 2px; border-radius: 4px; cursor: pointer;">Directions</button>
-                </div>
-              </div>
-            `)
-        )
-        .addTo(map.current);
+    // Highlight selected pharmacy
+    if (selectedPharmacy?.store_id === pharmacy.store_id) {
+      markerEl.style.border = '3px solid #10B981';
+      markerEl.style.transform = 'scale(1.2)';
+    }
 
-      // Highlight selected pharmacy
-      if (selectedPharmacy?.store_id === pharmacy.store_id) {
-        el.style.border = '3px solid #10B981';
-        marker.togglePopup();
+    //  [OKS] Create popup content with pharmacy details only css global;
+    const createPopupContent = () => {
+      const popupContent = document.createElement('div');
+      popupContent.className = 'pharmacy-popup-capsule';
+      
+      popupContent.innerHTML = `
+        <div class="popup-header" style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <img src="${pharmacy.store_logo_url}" 
+                 style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover;" 
+                 alt="${pharmacy.store_name}">
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1f2937;">${pharmacy.store_name}</h3>
+          </div>
+          <div style="display: flex; align-items: center; color: #f59e0b;">
+            ${'★'.repeat(Math.round(pharmacy.rating))}${'☆'.repeat(5 - Math.round(pharmacy.rating))}
+            <span style="margin-left: 4px; font-size: 12px; color: #6b7280;">${pharmacy.rating?.toFixed(1)}/5.0</span>
+          </div>
+        </div>
+        
+        <div class="popup-body" style="padding: 12px;">
+          <div class="popup-info">
+            <p style="margin: 4px 0; font-size: 12px; color: #6b7280; display: flex; align-items: center;">
+              <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+              </svg>
+              ${pharmacy.address}
+            </p>
+            <p style="margin: 4px 0; font-size: 12px; color: #6b7280; display: flex; align-items: center;">
+              <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+              </svg>
+              ${pharmacy.hours}
+            </p>
+          </div>
+        </div>
+        
+        <div class="popup-footer" style="padding: 8px 12px; border-top: 1px solid #e5e7eb; display: flex; gap: 8px;">
+          <button onclick="handleCall('${pharmacy.phone}')" 
+                  style="flex: 1; background: #10b981; color: white; border: none; padding: 6px 12px; 
+                         border-radius: 6px; font-size: 12px; cursor: pointer; display: flex; 
+                         align-items: center; justify-content: center; transition: background-color 0.2s;"
+                  onmouseover="this.style.background='#059669'" 
+                  onmouseout="this.style.background='#10b981'">
+            <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+            </svg>
+            Call
+          </button>
+          <button onclick="handleDirections(${pharmacy.location.lat}, ${pharmacy.location.lng})" 
+                  style="flex: 1; background: #3b82f6; color: white; border: none; padding: 6px 12px; 
+                         border-radius: 6px; font-size: 12px; cursor: pointer; display: flex; 
+                         align-items: center; justify-content: center; transition: background-color 0.2s;"
+                  onmouseover="this.style.background='#2563eb'" 
+                  onmouseout="this.style.background='#3b82f6'">
+            <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+            </svg>
+            Directions
+          </button>
+        </div>
+      `;
+
+      return popupContent;
+    };
+
+    // Add global functions for popup interactions
+    window.handleCall = (phoneNumber) => {
+      window.open(`tel:${phoneNumber}`, '_self');
+    };
+
+    window.handleDirections = (lat, lng) => {
+      if (userLocation) {
+        window.open(
+          `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${lat},${lng}`,
+          '_blank'
+        );
       }
+    };
 
-      marker.getElement().addEventListener('click', () => {
-        setSelectedPharmacy(pharmacy);
-      });
+    // Create marker with popup
+    const marker = new mapboxgl.Marker({
+      element: markerEl,
+      anchor: 'bottom'
+    }).setLngLat([pharmacy.location.lng, pharmacy.location.lat]);
 
-      markers.current.push(marker);
+    markerEl.addEventListener('click', () => {
+      setSelectedPharmacy(pharmacy);
+      
+      const popupContent = createPopupContent();
+      const popup = new mapboxgl.Popup({ 
+        offset: 25,
+        className: 'custom-popup',
+        maxWidth: '320px'
+      }).setDOMContent(popupContent);
+
+      marker.setPopup(popup).togglePopup();
     });
 
-    // Center map on selected pharmacy
-    if (selectedPharmacy) {
-      map.current.flyTo({
-        center: [selectedPharmacy.location.lng, selectedPharmacy.location.lat],
-        zoom: 17,
-        essential: true
-      });
-    }
-  }, [pharmacies, selectedPharmacy, mapLoaded]);
+    marker.addTo(map.current);
+    markers.current.push(marker);
+  });
+
+  if (selectedPharmacy) {
+    map.current.flyTo({
+      center: [selectedPharmacy.location.lng, selectedPharmacy.location.lat],
+      zoom: 17,
+      essential: true
+    });
+  }
+}, [pharmacies, selectedPharmacy, mapLoaded, userLocation]);
 
   const refreshLocation = () => {
     setLoading(true);
@@ -239,7 +317,6 @@ const PharmacyLocator = () => {
           setUserLocation(newLocation);
           setMapCenter(newLocation);
           setLocationError(null);
-          fetchPharmacies();
         },
         (error) => {
           handleLocationError(error);
@@ -263,23 +340,28 @@ const PharmacyLocator = () => {
 
   const handlePharmacyClick = (pharmacy) => {
     setSelectedPharmacy(pharmacy);
-    
-    // Center map on selected pharmacy
     if (map.current) {
       map.current.flyTo({
         center: [pharmacy.location.lng, pharmacy.location.lat],
         zoom: 17,
         essential: true
       });
-      
-      // Open the marker's popup
       const marker = markers.current.find(m => 
         m.getLngLat().lng === pharmacy.location.lng && 
         m.getLngLat().lat === pharmacy.location.lat
       );
-      if (marker) {
-        marker.togglePopup();
-      }
+      if (marker) marker.togglePopup();
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearchTerm(searchQuery.trim());
+    
+    if (searchQuery.trim()) {
+      fetchPharmacies(searchQuery.trim());
+    } else {
+      fetchPharmacies();
     }
   };
 
@@ -288,6 +370,18 @@ const PharmacyLocator = () => {
     const url = `https://www.mapbox.com/directions/?from=${userLocation.lng},${userLocation.lat}&to=${pharmacy.location.lng},${pharmacy.location.lat}`;
     window.open(url, '_blank');
   };
+
+  const sortedPharmacies = pharmacies
+    .map(pharmacy => ({
+      ...pharmacy,
+      distance: calculateDistance(
+        userLocation?.lat || 0, 
+        userLocation?.lng || 0,
+        pharmacy.location.lat, 
+        pharmacy.location.lng
+      )
+    }))
+    .sort((a, b) => a.distance - b.distance);
 
   if (!userLocation || !mapCenter) {
     return (
@@ -316,26 +410,27 @@ const PharmacyLocator = () => {
     );
   }
 
-  const sortedPharmacies = pharmacies
-    .map(pharmacy => ({
-      ...pharmacy,
-      distance: calculateDistance(
-        userLocation.lat, userLocation.lng,
-        pharmacy.location.lat, pharmacy.location.lng
-      )
-    }))
-    .sort((a, b) => a.distance - b.distance);
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header with improved spacing */}
+        {/* Header with search */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Find Nearby Pharmacies</h1>
-          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
-            Locate pharmacies near you with real-time information
-          </p>
+          
+          <div className="max-w-2xl mx-auto mt-4">
+            <DrugFinderSearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder="Search for medicines in pharmacies..."
+            />
+          </div>
+          
+          {isSearching && (
+            <p className="text-sm md:text-base text-gray-600 mt-2">
+              Showing pharmacies with "{searchQuery}" in stock
+            </p>
+          )}
         </div>
 
         {locationError && (
@@ -362,95 +457,100 @@ const PharmacyLocator = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-
+          {/* Map */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden h-[400px] md:h-[500px]">
-              <div 
-                ref={mapContainer}
-                className="w-full h-full"
-              />
-              
+              <div ref={mapContainer} className="w-full h-full" />
               {!mapLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center">
-                  <div className="text-center p-4 md:p-6">
-                    <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg">
-                      <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-3 md:mb-4"></div>
-                      <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-1 md:mb-2">Loading Map...</h3>
-                      <p className="text-xs md:text-sm text-gray-600">Please wait while we load the map</p>
+                <div className="min-h-screen bg-white">
+                  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="flex flex-col items-center justify-center">
+                      <PharmaCapsuleLoader />
                     </div>
                   </div>
                 </div>
               )}
             </div>
           </div>
+          
 
-          {/* [OKS] Pharmacy List with improved scrolling */}
-  <div className="h-[320px] md:h-[400px] flex flex-col">
-  <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-3 md:p-4 flex flex-col h-full overflow-hidden border border-gray-100"> {/* Added subtle border */}
-    
-    {/* Header with subtle bottom border */}
-    <div className="px-2 pb-3 mb-1 border-b border-gray-100"> {/* Added border separator */}
-      <h2 className="text-lg md:text-xl font-semibold text-gray-800 flex items-center">
-        <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mr-2" />
-        Nearby Pharmacies
-      </h2>
-    </div>
-
-    
-    {/* Fixed height container with scroll */}
-    <div className="flex flex-col h-full">
-     <div 
-        ref={pharmacyListRef}
-        className="h-full overflow-y-auto pr-2 scrollbar-thin 
-                  scrollbar-thumb-blue-200 scrollbar-track-blue-50 
-                  hover:scrollbar-thumb-blue-300 transition-all 
-                  duration-300 scrollbar-thumb-rounded-full"
-      >
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600"></div>
+          {/* Pharmacy List */}
+          <div className="h-[320px] md:h-[500px] flex flex-col">
+            <h4 className="text-sm md:text-base mb-3 md:mb-4 px-4 py-3 rounded-lg bg-gradient-to-r from-blur-50 to-orange-50 border-l-4 border-blue-400 text-blue-700">
+                 {searchTerm ? (
+                  <>
+                    Found <strong className="text-blue-800">{sortedPharmacies.length}</strong> pharmacies with "
+                           <strong className="text-blue-800">{searchTerm}</strong>" <span className="text-blue-600">(nearest first)</span>
+                  </>
+                 ) : (
+                 <>
+                  Showing <strong className="text-blue-800">{sortedPharmacies.length}</strong> nearby pharmacies 
+                <span className="text-blue-600"> (sorted by distance)</span>
+             </>
+             )}
+            </h4>
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-3 md:p-4 flex flex-col h-full overflow-hidden border border-gray-100">
+              <div className="px-2 pb-3 mb-1 border-b border-gray-100">
+               
+                <h2 className="text-lg md:text-xl font-semibold text-gray-800 flex items-center">
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mr-2" />
+                  Nearby Pharmacies
+                </h2>
+              </div>
+              
+              <div className="flex flex-col h-full">
+                <div 
+                  ref={pharmacyListRef}
+                  className="h-full overflow-y-auto pr-2 scrollbar-thin 
+                            scrollbar-thumb-blue-200 scrollbar-track-blue-50 
+                            hover:scrollbar-thumb-blue-300 transition-all 
+                            duration-300 scrollbar-thumb-rounded-full"
+                >
+                  {loading ? (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600"></div>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-8 flex flex-col items-center justify-center h-full">
+                      <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
+                      <p className="text-red-600 font-medium mb-4">{error}</p>
+                      <button 
+                        onClick={fetchPharmacies}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  ) : sortedPharmacies.length === 0 ? (
+                    <div className="text-center py-6 flex flex-col items-center justify-center h-full">
+                      <MapPin className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-500">No pharmacies found near you</p>
+                      <button 
+                        onClick={refreshLocation}
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        Refresh Location
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {sortedPharmacies.map(pharmacy => (
+                        <PharmacyCardLocator
+                          key={pharmacy.store_id}
+                          pharmacy={pharmacy}
+                          selected={selectedPharmacy?.store_id === pharmacy.store_id}
+                          onClick={() => handlePharmacyClick(pharmacy)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : error ? (
-          <div className="text-center py-8 flex flex-col items-center justify-center h-full">
-            <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
-            <p className="text-red-600 font-medium mb-4">{error}</p>
-            <button 
-              onClick={fetchPharmacies}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : sortedPharmacies.length === 0 ? (
-            <div className="text-center py-6 flex flex-col items-center justify-center h-full"> {/* Reduced padding */}            <MapPin className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-500">No pharmacies found near you</p>
-            <button 
-              onClick={refreshLocation}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              Refresh Location
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {sortedPharmacies.map(pharmacy => (
-              <PharmacyCardLocator
-                key={pharmacy.store_id}
-                pharmacy={pharmacy}
-                selected={selectedPharmacy?.store_id === pharmacy.store_id}
-                onClick={() => handlePharmacyClick(pharmacy)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
         </div>
 
-      </div>
-       {/* Selected Pharmacy Details with improved layout */}
+        {/* Selected Pharmacy Details */}
         {selectedPharmacy && (
           <div className="mt-4 md:mt-6 bg-white rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6">
             <div className="flex items-center justify-between mb-3 md:mb-4">
@@ -514,19 +614,24 @@ const PharmacyLocator = () => {
                     <Phone className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
                     Call Now
                   </button>
-                  
+                  <Link 
+                    to={`/pharmacy/${selectedPharmacy.store_id}`}>
                   <button
-                    onClick={() => getDirections(selectedPharmacy)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center text-sm md:text-base"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center text-sm md:text-base"
                   >
-                    <Navigation className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
-                    Directions
+                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                    Go Shopping
                   </button>
+                  </Link>
+
+  
+
                 </div>
               </div>
             </div>
           </div>
         )}
+      </div>
     </div>
     
   );

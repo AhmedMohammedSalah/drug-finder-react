@@ -135,17 +135,19 @@ const apiEndpoints = {
   auth: {
     login: (credentials) => api.post("users/login/", credentials),
     refreshToken: (refreshToken) =>
-        api.post("login/refresh/", { refresh: refreshToken }),
+      api.post("login/refresh/", { refresh: refreshToken }),
     verifyEmail: (token) => api.get(`users/verify-email/${token}/`),
-    googleAuth: (tokenData) => api.post("users/google-auth/", tokenData),
+    // [AMS]-> GOOGLE AUTH
+    googleAuth: (tokenData) => api.post("users/auth/google/", tokenData),
+
     // googleLogin: () => api.get("users/auth/google/"), // For server-side flow
   },
-//   profile: {
-//     getPatientProfile: () => api.get("patients/me/"),
-//     updatePatientProfile: (data) => api.put("patients/me/", data),
-//     getDoctorProfile: () => api.get("doctors/doctors/me"),
-//     updateDoctorProfile: (data) => api.put("doctors/doctors/me/", data),
-//   },
+  //   profile: {
+  //     getPatientProfile: () => api.get("patients/me/"),
+  //     updatePatientProfile: (data) => api.put("patients/me/", data),
+  //     getDoctorProfile: () => api.get("doctors/doctors/me"),
+  //     updateDoctorProfile: (data) => api.put("doctors/doctors/me/", data),
+  //   },
   users: {
     register: (userData) => apiFileUpload.post("users/users/", userData),
     getCurrentUser: () => api.get("users/me/"),
@@ -154,12 +156,15 @@ const apiEndpoints = {
 
     // [SENU]: fetch pharmacist profile to determine has_store
     getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
-
   },
   pharmacies: {
-    findNearbyPharmacist: () => api.get("/medical_stores"),
+    findPharmaciesWithMedicine: (medicineName) =>
+      api.get(
+        `/medical_stores/with-medicine.json?medicine_name=${medicineName}`
+      ),
+    getAllPharmacies: (config = {}) => api.get("medical_stores/", config),
   },
-  
+
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     // You can add getDevices or other inventory endpoints here as needed
@@ -168,14 +173,18 @@ const apiEndpoints = {
   cart: {
     getCart: () => {
       const result = api.get("cart/cart/");
-      result.then(res => console.log("Cart API response:", res.data)).catch(err => console.error("Cart API error:", err));
+      result
+        .then((res) => console.log("Cart API response:", res.data))
+        .catch((err) => console.error("Cart API error:", err));
       return result;
     },
     getCartById: (id) => api.get(`cart/cart/${id}/`),
     createCart: (data) => api.post("cart/cart/", data),
     updateCart: (id, data) => api.patch(`cart/cart/${id}/`, data),
-    updateItems: (id, items) => api.patch(`cart/cart/${id}/update-items/`, { items }),
-    removeItem: (id, product, quantity) => api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
+    updateItems: (id, items) =>
+      api.patch(`cart/cart/${id}/update-items/`, { items }),
+    removeItem: (id, product, quantity) =>
+      api.patch(`cart/cart/${id}/remove-item/`, { product, quantity }),
     deleteCart: (id) => api.delete(`cart/cart/${id}/delete/`),
   },
   // {amira}added client endpoints
@@ -187,56 +196,48 @@ aiChat: {
   ask: (question) => api.post("AI-chat/ask/", { question }),
 },
   // [OKS] Order endpoints
-  orders:{
- createOrder: (data) => api.post("orders/", data),
-  updateOrderStatus: (orderId, newStatus) => api.post(
-    `orders/${orderId}/update_status/`, 
-    { status: 'paid' }
-  ),
- getMyOrders: () => api.get("orders/"),
+  orders: {
+    createOrder: (data) => api.post("orders/", data),
+    updateOrderStatus: (orderId, newStatus) =>
+      api.post(`orders/${orderId}/update_status/`, { status: "paid" }),
+    getMyOrders: () => api.get("orders/"),
     getPaginatedOrders: (page = 1, pageSize = 10, filters = {}) => {
       const params = new URLSearchParams({
         page,
         page_size: pageSize,
-        ...filters
+        ...filters,
       });
       return api.get(`orders/?${params.toString()}`);
     },
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
-    
+
     //[OKS] Convenience methods
-    getOrdersByStatus: (status, page = 1, pageSize = 10) => 
+    getOrdersByStatus: (status, page = 1, pageSize = 10) =>
       apiEndpoints.orders.getPaginatedOrders(page, pageSize, { status }),
-    
+
     getRecentOrders: (days = 7, page = 1, pageSize = 10) => {
       const date = new Date();
       date.setDate(date.getDate() - days);
-      return apiEndpoints.orders.getPaginatedOrders(
-        page, 
-        pageSize, 
-        { created_at_after: date.toISOString() }
-      );
-    }
-  }
-    
-  
-  }
-  // [AMS]
-//   notifications: {
-//     list: () => api.get("notifications/"),
-//     detail: (id) => api.get(`notifications/${id}/`),
-//     markRead: (id) => api.patch(`notifications/${id}/`, { is_read: true }),
-//     delete: (id) => api.delete(`notifications/${id}/`),
-//     create: (notificationData) => api.post("notifications/", notificationData),
-//   },
+      return apiEndpoints.orders.getPaginatedOrders(page, pageSize, {
+        created_at_after: date.toISOString(),
+      });
+    },
+  },
+
+  notifications: {
+    list: () => api.get("notification/"),
+    detail: (id) => api.get(`notification/${id}/`),
+    markRead: (id) => api.patch(`notification/${id}/`, { is_read: true }),
+    markAllRead: () => api.post("notification/mark_all_read/"),
+    delete: (id) => api.delete(`notification/${id}/`),
+  },
   // [AMS]Add other endpoints as needed
-
-
+};
+// [AMS]
+// Add to apiEndpoints object
 
 export default apiEndpoints;
-
-
 
 // [SENU]: solve the authorization problem
 //======="حسبي الله ونعم الوكيل"=====================
