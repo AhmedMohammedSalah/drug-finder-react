@@ -53,6 +53,9 @@ import ChatBox from "./pages/AI_chatBox.js";
 import { MessageCircle, X, Bot } from "lucide-react";
 import UnauthorizedPage from "./pages/unauthorized.js";
 import NotFoundPage from "./pages/Notfound.js";
+import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
+import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
+
 function App() {
   const [showChat, setShowChat] = useState(false);
 
@@ -116,6 +119,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+
+        <Route path="test" element={<MedicalLoadingComponent />}/>
+
         {/*===========================================================*/}
 
 
@@ -135,20 +141,23 @@ function App() {
         <Route path="/chat" element={<AI_ChatPage />} />
         <Route path="/Unauthorized" element={<UnauthorizedPage />} />
 
-        {/* CLIENT*/}
-        <Route path="/client" element={<ClientLayout />}>
-          <Route index element={<PharmacyMapPage />} />
-          <Route path="cart" element={<CartPage />}></Route>
-          <Route path="checkout" element={<Checkout />}></Route>
-          <Route path="pharmacies" element={<PharmacyList />} />
-          <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
-          <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
-          {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
-          <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
-          <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
-          <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
-        </Route>
-
+          
+          {/* CLIENT*/}
+          <Route path="/client" element={<ClientLayout />}>
+            <Route index  element={<PharmacyMapPage />} />
+            <Route path="cart" element={<CartPage />}></Route>
+            <Route path="checkout" element={<Checkout />}></Route> 
+            <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="pharmacies/:storeId" element={<ClientStoreProfile />} />
+            
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
+            <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
+            {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}
+            <Route path="MedicineSearchPage" element={<MedicineSearchPage />} /> {/* [OKS] MedicineSearchPage Page */}
+            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+            <Route path="order" element={<OrderHistory />} /> {/* [OKS] Order History Page */}
+          </Route>
+          
         {/*===========================================================*/}
 
 
@@ -199,7 +208,7 @@ function App() {
         {/* </Route> */}
 
         <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-          <Route path="create-store" element={<PharmacistStoreProfilePage />} />
+          <Route path="store" element={<PharmacistStoreProfilePage />} />
           <Route path="drugs" element={<Drugs />} />
           <Route path="drugs/add" element={<AddDrug />} />
           <Route path="orders" element={<Orders />} />
