@@ -104,14 +104,16 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
+        <Route path="test" element={<MedicalLoadingComponent />} />
+        <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/* Guest Routes (No auth required) */}
         <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
           <Route path="pharmacy/:id" element={<PharmacyPage />} />
-          <Route path="pharmacy-map" element={<PharmacyMapPage />} />
-          <Route path="medicine-search" element={<MedicineSearchPage />} />
+          <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+          <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
         </Route>
 
         {/* Client Routes */}
@@ -120,13 +122,18 @@ function App() {
             <Route index element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
+            <Route path="pharmacies" element={<PharmacyList />} />
             <Route
               path="pharmacies/:storeId"
               element={<ClientStoreProfile />}
             />
+            <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} />
-            <Route path="orders" element={<OrderHistory />} />
+            <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
+            <Route path="order" element={<OrderHistory />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="pharmacy/:id" element={<PharmacyPage />} />
+            <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
           <Route path="order-success" element={<OrderSuccess />} />
         </Route>
