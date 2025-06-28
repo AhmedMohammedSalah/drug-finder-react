@@ -87,6 +87,26 @@ const notificationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    .addCase(addNotification, (state, action) => {
+      const exists = state.items.some(item => item.id === action.payload.id);
+      if (!exists) {
+        state.items.unshift(action.payload);
+        if (!action.payload.is_read) {
+          state.unreadCount += 1;
+        }
+      }
+    })
+    
+    // Handle real-time mark as read
+    .addCase(markOneAsRead, (state, action) => {
+      const notification = state.items.find(
+        item => item.id === action.payload
+      );
+      if (notification && !notification.is_read) {
+        notification.is_read = true;
+        state.unreadCount = Math.max(0, state.unreadCount - 1);
+      }
+    })
       // Fetch Notifications
       .addCase(fetchNotifications.pending, (state) => {
         state.status = "loading";
