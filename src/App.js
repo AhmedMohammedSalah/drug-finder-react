@@ -53,14 +53,11 @@ import ChatBox from "./pages/AI_chatBox.js";
 import { MessageCircle, X, Bot } from "lucide-react";
 import UnauthorizedPage from "./pages/unauthorized.js";
 import NotFoundPage from "./pages/Notfound.js";
-<<<<<<< HEAD
 import ClientProfilePage from "./pages/ClientProfilePage.js";
 import EditClientProfilePage from "./pages/EditClientProfilePage.js";
-=======
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
 import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
 
->>>>>>> 43ff3d0b5b1aa327472169899b5ffe837da1682d
 function App() {
   const [showChat, setShowChat] = useState(false);
 
