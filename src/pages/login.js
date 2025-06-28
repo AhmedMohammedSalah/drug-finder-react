@@ -27,7 +27,12 @@ export default function LoginPage() {
     if (role === "admin") {
       navigate("/admin");
     } else if (role === "pharmacist") {
-      navigate("/pharmacy");
+      const hasStore = result?.user?.pharmacist?.has_store;
+      if (hasStore === false) {
+        navigate("/pharmacy/store");
+      } else {
+        navigate("/pharmacy");
+      }
     } else if (role === "client") {
       navigate("/client");
     } else {
@@ -37,7 +42,6 @@ export default function LoginPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-
     const { valid, errors: validationErrors } = validateLoginForm(email, password);
     setErrors(validationErrors);
 
@@ -47,28 +51,7 @@ export default function LoginPage() {
         setBackendError("");
 
         const result = await dispatch(loginUser({ email, password })).unwrap();
-
-        const role = result?.user?.role?.toLowerCase();
-
-        if (role === "admin") {
-          navigate("/admin");
-        } else if (role === "pharmacist") {
-          const hasStore = result?.user?.pharmacist?.has_store;
-
-          // ✅ Debug output (optional)
-          console.log("hasStore =", hasStore);
-
-          if (hasStore === false) {
-            navigate("/pharmacy/store"); // redirect to store creation page
-          } else {
-            navigate("/pharmacy"); // go to pharmacist dashboard
-          }
-        } else if (role === "client") {
-          navigate("/client");
-        } else {
-          navigate("/");
-        }
-
+        handleLoginSuccess(result);
       } catch (error) {
         if (error?.error === "email_not_verified") {
           setBackendError("Please verify your email before logging in");
@@ -104,48 +87,43 @@ export default function LoginPage() {
   };
 
   return (
-    <GoogleOAuthProvider
-      clientId={
-        "830041637628-d3troc4aqg9q48q7rmncg1d62sc3q26b.apps.googleusercontent.com"
-      }
-      redirectUri="http://localhost:3000"
-    >
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white min-h-screen flex items-center justify-center shadow-md grid grid-cols-2 w-[1000px] border border-gray-300 rounded-lg">
-        
-          <FormWrapper className="p-10 flex flex-col gap-10" onSubmit={submit}>
+    <GoogleOAuthProvider clientId="830041637628-d3troc4aqg9q48q7rmncg1d62sc3q26b.apps.googleusercontent.com">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="bg-white shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+          {/* Left Column – Form */}
+          <FormWrapper className="p-10 flex flex-col gap-6 justify-center" onSubmit={submit}>
+            {/* Backend Error */}
             {backendError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              <div className="bg-red-100 border border-red-400 text-red-700 text-sm px-4 py-3 rounded">
                 {backendError}
               </div>
             )}
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-blue-600 mb-2">Welcome back</h1>
-              <h1 className="text-2xl mb-5 text-blue-500">
-                Find your Medicine with no time
-              </h1>
+
+            {/* Heading */}
+            <div className="text-center mb-2">
+              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Welcome Back 👋</h1>
+              <p className="text-gray-500 text-base">Find your medicine in no time</p>
             </div>
 
-            {/* EMAIL */}
+            {/* Email */}
             <InputField
-            className="mt-5"
               label="Email"
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
+              className="mt-2"
             />
 
-            {/* PASSWORD LABEL + FORGET LINK */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-medium">Password</label>
-                <a href="#" className="text-md hover:underline">
-                  Forgot password?
-                </a>
+            {/* Password */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mt-2">
+                <label className="text-sm font-medium">Password</label>
+                <a href="#" className="text-sm text-blue-500 hover:underline">Forgot password?</a>
               </div>
-              {/* PASSWORD */}
+              
               <InputField
                 type="password"
                 placeholder="Enter your password"
@@ -156,49 +134,55 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* SUBMIT [BIG BUTTON] */}
-            <BigBtn text="Login" bg-blue-500 onClick={submit} />
+            {/* Login Button */}
+            <BigBtn text="Login" bg-blue-500 onClick={submit} className="mt-4" />
 
-            {/* SEPARATOR */}
-            <div className="flex items-center">
-              <div className="flex-grow border-t mt-5 border-gray-300"></div>
-              <span className="mx-4 text-gray-500">Or Continue with</span>
-              <div className="flex-grow border-t border-gray-300"></div>
+            {/* OR separator */}
+            <div className="flex items-center gap-3 my-4 text-gray-400 text-sm">
+              <div className="flex-grow border-t" />
+              <span>OR</span>
+              <div className="flex-grow border-t" />
             </div>
 
-            {/* AUTH BUTTONS */}
-            <div className="flex justify-between">
-              <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
-                <i className="fa-brands fa-facebook-f fa-2x"></i>
+            {/* Social Login */}
+            <div className="flex justify-center gap-4">
+              <button className="border px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i className="fa-brands fa-facebook-f text-blue-600 text-xl"></i>
               </button>
-              <div className="border rounded-md hover:bg-gray-100 overflow-hidden">
+              <div className="border px-2 py-1 rounded hover:bg-gray-100 transition">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() =>
                     setBackendError("Google login failed. Please try again.")
                   }
-                  useOneTap={true} // Enable Google One Tap
-                  auto_select={true} // Automatically sign in returning users
+                  useOneTap
+                  auto_select
                   size="medium"
                   width="200"
                 />
               </div>
-              <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
-                <i className="fa-brands fa-twitter fa-2x"></i>
+              <button className="border px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i className="fa-brands fa-twitter text-sky-400 text-xl"></i>
               </button>
             </div>
 
-            {/* SIGN UP DIRECTION */}
-            <p className="text-center text-lg mt-2">
-              Don’t have another account?{" "}
-              <a href="#" className="underline font-medium">
+            {/* Sign up link */}
+            <p className="text-center text-sm text-gray-600 mt-6">
+              Don’t have an account?{" "}
+              <a href="#" className="text-blue-500 font-medium hover:underline">
                 Sign up
               </a>
             </p>
           </FormWrapper>
 
-          {/* RGHT-Col - IMG */}
-         
+          {/* Right Column – Image */}
+          <div className="hidden md:block">
+            <img
+              src="/images/login/9052.jpg_wh300.jpg"
+              alt="Pharmacy illustration"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </div>
     </GoogleOAuthProvider>

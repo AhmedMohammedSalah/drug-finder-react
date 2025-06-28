@@ -42,7 +42,7 @@ import CartPage from "./pages/cart.js";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "./features/authSlice.js";
-import ProfilePage from "./pages/profilePage.js";
+import ProfilePage from "./pages/ClientProfilePage.js";
 import apiEndpoints from "./services/api.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
@@ -53,6 +53,8 @@ import ChatBox from "./pages/AI_chatBox.js";
 import { MessageCircle, X, Bot } from "lucide-react";
 import UnauthorizedPage from "./pages/unauthorized.js";
 import NotFoundPage from "./pages/Notfound.js";
+import ClientProfilePage from "./pages/ClientProfilePage.js";
+import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 function App() {
   const [showChat, setShowChat] = useState(false);
 
@@ -176,7 +178,8 @@ function App() {
 
         {/*===========================================================*/}
 
-        <Route path="MyProfile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ClientProfilePage/>} />
+  <Route path="/profile/edit" element={<EditClientProfilePage/>} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
