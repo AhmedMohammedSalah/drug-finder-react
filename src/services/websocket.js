@@ -1,5 +1,5 @@
 import { store } from "../app/store";
-import { addNotification, markOneAsRead } from "../features/notificationSlice";
+import { addNotification } from "../features/notificationSlice";
 
 let socket = null;
 let reconnectAttempts = 0;
