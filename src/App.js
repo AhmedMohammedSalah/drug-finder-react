@@ -46,6 +46,8 @@ import apiEndpoints from "./services/api.js";
 // import IconButton from './components/shared/iconButton';
 import { Toaster } from "react-hot-toast";
 import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
+import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
+import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
 
 function App() {
   const dispatch = useDispatch();
@@ -92,6 +94,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+
+        <Route path="test" element={<MedicalLoadingComponent />}/>
+
         {/*===========================================================*/}
           
           
@@ -115,6 +120,8 @@ function App() {
             <Route path="cart" element={<CartPage />}></Route>
             <Route path="checkout" element={<Checkout />}></Route> 
             <Route path="pharmacies" element={<PharmacyList />} />
+            <Route path="pharmacies/:storeId" element={<ClientStoreProfile />} />
+            
             <Route path="PharmacyPage" element={<PharmacyPage />} />{" "}
             <Route path="notifications" element={<NotificationPage />} /> {/* [AMS] 🔔 notification page  */}
             {/* <Route path="PharmacyPage" element={<PharmacyPage />} /> */}

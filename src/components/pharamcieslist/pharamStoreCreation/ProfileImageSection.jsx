@@ -19,6 +19,9 @@ const ProfileImageSection = ({ logoImage, setLogoImage }) => {
       ? `http://localhost:8000${logoImage}` // fallback in case passed relative path
       : null;
 
+  console.log('ProfileImageSection logoImage:', logoImage);
+  console.log('ProfileImageSection image source:', imageSrc);
+
   return (
     <div className="relative h-40">
       <div className="relative mx-auto lg:mx-0 w-40 h-40 rounded-full bg-gray-200 overflow-hidden border-4 border-gray-400 flex-shrink-0">

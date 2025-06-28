@@ -1,73 +1,135 @@
-import React, { useState, useEffect } from "react";
-import Sidebar from "../components/client/sidebarFilter";
-import ProductList from "../components/client/ProductList";
-import Pagination from "../components/shared/Pagination";
-import Toast from "../components/shared/toast";
+// src/PharmacyPage.jsx
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { debounce } from 'lodash';
+import axios from 'axios';
+import ProductList from '../components/client/ProductList';
+import Toast from '../components/shared/toast';
 import apiEndpoints from '../services/api';
 
-{/* [OKS *0-0*]  PharmacyPage*/}
-const PharmacyPage = () => {
+const PharmacyPage = ({ storeId }) => {
   const [products, setProducts] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [abovePrice, setAbovePrice] = useState(0);
-  const [belowPrice, setBelowPrice] = useState(1000);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [viewMode, setViewMode] = useState("grid");
-  const [page, setPage] = useState(1);
-  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState('brand_name');
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [selectedLetter, setSelectedLetter] = useState(null);
+  const itemsPerPage = 12;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
+  const cancelTokenSource = useRef(null);
+
+  const fetchMedicines = useCallback(
+    debounce(async (page, query, sortBy, sortOrder, startsWith = null) => {
+      if (cancelTokenSource.current) {
+        cancelTokenSource.current.cancel('New request triggered');
+      }
+      cancelTokenSource.current = axios.CancelToken.source();
+
       try {
-        // Example: backend supports ?page= and ?min_price=&max_price=
-        const response = await apiEndpoints.inventory.getMedicines({
-          params: {
-            page,
-            min_price: abovePrice,
-            max_price: belowPrice,
-            // categories: selectedCategories.join(','), // if supported
-          },
-        });
-        setProducts(response.data.results || response.data); // DRF pagination: results key
-        setTotalPages(response.data.total_pages || 1); // adjust if your backend returns total_pages
+        setLoading(true);
+        setErrorMessage('');
+
+        const params = {
+          page,
+          page_size: itemsPerPage,
+          ordering: `${sortOrder === 'desc' ? '-' : ''}${sortBy}`,
+        };
+
+        if (query) params.search = query;
+        if (startsWith) params.brand_startswith = startsWith;
+
+        const res = await apiEndpoints.pharmacies.getMedicinesForStore(storeId, params);
+
+        setProducts(res.results || []);
+        setTotalItems(res.count || 0);
+        setTotalPages(Math.ceil((res.count || 0) / itemsPerPage));
       } catch (err) {
-        setErrorMessage(err.message || 'Failed to fetch products');
+        if (!axios.isCancel(err)) {
+          setErrorMessage(err.message || 'Failed to fetch products');
+        }
       } finally {
         setLoading(false);
+        setIsSearchLoading(false);
+      }
+    }, 150),
+    [storeId, itemsPerPage]
+  );
+
+  useEffect(() => {
+    fetchMedicines(currentPage, searchQuery, sortField, sortDirection, selectedLetter);
+    return () => {
+      if (cancelTokenSource.current) {
+        cancelTokenSource.current.cancel('Component unmounted');
       }
     };
-    fetchProducts();
-  }, [page, abovePrice, belowPrice]);
+  }, [currentPage, searchQuery, sortField, sortDirection, selectedLetter, fetchMedicines]);
 
-  const toggleViewMode = (mode) => setViewMode(mode);
-  const changePage = (newPage) => setPage(newPage);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setLoading(true);
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setIsSearchLoading(true);
+    setCurrentPage(1);
+    setSelectedLetter(null);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setIsSearchLoading(true);
+    setCurrentPage(1);
+    setSelectedLetter(null);
+  };
+
+  const handleLetterClick = (letter) => {
+    setSearchQuery('');
+    setSelectedLetter(letter);
+    setCurrentPage(1);
+    fetchMedicines(1, '', sortField, sortDirection, letter);
+  };
+
+  const toggleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="container mx-auto my-4 px-4">
-      <div className="flex flex-col lg:flex-row gap-4">
-        <Sidebar
-          products={products}
-          abovePrice={abovePrice}
-          belowPrice={belowPrice}
-          setAbovePrice={setAbovePrice}
-          setBelowPrice={setBelowPrice}
-        />
-        <ProductList
-          products={products || []}
-          viewMode={viewMode}
-          toggleViewMode={toggleViewMode}
-          loading={loading}
-        />
-      </div>
-      <Pagination
-        page={page}
+    <>
+      <ProductList
+        products={products}
+        viewMode={viewMode}
+        toggleViewMode={setViewMode}
+        loading={loading}
+        currentPage={currentPage}
         totalPages={totalPages}
-        changePage={changePage}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        onClearSearch={handleClearSearch}
+        isSearchLoading={isSearchLoading}
+        sortField={sortField}
+        sortDirection={sortDirection}
+        toggleSort={toggleSort}
+        selectedLetter={selectedLetter}
+        onLetterClick={handleLetterClick}
       />
       <Toast message={errorMessage} />
-    </div>
+    </>
   );
 };
 

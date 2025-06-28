@@ -69,7 +69,7 @@ const PharmacyCard = ({ pharmacy }) => {
 
       {/* View Button */}
       <Link
-        to={`/pharmacies/${pharmacy.id}`}
+        to={`${pharmacy.id}`}
         className="mt-6 w-full text-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
       >
         View Store

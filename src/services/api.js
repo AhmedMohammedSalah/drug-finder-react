@@ -164,6 +164,7 @@ const apiEndpoints = {
     findNearbyPharmacist: () => api.get("/medical_stores"),
     createStore: (data) => apiFileUpload.post("/medical_stores/", data),
     updateStore: (id, data) => apiFileUpload.patch(`/medical_stores/${id}/`, data),
+    getStoreById: (id) => api.get(`/medical_stores/${id}/`),
 
 
     findPharmaciesWithMedicine: (medicineName) =>
@@ -171,6 +172,18 @@ const apiEndpoints = {
         `/medical_stores/with-medicine.json?medicine_name=${medicineName}`
       ),
     getAllPharmacies: (config = {}) => api.get("medical_stores/", config),
+
+    // [SENU] Get medicines for a specific store
+    getMedicinesForStore: async (storeId, params = {}) => {
+      const response = await api.get("inventory/medicines/", {
+        params: {
+          store_id: storeId,
+          ...params,
+        },
+      });
+      return response.data; // Returns { count, next, previous, results }
+    },
+
   },
 
   inventory: {
@@ -246,12 +259,3 @@ const apiEndpoints = {
 // Add to apiEndpoints object
 
   export { api, apiFileUpload, apiEndpoints as default };
-
-
-// [SENU]: solve the authorization problem
-//======="حسبي الله ونعم الوكيل"=====================
-// Example usage:
-// apiEndpoints.inventory.getMedicines().then(response => {
-// response.data contains the list of medicines
-// });
-//=====================================================
