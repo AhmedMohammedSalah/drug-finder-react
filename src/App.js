@@ -104,6 +104,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
+
+        
         <Route path="test" element={<MedicalLoadingComponent />} />
         <Route path="order-success" element={<OrderSuccess />}></Route>
 
