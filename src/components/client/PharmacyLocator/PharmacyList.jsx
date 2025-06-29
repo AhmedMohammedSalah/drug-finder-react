@@ -1,7 +1,6 @@
 import { MapPin, AlertCircle, ShoppingCart } from 'lucide-react';
 import PharmacyCardLocator from '../../shared/PharmacyCardLocator';
 
-// Update the PharmacyList component
 const PharmacyList = ({ 
   pharmacies, 
   loading, 

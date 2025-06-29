@@ -1,4 +1,3 @@
-import { Pill } from 'lucide-react';
 import DrugFinderSearchBar from '../../client/DrugFinderSearchBar';
 
 const SearchHeader = ({ 
