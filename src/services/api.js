@@ -163,21 +163,34 @@ const apiEndpoints = {
   pharmacies: {
     findNearbyPharmacist: () => api.get("/medical_stores"),
     createStore: (data) => apiFileUpload.post("/medical_stores/", data),
-    updateStore: (id, data) => apiFileUpload.patch(`/medical_stores/${id}/`, data),
-
+    updateStore: (id, data) =>
+      apiFileUpload.patch(`/medical_stores/${id}/`, data),
+    getStoreById: (id) => api.get(`/medical_stores/${id}/`),
 
     findPharmaciesWithMedicine: (medicineName) =>
       api.get(
         `/medical_stores/with-medicine.json?medicine_name=${medicineName}`
       ),
     getAllPharmacies: (config = {}) => api.get("medical_stores/", config),
+
+    // [SENU] Get medicines for a specific store
+    getMedicinesForStore: async (storeId, params = {}) => {
+      const response = await api.get("inventory/medicines/", {
+        params: {
+          store_id: storeId,
+          ...params,
+        },
+      });
+      return response.data; // Returns { count, next, previous, results }
+    },
   },
 
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
-    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
-    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`), 
+    updateMedicine: (id, data) =>
+      apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`),
   },
   // {amira} added cart endpoints
   cart: {
@@ -202,6 +215,9 @@ const apiEndpoints = {
     getClientProfile: () => api.get("users/client/profile/"),
     updateClientProfile: (data) =>
       apiFileUpload.patch("users/client/profile/", data),
+  },
+  aiChat: {
+    ask: (question) => api.post("AI-chat/ask/", { question }),
   },
   // [OKS] Order endpoints
   orders: {
@@ -246,12 +262,3 @@ const apiEndpoints = {
 // Add to apiEndpoints object
 
   export { api, apiFileUpload, apiEndpoints as default };
-
-
-// [SENU]: solve the authorization problem
-//======="حسبي الله ونعم الوكيل"=====================
-// Example usage:
-// apiEndpoints.inventory.getMedicines().then(response => {
-// response.data contains the list of medicines
-// });
-//=====================================================

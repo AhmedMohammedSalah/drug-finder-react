@@ -4,12 +4,14 @@ import NotificationItem from "./NotificationItem";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addNotification,
   fetchNotifications,
   markAllNotificationsRead,
 } from "../../features/notificationSlice";
 import { initWebSocket, closeWebSocket } from "../../services/websocket";
-
+import { initSocket , getSocket} from "../../services/socket";
 const NotificationDropdown = () => {
+  const { user, accessToken } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
@@ -23,20 +25,26 @@ const NotificationDropdown = () => {
       dispatch(fetchNotifications());
     }
   }, [open, dispatch]);
-
+  const playNotificationSound = () => {
+    const audio = new Audio("/sounds/notification.mp3");
+    audio.play().catch((e) => console.log("Audio play failed:", e));
+  };
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const accessToken = localStorage.getItem("access_token");
-
     if (user && accessToken) {
-      initWebSocket(user.id, accessToken);
+      const socket = initSocket(user.id, accessToken);
+
+      const handleNewNotification = (notification) => {
+        dispatch(addNotification(notification));
+        playNotificationSound();
+      };
+
+      socket.on("new_notification", handleNewNotification);
+
+      return () => {
+        socket.off("new_notification", handleNewNotification);
+      };
     }
-
-    return () => {
-      closeWebSocket();
-    };
-  }, []);
-
+  }, [user, accessToken, dispatch]);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

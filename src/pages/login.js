@@ -3,7 +3,7 @@ import FormWrapper from "./../components/shared/FormWrapper.js";
 import InputField from "./../components/shared/InputField.js";
 import BigBtn from "./../components/shared/BigBtn.js";
 import { validateLoginForm } from "./../utils/validations.js";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   loginUser,
   clearError,
@@ -140,9 +140,9 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="font-medium">Password</label>
-                <a href="#" className="text-md hover:underline">
+                {/* <a href="#" className="text-md hover:underline">
                   Forgot password?
-                </a>
+                </a> */}
               </div>
               {/* PASSWORD */}
               <InputField
@@ -167,9 +167,9 @@ export default function LoginPage() {
 
             {/* AUTH BUTTONS */}
             <div className="flex justify-between">
-              <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
+              {/* <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
                 <i className="fa-brands fa-facebook-f fa-2x"></i>
-              </button>
+              </button> */}
               <div className="border rounded-md hover:bg-gray-100 overflow-hidden">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
@@ -182,17 +182,17 @@ export default function LoginPage() {
                   width="200"
                 />
               </div>
-              <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
+              {/* <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
                 <i className="fa-brands fa-twitter fa-2x"></i>
-              </button>
+              </button> */}
             </div>
 
             {/* SIGN UP DIRECTION */}
             <p className="text-center text-lg mt-2">
               Don’t have another account?{" "}
-              <a href="#" className="underline font-medium">
+              <Link to="/register" className="underline font-medium">
                 Sign up
-              </a>
+              </Link>
             </p>
           </FormWrapper>
 

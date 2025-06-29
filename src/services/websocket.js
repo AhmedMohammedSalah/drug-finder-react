@@ -1,12 +1,13 @@
 import { store } from "../app/store";
-import { addNotification } from "../features/notificationSlice";
-
+import { addNotification, markOneAsRead } from "../features/notificationSlice";
+import toast from "react-hot-toast"
 let socket = null;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
 export const initWebSocket = (userId, accessToken) => {
-  if (socket) socket.close();
+  if (socket) return socket;
+
 
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = window.location.host;
@@ -39,6 +40,12 @@ export const initWebSocket = (userId, accessToken) => {
 
       // Play notification sound
       playNotificationSound();
+
+      // ADDED: Show toast notification
+      toast(notification.message, {
+        icon: "🔔",
+        duration: 5000,
+      });
     } catch (error) {
       console.error("Error parsing WebSocket message:", error);
     }
