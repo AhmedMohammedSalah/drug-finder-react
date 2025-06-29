@@ -35,14 +35,12 @@ const handleAddToCart = async (e) => {
 
   return (
     <div 
-      className={`p-4 rounded-lg border transition-all duration-200 cursor-pointer mb-3 last:mb-0 ${
-        selected 
-          ? 'border-blue-500 bg-blue-50 shadow-md' 
-          : 'border-gray-200 hover:border-blue-300 bg-white'
-      }`}
+     className={`p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer mb-4 last:mb-0 w-full ${
+    selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'
+  }`}
       onClick={onClick}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start ">
         <div className="flex items-start">
           <div className="w-12 h-12 rounded-md mr-3 flex items-center justify-center bg-gray-100 overflow-hidden">
             {pharmacy.store_logo_url ? (
@@ -81,11 +79,11 @@ const handleAddToCart = async (e) => {
         </Link>
       </div>
 
-      {medicine ? (
+       {medicine ? (
         <>
-          <div className="my-3 border-t border-gray-200"></div>
-          <div className="flex">
-            <div className="w-16 h-16 rounded-md mr-3 flex items-center justify-center bg-gray-100 overflow-hidden">
+          <div className="my-4 border-t border-gray-100"></div>
+          <div className="flex gap-4">
+            <div className="w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
               {medicine.image ? (
                 <img 
                   src={medicine.image} 
@@ -97,43 +95,58 @@ const handleAddToCart = async (e) => {
                   }}
                 />
               ) : null}
-              <div className="hidden w-full h-full items-center justify-center bg-gray-200 text-gray-600 font-medium text-sm">
+              <div className="hidden w-full h-full items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 font-semibold text-lg">
                 {medicine.brand_name?.charAt(0).toUpperCase()}
+                
               </div>
+              
             </div>
-            <div className="flex-1">
-              <h4 className="font-semibold text-base text-gray-800">{medicine.brand_name}</h4>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{medicine.description}</p>
-              <div className="flex items-center justify-between mt-4">
+
+            {/* Content Container */}
+            <div className="flex-1 min-w-0">
+              {/* Title with proper truncation */}
+              <h4 className="font-semibold text-lg text-gray-900 mb-2 break-words hyphens-auto">
+                <span className="line-clamp-2">{medicine.brand_name}</span>
+              </h4>
+              
+              <p className="text-gray-600 text-sm leading-relaxed mb-4 break-words hyphens-auto">
+                <span className="line-clamp-2">{medicine.description}</span>
+              </p>
+                <span className="bg-green-600 text-white text-sm font-semibold px-3 py-1.5 rounded-full border border-green-700">
+                   ${parseFloat(medicine.price).toFixed(2)}
+                  </span>
+              
+              
+              <div className="flex items-center justify-between gap-3 mt-3  ">
                 <button 
-                  className="text-blue-600 text-sm font-medium hover:text-blue-800 pl-2"
+                  className="text-blue-600 text-sm font-medium hover:text-blue-700 transition-colors duration-200 flex-shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  View All Details
+                  View Details
                 </button>
-                <div className="flex items-center space-x-4">
-                   <div className="flex justify-between items-center mt-3">
-                        < span className="ml-auto inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">
-                         ${parseFloat(medicine.price).toFixed(2)}
-                        </span>
-
-                  </div>
-                  <button 
-                    className="flex items-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-3 py-2 rounded-lg"
+                
+                <button 
+                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleAddToCart}
                     disabled={adding}
                   >
-                    {adding ? 'Adding...' : <><ShoppingCart className="h-5 w-5 mr-1" /> Add</>}
+                    {adding ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Adding...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
-                </div>
+                  
               </div>
             </div>
           </div>
         </>
-      ) : (
-        <div className="mt-3 text-sm text-gray-500">
-        </div>
-      )}
+      ) : null}
     </div>
   );
 };

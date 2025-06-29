@@ -11,6 +11,16 @@ const PharmacyList = ({
   searchTerm,
   onRefreshLocation 
 }) => {
+    //[OKS] find searched Medicine 
+   const findSearchedMedicine = (pharmacy) => {
+    if(!searchTerm) return null;
+    return pharmacy.medicines?.find(medicine => 
+      medicine.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) 
+    );
+  };
+  
+
+
   return (
 <div className="h-[320px] md:h-[500px] flex flex-col p-4">
       <h4 className="text-sm md:text-base mb-3 md:mb-4 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-50 to-orange-50 border-l-4 border-blue-400 text-blue-700">
@@ -69,7 +79,8 @@ const PharmacyList = ({
             ) : (
               <div className="space-y-3">
               {pharmacies.map(pharmacy => {
-         const firstMedicine = pharmacy.medicines?.[0];
+               const firstMedicine = findSearchedMedicine(pharmacy);
+
   
             return (
                     <PharmacyCardLocator
