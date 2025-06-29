@@ -108,7 +108,7 @@ export default function LoginPage() {
 
             {/* Heading */}
             <div className="text-center mb-2">
-              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Welcome Back 👋</h1>
+              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Welcome Back </h1>
               <p className="text-gray-500 text-base">Find your medicine in no time</p>
             </div>
 

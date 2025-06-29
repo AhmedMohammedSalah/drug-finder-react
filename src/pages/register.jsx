@@ -152,7 +152,7 @@ export default function RegisterPage() {
             )}
 
             <div className="text-center">
-              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Create an Account 🚀</h1>
+              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Create an Account </h1>
               <p className="text-gray-500 text-base">Register to access all features</p>
             </div>
 
