@@ -8,7 +8,7 @@ const PharmacyDetails = ({ pharmacy, onClose }) => {
     <div className="mt-4 md:mt-6 bg-white rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6">
       <div className="flex items-center justify-between mb-3 md:mb-4">
         <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center">
-<img src="/images/pharmacy.svg" alt="Pharmacy" className="h-8 w-8 md:h-6 md:w-6 mr-2" />
+         <img src="images/pharmacy.svg" alt="Pharmacy" className="h-8 w-8 md:h-6 md:w-6 text-amber-500 mr-2" />
          Pharmacy Details
         </h3>
         <button onClick={onClose} className="text-xl text-gray-400 hover:text-gray-600">

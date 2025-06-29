@@ -25,9 +25,8 @@ const PharmacyLocatorContainer = () => {
     medicineLoading: false
   });
 
-  const [showMedicinePopup, setShowMedicinePopup] = useState(false);
-  const DEFAULT_LOCATION = { lat: 30.0444, lng: 31.2357 };
-
+const [showMedicinePopup, setShowMedicinePopup] = useState(false);
+const DEFAULT_LOCATION = { lat: 28.1099, lng: 30.7503 }; // [OKS]  Minya, Egypt coordinates
   const setDefaultLocation = () => {
     setState(prev => ({
       ...prev,
@@ -96,7 +95,7 @@ const PharmacyLocatorContainer = () => {
           medicines: allMedicines
         }));
 
-        // Show medicine popup if we found medicines
+        //  Show medicine popup if we found medicines
         if (allMedicines.length > 0) {
           setShowMedicinePopup(true);
         }
@@ -108,7 +107,7 @@ const PharmacyLocatorContainer = () => {
         }));
       }
 
-      // Process pharmacies data
+      // [OKS] Process pharmacies data
       const pharmaciesData = response.data.results || response.data;
       const transformedPharmacies = pharmaciesData.map(pharmacy => ({
         store_id: pharmacy.id,
