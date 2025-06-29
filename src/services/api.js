@@ -163,9 +163,9 @@ const apiEndpoints = {
   pharmacies: {
     findNearbyPharmacist: () => api.get("/medical_stores"),
     createStore: (data) => apiFileUpload.post("/medical_stores/", data),
-    updateStore: (id, data) => apiFileUpload.patch(`/medical_stores/${id}/`, data),
+    updateStore: (id, data) =>
+      apiFileUpload.patch(`/medical_stores/${id}/`, data),
     getStoreById: (id) => api.get(`/medical_stores/${id}/`),
-
 
     findPharmaciesWithMedicine: (medicineName) =>
       api.get(
@@ -183,14 +183,14 @@ const apiEndpoints = {
       });
       return response.data; // Returns { count, next, previous, results }
     },
-
   },
 
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
-    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
-    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`), 
+    updateMedicine: (id, data) =>
+      apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`),
   },
   // {amira} added cart endpoints
   cart: {
@@ -212,12 +212,13 @@ const apiEndpoints = {
   },
   // {amira}added client endpoints
   client: {
-  getClientProfile: () => api.get("users/client/profile/"),
-  updateClientProfile: (data) => apiFileUpload.patch("users/client/profile/", data),
-},
-aiChat: {
-  ask: (question) => api.post("AI-chat/ask/", { question }),
-},
+    getClientProfile: () => api.get("users/client/profile/"),
+    updateClientProfile: (data) =>
+      apiFileUpload.patch("users/client/profile/", data),
+  },
+  aiChat: {
+    ask: (question) => api.post("AI-chat/ask/", { question }),
+  },
   // [OKS] Order endpoints
   orders: {
     createOrder: (data) => api.post("orders/", data),

@@ -4,12 +4,14 @@ import NotificationItem from "./NotificationItem";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addNotification,
   fetchNotifications,
   markAllNotificationsRead,
 } from "../../features/notificationSlice";
 import { initWebSocket, closeWebSocket } from "../../services/websocket";
-
+import { initSocket , getSocket} from "../../services/socket";
 const NotificationDropdown = () => {
+  const { user, accessToken } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
@@ -23,20 +25,26 @@ const NotificationDropdown = () => {
       dispatch(fetchNotifications());
     }
   }, [open, dispatch]);
-
+  const playNotificationSound = () => {
+    const audio = new Audio("/sounds/notification.mp3");
+    audio.play().catch((e) => console.log("Audio play failed:", e));
+  };
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const accessToken = localStorage.getItem("access_token");
-
     if (user && accessToken) {
-      initWebSocket(user.id, accessToken);
+      const socket = initSocket(user.id, accessToken);
+
+      const handleNewNotification = (notification) => {
+        dispatch(addNotification(notification));
+        playNotificationSound();
+      };
+
+      socket.on("new_notification", handleNewNotification);
+
+      return () => {
+        socket.off("new_notification", handleNewNotification);
+      };
     }
-
-    return () => {
-      closeWebSocket();
-    };
-  }, []);
-
+  }, [user, accessToken, dispatch]);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -86,7 +94,7 @@ const NotificationDropdown = () => {
           <div className="p-3 border-b flex justify-between items-center bg-gray-50">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-800">Notifications</h3>
-              {unreadCount > 0 && (
+              {/* {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
                   className="text-xs px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded flex items-center gap-1"
@@ -94,7 +102,7 @@ const NotificationDropdown = () => {
                   <CheckCircle size={14} />
                   Mark all read
                 </button>
-              )}
+              )} */}
             </div>
             <button
               onClick={() => setOpen(false)}

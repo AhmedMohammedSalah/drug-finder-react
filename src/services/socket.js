@@ -3,10 +3,12 @@ import io from "socket.io-client";
 const SOCKET_URL =
   process.env.REACT_APP_NOTIFICATION_SERVER || "http://localhost:3001";
 let socket = null;
-
+const accessToken = localStorage.getItem("access_token");
 export const initSocket = (userId) => {
   if (!socket) {
     socket = io(SOCKET_URL, {
+      auth: { token: `Bearer ${accessToken}` },
+      query: { userId },
       withCredentials: true,
       transports: ["websocket"],
       autoConnect: true,
@@ -26,6 +28,9 @@ export const initSocket = (userId) => {
 
     socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err);
+    } );
+    socket.on("error", (err) => {
+      console.error("Socket error:", err);
     });
   }
   return socket;

@@ -3,7 +3,7 @@ import FormWrapper from "./../components/shared/FormWrapper.js";
 import InputField from "./../components/shared/InputField.js";
 import BigBtn from "./../components/shared/BigBtn.js";
 import { validateLoginForm } from "./../utils/validations.js";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   loginUser,
   clearError,
@@ -171,9 +171,9 @@ export default function LoginPage() {
             {/* Sign up link */}
             <p className="text-center text-sm text-gray-600 mt-6">
               Don’t have an account?{" "}
-              <a href="/register" className="text-blue-500 font-medium hover:underline">
+              <Link to="/register" className="text-blue-500 font-medium hover:underline">
                 Sign up
-              </a>
+              </Link>
             </p>
           </FormWrapper>
 

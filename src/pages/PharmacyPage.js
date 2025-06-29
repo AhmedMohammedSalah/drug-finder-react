@@ -1,22 +1,21 @@
-// src/PharmacyPage.jsx
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { debounce } from 'lodash';
-import axios from 'axios';
-import ProductList from '../components/client/ProductList';
-import Toast from '../components/shared/toast';
-import apiEndpoints from '../services/api';
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { debounce } from "lodash";
+import axios from "axios";
+import ProductList from "../components/client/ProductList";
+import Toast from "../components/shared/toast";
+import apiEndpoints from "../services/api";
 
 const PharmacyPage = ({ storeId }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState('brand_name');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("brand_name");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState(null);
   const itemsPerPage = 12;
@@ -26,31 +25,34 @@ const PharmacyPage = ({ storeId }) => {
   const fetchMedicines = useCallback(
     debounce(async (page, query, sortBy, sortOrder, startsWith = null) => {
       if (cancelTokenSource.current) {
-        cancelTokenSource.current.cancel('New request triggered');
+        cancelTokenSource.current.cancel("New request triggered");
       }
       cancelTokenSource.current = axios.CancelToken.source();
 
       try {
         setLoading(true);
-        setErrorMessage('');
+        setErrorMessage("");
 
         const params = {
           page,
           page_size: itemsPerPage,
-          ordering: `${sortOrder === 'desc' ? '-' : ''}${sortBy}`,
+          ordering: `${sortOrder === "desc" ? "-" : ""}${sortBy}`,
         };
 
         if (query) params.search = query;
         if (startsWith) params.brand_startswith = startsWith;
 
-        const res = await apiEndpoints.pharmacies.getMedicinesForStore(storeId, params);
+        const res = await apiEndpoints.pharmacies.getMedicinesForStore(
+          storeId,
+          params
+        );
 
         setProducts(res.results || []);
         setTotalItems(res.count || 0);
         setTotalPages(Math.ceil((res.count || 0) / itemsPerPage));
       } catch (err) {
         if (!axios.isCancel(err)) {
-          setErrorMessage(err.message || 'Failed to fetch products');
+          setErrorMessage(err.message || "Failed to fetch products");
         }
       } finally {
         setLoading(false);
@@ -61,13 +63,26 @@ const PharmacyPage = ({ storeId }) => {
   );
 
   useEffect(() => {
-    fetchMedicines(currentPage, searchQuery, sortField, sortDirection, selectedLetter);
+    fetchMedicines(
+      currentPage,
+      searchQuery,
+      sortField,
+      sortDirection,
+      selectedLetter
+    );
     return () => {
       if (cancelTokenSource.current) {
-        cancelTokenSource.current.cancel('Component unmounted');
+        cancelTokenSource.current.cancel("Component unmounted");
       }
     };
-  }, [currentPage, searchQuery, sortField, sortDirection, selectedLetter, fetchMedicines]);
+  }, [
+    currentPage,
+    searchQuery,
+    sortField,
+    sortDirection,
+    selectedLetter,
+    fetchMedicines,
+  ]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -84,25 +99,25 @@ const PharmacyPage = ({ storeId }) => {
   };
 
   const handleClearSearch = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setIsSearchLoading(true);
     setCurrentPage(1);
     setSelectedLetter(null);
   };
 
   const handleLetterClick = (letter) => {
-    setSearchQuery('');
+    setSearchQuery("");
     setSelectedLetter(letter);
     setCurrentPage(1);
-    fetchMedicines(1, '', sortField, sortDirection, letter);
+    fetchMedicines(1, "", sortField, sortDirection, letter);
   };
 
   const toggleSort = (field) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
     setCurrentPage(1);
   };

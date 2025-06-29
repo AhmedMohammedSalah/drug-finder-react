@@ -4,14 +4,14 @@ import { Bell, CheckCircle, ChevronLeft, Loader2, X } from "lucide-react";
 import NotificationItem from "./NotificationItem";
 import api from "../../services/api";
 import { toast } from "react-hot-toast";
-import { getSocket } from "../../services/socket";
 import { useSelector } from "react-redux";
 
+import { initSocket, getSocket } from "../../services/socket";
 const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useSelector((state) => state.auth);
+  const { user, accessToken } = useSelector((state) => state.auth);
   const [unreadCount, setUnreadCount] = useState(0);
   const socket = getSocket();
 
@@ -35,36 +35,30 @@ const NotificationPage = () => {
   useEffect(() => {
     fetchNotifications();
 
-    if (user && user.id) {
-      // Setup socket listeners
+    if (user && accessToken) {
+      const socket = initSocket(user.id, accessToken);
+
       const handleNewNotification = (notification) => {
         setNotifications((prev) => {
-          if (prev.some((n) => n.id === notification.id)) {
-            return prev;
-          }
-          return [notification, ...prev];
+          const exists = prev.some((n) => n.id === notification.id);
+          return exists ? prev : [notification, ...prev];
         });
         setUnreadCount((prev) => prev + 1);
-      };
-
-      const handleNotificationRead = (notificationId) => {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.id === notificationId ? { ...n, is_read: true } : n
-          )
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
+        playNotificationSound();
       };
 
       socket.on("new_notification", handleNewNotification);
-      socket.on("notification_read", handleNotificationRead);
 
       return () => {
         socket.off("new_notification", handleNewNotification);
-        socket.off("notification_read", handleNotificationRead);
       };
     }
-  }, [user]);
+  }, [user, accessToken]);
+
+  const playNotificationSound = () => {
+    const audio = new Audio("/sounds/notification.mp3");
+    audio.play().catch((e) => console.log("Audio play failed:", e));
+  };
 
   const handleMarkAllRead = async () => {
     try {

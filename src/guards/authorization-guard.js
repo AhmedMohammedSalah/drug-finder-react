@@ -1,33 +1,53 @@
-import { Navigate, Outlet } from "react-router-dom";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-export function RequireAuth() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
+// Common role check function
+const hasRequiredRole = (user, allowedRoles) => {
+  return user && allowedRoles.includes(user.role);
+};
+
+export function RequireAuth({ children }) {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  return <Outlet />;
+
+  return children ? children : <Outlet />;
 }
 
-export function RequireRole({ allowedRoles }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
+export function RequireRole({ allowedRoles, children }) {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  if (!allowedRoles.includes(user.role)) {
-    // Redirect to home or a "not authorized" page
-    return <Navigate to="/unauthorized" replace />;
+
+  if (!hasRequiredRole(user, allowedRoles)) {
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
-  return <Outlet />;
+
+  return children ? children : <Outlet />;
 }
 
-export function RequireNoRole() {
-    const user = JSON.parse( localStorage.getItem( "user" ) );
-    // console.log( user );
+export function RequireNoRole({ children }) {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
   if (user) {
-      return <Navigate to="/" replace />;
-    }
-  return <Outlet />;
+    // Redirect to appropriate dashboard based on role
+    const redirectPath =
+      user.role === "client"
+        ? "/client"
+        : user.role === "pharmacist"
+        ? "/pharmacy"
+        : user.role === "admin"
+        ? "/admin"
+        : "/";
+    return <Navigate to={redirectPath} state={{ from: location }} replace />;
+  }
+
+  return children ? children : <Outlet />;
 }
