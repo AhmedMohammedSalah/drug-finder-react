@@ -94,7 +94,7 @@ const NotificationDropdown = () => {
           <div className="p-3 border-b flex justify-between items-center bg-gray-50">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-800">Notifications</h3>
-              {unreadCount > 0 && (
+              {/* {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
                   className="text-xs px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded flex items-center gap-1"
@@ -102,7 +102,7 @@ const NotificationDropdown = () => {
                   <CheckCircle size={14} />
                   Mark all read
                 </button>
-              )}
+              )} */}
             </div>
             <button
               onClick={() => setOpen(false)}
