@@ -1,4 +1,3 @@
-// src/components/client/ProductList.jsx
 import { Grid, List, Loader2, Search, X, PackageX } from "lucide-react";
 import MedicineCard from "../pharamcieslist/pharmaStoreView/MedicineCard";
 import Pagination from "../../components/medicine/Pagination";
@@ -21,7 +20,6 @@ const ProductList = ({
   toggleSort,
   selectedLetter,
   onLetterClick,
-  onProductClick, // Add the new prop
 }) => {
   const itemsPerPage = 12;
 
@@ -209,10 +207,9 @@ const ProductList = ({
                         key={product.id}
                         className={
                           viewMode === "grid"
-                            ? "transform transition-all hover:-translate-y-1 hover:shadow-md cursor-pointer"
-                            : "border-b border-gray-100 last:border-b-0 pb-4 last:pb-0 cursor-pointer"
+                            ? "transform transition-all hover:-translate-y-1 hover:shadow-md"
+                            : "border-b border-gray-100 last:border-b-0 pb-4 last:pb-0"
                         }
-                        onClick={() => onProductClick(medicine)} // Add click handler here
                       >
                         <MedicineCard
                           medicine={medicine}
