@@ -27,6 +27,30 @@ const getIcon = (type) => {
   return <Icon className={`${color} size-5`} />;
 };
 
+const renderNotificationData = (data) => {
+  if (!data) return null;
+
+  return (
+    <div className="mt-1 text-xs">
+      <details>
+        <summary className="text-gray-500 cursor-pointer">View details</summary>
+        <div className="mt-1 bg-gray-50 rounded p-2 space-y-1">
+          {Object.entries(data).map(([key, value]) => (
+            <div key={key} className="flex">
+              <span className="font-medium text-gray-600 w-1/3 capitalize">
+                {key}:
+              </span>
+              <span className="text-gray-500 flex-1">
+                {typeof value === "object" ? JSON.stringify(value) : value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </details>
+    </div>
+  );
+};
+
 const NotificationItem = ({ notification, onMarkedRead, onDelete }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -101,16 +125,7 @@ const NotificationItem = ({ notification, onMarkedRead, onDelete }) => {
           {notification.message}
         </p>
 
-        {notification.data && (
-          <details className="mt-1">
-            <summary className="text-xs text-gray-500 cursor-pointer">
-              View details
-            </summary>
-            <pre className="text-xs text-gray-500 mt-1 bg-gray-50 rounded p-2 overflow-x-auto">
-              {JSON.stringify(notification.data, null, 2)}
-            </pre>
-          </details>
-        )}
+        {renderNotificationData(notification.data)}
 
         <div className="flex items-center justify-between mt-2">
           <span className="text-xs text-gray-400">
