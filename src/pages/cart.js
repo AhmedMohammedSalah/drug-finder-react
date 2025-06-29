@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import IconButton from '../components/shared/btn';
 import { Trash2, Plus, Minus, X } from 'lucide-react';
 import { toast } from 'react-toastify';
+import LoadingOverlay from '../components/shared/LoadingOverlay';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const CartPage = () => {
 
   useEffect(() => {
     dispatch(fetchCart());
+   
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const CartPage = () => {
     dispatch(clearCart(cart.id));
   };
 
-  if (status === 'loading') return <p>Loading cart...</p>;
+  if (status === 'loading')return <LoadingOverlay />;
   
   if (!cart || !cart.items?.length) {
     return (
@@ -98,10 +101,10 @@ const CartPage = () => {
                 {/* Product Info */}
                 <div className="col-span-2 flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                    {item.medicine_image ? (
+                    {item.image ? (
                       <img 
-                        src={item.medicine_image} 
-                        alt={item.medicine_name || `Product ${item.product}`}
+                         src={item.image}
+    alt={item.name || `Product ${item.product}`}
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {
                           e.target.style.display = 'none';

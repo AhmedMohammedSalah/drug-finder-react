@@ -4,12 +4,12 @@ import apiEndpoints from '../services/api';
 import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { confirmAlert } from 'react-confirm-alert';
+
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
   try {
     const res = await apiEndpoints.cart.getCart();
-     console.log('Cart fetched successfully:', res.data);
-  return res.data.results[0];// FIX: return the cart object, not res.data[0]
-   
+    console.log('Cart fetched successfully:', res.data);
+    return res.data.results[0];
   } catch (err) {
     toast.error('Failed to load cart.');
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
@@ -55,34 +55,16 @@ export const clearCart = createAsyncThunk('cart/clearCart', async (cartId, thunk
   }
 });
 
-
-
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async (product, thunkAPI) => {
     try {
-      const state = thunkAPI.getState();
-      const cart = state.cart.cart;
-      let res;
-
-      if (!cart) {
-        res = await apiEndpoints.cart.createCart({ items: [{ product: product.id, quantity: 1 }] });
-      } else {
-        const existing = cart.items?.find(i => i.product === product.id);
-        const items = existing
-          ? cart.items.map(i =>
-              i.product === product.id
-                ? { product: i.product, quantity: i.quantity + 1 }
-                : { product: i.product, quantity: i.quantity }
-            )
-          : [
-              ...cart.items.map(i => ({ product: i.product, quantity: i.quantity })),
-              { product: product.id, quantity: 1 },
-            ];
-
-        res = await apiEndpoints.cart.updateItems(cart.id, items);
-      }
-
+      // بساطة الكود - بس ابعتي المنتج للـ backend واتركي له يتعامل مع المنطق
+      const res = await apiEndpoints.cart.createCart({ 
+        items: [{ product: product.id }] // مش محتاجة quantity لأن الـ backend هيحطها 1 تلقائياً
+      });
+      
+      toast.success('Product added to cart!');
       return res.data;
 
     } catch (err) {
@@ -104,11 +86,13 @@ export const addToCart = createAsyncThunk(
                         onClose();
                         try {
                           const newRes = await apiEndpoints.cart.createCart({
-                            items: [{ product: product.id, quantity: 1 }],
+                            items: [{ product: product.id }],
                             force_clear: true,
                           });
+                          toast.success('Cart cleared and product added!');
                           resolve(newRes.data);
                         } catch (innerErr) {
+                          toast.error('Failed to add product.');
                           reject(innerErr.response?.data || innerErr.message);
                         }
                       }}
@@ -133,6 +117,7 @@ export const addToCart = createAsyncThunk(
         });
       }
 
+      toast.error('Failed to add product to cart.');
       return thunkAPI.rejectWithValue(errorData || 'Failed to add product to cart.');
     }
   }

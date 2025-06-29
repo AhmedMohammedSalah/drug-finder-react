@@ -11,6 +11,10 @@ import {
 } from "../features/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import Header from "../components/home/header.jsx";
+import LoadingOverlay from "../components/shared/LoadingOverlay.jsx";
+import MedicalLoadingComponent from "../components/shared/medicalLoading.js";
+import Footer from "../components/home/footer.jsx";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -88,6 +92,8 @@ export default function LoginPage() {
 
   return (
     <GoogleOAuthProvider clientId="830041637628-d3troc4aqg9q48q7rmncg1d62sc3q26b.apps.googleusercontent.com">
+       {loading && <LoadingOverlay/>}
+      <Header/>
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
@@ -146,9 +152,7 @@ export default function LoginPage() {
 
             {/* Social Login */}
             <div className="flex justify-center gap-4">
-              <button className="border px-4 py-2 rounded hover:bg-gray-100 transition">
-                <i className="fa-brands fa-facebook-f text-blue-600 text-xl"></i>
-              </button>
+          
               <div className="border px-2 py-1 rounded hover:bg-gray-100 transition">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
@@ -161,30 +165,36 @@ export default function LoginPage() {
                   width="200"
                 />
               </div>
-              <button className="border px-4 py-2 rounded hover:bg-gray-100 transition">
-                <i className="fa-brands fa-twitter text-sky-400 text-xl"></i>
-              </button>
+           
             </div>
 
             {/* Sign up link */}
             <p className="text-center text-sm text-gray-600 mt-6">
               Don’t have an account?{" "}
-              <a href="#" className="text-blue-500 font-medium hover:underline">
+              <a href="/register" className="text-blue-500 font-medium hover:underline">
                 Sign up
               </a>
             </p>
           </FormWrapper>
 
           {/* Right Column – Image */}
-          <div className="hidden md:block">
-            <img
-              src="/images/login/9052.jpg_wh300.jpg"
-              alt="Pharmacy illustration"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        {/* Right Column – Image / Branding */}
+<div className="hidden md:flex flex-col items-center justify-center bg-blue-500 text-white p-8">
+  <img
+    src="/logo.png"
+    alt="Pharmacy illustration"
+    className="w-28 h-28 object-contain mb-6 drop-shadow-md"
+  />
+
+  <h5 className="text-3xl font-bold mb-2">Drug Finder</h5>
+  <p className="text-center text-base font-medium opacity-90 leading-relaxed">
+    Find your medicine in no time....
+  </p>
+</div>
+
         </div>
       </div>
+      <Footer />
     </GoogleOAuthProvider>
   );
 }

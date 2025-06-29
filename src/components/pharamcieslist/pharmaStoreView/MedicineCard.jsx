@@ -60,7 +60,8 @@ const MedicineCard = ({ medicine, viewMode = 'grid' }) => {
             {/* Add to Cart button */}
             <button
               onClick={() => {
-                dispatch(addToCart({ ...medicine, quantity: 1 }));
+               dispatch(addToCart({ product: medicine, quantity }));
+
                 toast.success(`${medicine.brand_name} added to cart!`);
               }}
               disabled={isAdding || medicine.stock <= 0}

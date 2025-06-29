@@ -10,6 +10,7 @@ import {
   FaEnvelope,
   FaUserShield,
 } from "react-icons/fa";
+import LoadingOverlay from "../components/shared/LoadingOverlay";
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/150/cccccc/ffffff?text=No+Image";
 
@@ -23,8 +24,8 @@ export default function ClientProfilePage() {
       .catch(() => setClientData(null));
   }, []);
 
-  if (!clientData)
-    return <div className="text-center mt-20 text-lg font-semibold">Loading...</div>;
+  if (!clientData) return <LoadingOverlay />;
+    // return <div className="text-center mt-20 text-lg font-semibold">Loading...</div>;
 
   const renderBoolean = (val) =>
     val ? (
