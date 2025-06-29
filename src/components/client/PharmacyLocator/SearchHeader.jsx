@@ -24,16 +24,6 @@ const SearchHeader = ({
           placeholder="Search for medicines in pharmacies..."
         />
       </div>
-      
-      {isSearching && medicines.length > 0 && (
-        <button 
-          onClick={onShowMedicinePopup}
-          className="mt-2 inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-        >
-          <Pill className="h-4 w-4 mr-1" />
-          Show {medicines.length} available medicines
-        </button>
-      )}
     </div>
   );
 };

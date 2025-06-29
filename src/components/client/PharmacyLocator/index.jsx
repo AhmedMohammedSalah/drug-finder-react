@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AlertCircle, RefreshCw,MapPin} from 'lucide-react';
 import apiEndpoints from '../../../services/api';
-import MedicinePopup from './MedicinePopup';
 import PharmacyDetails from './PharmacyDetails';
 import PharmacyList from './PharmacyList';
 import PharmacyMap from './PharmacyMap';
