@@ -123,28 +123,30 @@ const PharmacyPage = ({ storeId }) => {
   };
 
   return (
-    <>
-      <ProductList
-        products={products}
-        viewMode={viewMode}
-        toggleViewMode={setViewMode}
-        loading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        onClearSearch={handleClearSearch}
-        isSearchLoading={isSearchLoading}
-        sortField={sortField}
-        sortDirection={sortDirection}
-        toggleSort={toggleSort}
-        selectedLetter={selectedLetter}
-        onLetterClick={handleLetterClick}
-      />
-      <Toast message={errorMessage} />
-    </>
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <ProductList
+          products={products}
+          viewMode={viewMode}
+          toggleViewMode={setViewMode}
+          loading={loading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onClearSearch={handleClearSearch}
+          isSearchLoading={isSearchLoading}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          toggleSort={toggleSort}
+          selectedLetter={selectedLetter}
+          onLetterClick={handleLetterClick}
+        />
+        <Toast message={errorMessage} />
+      </div>
+    </div>
   );
 };
 

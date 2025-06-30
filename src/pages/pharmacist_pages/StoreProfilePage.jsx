@@ -37,103 +37,126 @@ const StoreProfileForm = () => {
 
   if (hasStore && isLoading) {
     return (
-      <div className="flex items-center justify-center h-[400px] text-gray-500">
+      <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
         <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-        <span className="ml-4 text-lg">Loading store data...</span>
+        <span className="mt-4 text-base sm:text-lg">Loading store data...</span>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="relative z-0 p-6 max-w-7xl mx-auto border rounded-2xl bg-white">
-        {mapLoading && <MapLoadingOverlay />}
+    <div className="w-full overflow-x-hidden">
+      <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto">
+        {/* Main Profile Card */}
+        <div className="relative bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          {mapLoading && <MapLoadingOverlay />}
 
-        {hasStore && !isEditMode && (
-          <div className="text-right">
-            <button
-              onClick={() => setIsEditMode(true)}
-              className="text-blue-500 flex items-center gap-1 hover:underline"
-            >
-              <Pencil size={18} />
-            </button>
-          </div>
-        )}
+          <div className="p-4 sm:p-6">
+            {/* Edit Button */}
+            {hasStore && !isEditMode && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsEditMode(true)}
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+                  aria-label="Edit profile"
+                >
+                  <Pencil size={18} />
+                  <span className="text-sm font-medium">Edit</span>
+                </button>
+              </div>
+            )}
 
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="flex flex-col h-full">
-            <div className="flex gap-4 items-start">
-              <div className="w-40 flex-shrink-0">
-                <ProfileImageSection
-                  logoImage={logoImage}
-                  setLogoImage={canEdit ? setLogoImage : undefined}
-                />
+            {/* Profile Content */}
+            <div className="mt-4 sm:mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+              {/* Left Column - Profile Info */}
+              <div className="space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                  <div className="w-full sm:w-40 mx-auto sm:mx-0">
+                    <ProfileImageSection
+                      logoImage={logoImage}
+                      setLogoImage={canEdit ? setLogoImage : undefined}
+                    />
+                  </div>
+
+                  <div className="flex-1 w-full min-w-0">
+                    <InputSection
+                      isSubmitted={!canEdit}
+                      storeName={storeName}
+                      setStoreName={canEdit ? setStoreName : undefined}
+                      address={address}
+                      setAddress={canEdit ? setAddress : undefined}
+                      phone={phone}
+                      setPhone={canEdit ? setPhone : undefined}
+                      description={description}
+                      setDescription={canEdit ? setDescription : undefined}
+                      startTime={startTime}
+                      setStartTime={canEdit ? setStartTime : undefined}
+                      endTime={endTime}
+                      setEndTime={canEdit ? setEndTime : undefined}
+                      errors={errors}
+                      isReadOnly={!canEdit}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-hidden">
-                <InputSection
-                  isSubmitted={!canEdit}
-                  storeName={storeName}
-                  setStoreName={canEdit ? setStoreName : undefined}
-                  address={address}
-                  setAddress={canEdit ? setAddress : undefined}
-                  phone={phone}
-                  setPhone={canEdit ? setPhone : undefined}
-                  description={description}
-                  setDescription={canEdit ? setDescription : undefined}
-                  startTime={startTime}
-                  setStartTime={canEdit ? setStartTime : undefined}
-                  endTime={endTime}
-                  setEndTime={canEdit ? setEndTime : undefined}
-                  errors={errors}
-                  isReadOnly={!canEdit}
+              {/* Right Column - Map */}
+              <div className="h-[300px] sm:h-[350px] md:h-[400px] xl:h-full rounded-lg overflow-hidden border border-gray-200 min-w-0">
+                <MapSection
+                  latLng={latLng}
+                  setLatLng={canEdit ? setLatLng : () => {}}
+                  handleLatChange={canEdit ? handleLatChange : () => {}}
+                  handleLngChange={canEdit ? handleLngChange : () => {}}
+                  showMapModal={showMapModal}
+                  setShowMapModal={canEdit ? setShowMapModal : () => {}}
+                  canEdit={canEdit}
                 />
               </div>
             </div>
-          </div>
 
-          <div className="h-full">
-            <MapSection
-              latLng={latLng}
-              setLatLng={canEdit ? setLatLng : () => {}}
-              handleLatChange={canEdit ? handleLatChange : () => {}}
-              handleLngChange={canEdit ? handleLngChange : () => {}}
-              showMapModal={showMapModal}
-              setShowMapModal={canEdit ? setShowMapModal : () => {}}
-              canEdit={canEdit}
-            />
+            {/* Submit Button */}
+            {canEdit && (
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      {hasStore ? 'Updating...' : 'Saving...'}
+                    </span>
+                  ) : hasStore ? 'Update Profile' : 'Save Profile'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {canEdit && (
-          <div className="text-right mt-6">
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : hasStore ? 'Update' : 'Save'}
-            </button>
+        {/* License Status Section */}
+        {hasStore && !isEditMode && (
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-4 sm:p-6 w-full">
+            {licenseStatus === 'approved' ? (
+              <div className="w-full overflow-x-hidden">
+                <MedicineManager />
+              </div>
+            ) : licenseStatus === 'pending' ? (
+              <PendingLicenseCard />
+            ) : licenseStatus === 'rejected' ? (
+              <RejectedLicenseCard 
+                adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
+                appealLink="/pharmacy/profile/"
+              />
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No license information available</p>
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* Medicine Manager or Pending License Card */}
-      {hasStore && !isEditMode && (
-        <div className="max-w-7xl mx-auto mt-6">
-          {licenseStatus === 'approved' ? (
-            <MedicineManager />
-          ) : licenseStatus === 'pending' ? (
-            <PendingLicenseCard />
-          ) : licenseStatus === 'rejected' ? (
-            <RejectedLicenseCard 
-              adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
-              appealLink="/pharmacy/profile/"
-            />
-          ) : null}
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 

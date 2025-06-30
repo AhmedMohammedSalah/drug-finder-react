@@ -113,7 +113,7 @@ function App() {
         <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
-          <Route path="pharmacy/:id" element={<PharmacyPage />} />
+          {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU] ANOTHER WRONG PATH */}
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
         </Route>
@@ -134,7 +134,7 @@ function App() {
             <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
             <Route path="order" element={<OrderHistory />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="pharmacy/:id" element={<PharmacyPage />} />
+            {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU]  WRGON PATH */}
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
           <Route path="order-success" element={<OrderSuccess />} />
