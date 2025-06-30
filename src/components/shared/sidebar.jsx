@@ -32,6 +32,8 @@ const Sidebar = ({ role = "client" }) => {
   const [hasStore, setHasStore] = useState(true); // Default true to show full menu
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.accessToken);
+const cart = useSelector((state) => state.cart.cart);
+const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -106,21 +108,35 @@ const Sidebar = ({ role = "client" }) => {
 
       {/* MENU */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {items.map(({ label, icon: Icon, to, end }, index) => (
-          <NavLink
-            key={index}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
-                isActive ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
-              }`
-            }
-          >
-            <Icon size={20} className="text-white" />
-            <span>{label}</span>
-          </NavLink>
-        ))}
+       {items.map(({ label, icon: Icon, to, end }, index) => {
+  const isCart = label === 'Cart';
+
+  return (
+    <NavLink
+      key={index}
+      to={to}
+      end={end}
+      className={({ isActive }) =>
+        `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
+          isActive ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
+        }`
+      }
+    >
+      {/* Icon with badge */}
+      <div className="relative">
+        <Icon size={20} className="text-white" />
+        {isCart && cartItemCount > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none shadow">
+            {cartItemCount}
+          </span>
+        )}
+      </div>
+
+      <span>{label}</span>
+    </NavLink>
+  );
+})}
+
 
         {/* LOGOUT button */}
         <button
