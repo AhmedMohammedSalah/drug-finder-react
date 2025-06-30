@@ -1,5 +1,3 @@
-// Sidebar.jsx
-
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -18,18 +16,19 @@ import {
   FileQuestion,
   Power,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import apiEndpoints from "../../../src/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/authSlice";
 
-const Sidebar = ({ role = "client" }) => {
+const Sidebar = ({ role = "client", onNavigate, isMobile }) => {
   const [user, setUser] = useState({
     name: "Loading...",
     avatar: "/avatar.jpg",
   });
-  const dispatch = useDispatch(); // [SENU] TRACK WHETHER THE PHARMACIST HAS A STORE
-  const [hasStore, setHasStore] = useState(true); // Default true to show full menu
+  const dispatch = useDispatch();
+  const [hasStore, setHasStore] = useState(true);
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.accessToken);
 const cart = useSelector((state) => state.cart.cart);
@@ -46,10 +45,9 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
           avatar,
         });
 
-        // [SENU] IF ROLE IS PHARMACIST, FETCH WHETHER THEY HAVE A STORE
         if (res.data.role === "pharmacist") {
           const pharmacistRes = await apiEndpoints.users.getPharmacistProfile();
-          setHasStore(pharmacistRes.data.has_store); // This field must exist in backend response
+          setHasStore(pharmacistRes.data.has_store);
         }
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -63,30 +61,24 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
     dispatch(logout());
   };
 
-  // === ROLE-BASED MENU ITEMS ===
   const menuItems = {
     admin: [
-      { label: "Requests", icon: FileQuestion, to: "/admin", end: true }, // ✅ Points to /admin
+      { label: "Requests", icon: FileQuestion, to: "/admin", end: true },
       { label: "Users", icon: Users, to: "/admin/users" },
       { label: "Medicines", icon: ClipboardList, to: "/admin/medicines" },
       { label: "Stores", icon: WarehouseIcon, to: "/admin/stores" },
       { label: "Orders", icon: ShoppingCart, to: "/admin/orders" },
     ],
-
-    // [SENU] CONDITIONALLY SHOW PHARMACIST MENU BASED ON STORE AVAILABILITY
     pharmacist: hasStore
       ? [
-          // { label: 'Home', icon: Home, to: '/pharmacy/home' },
           { label: "Store", icon: Store, to: "/pharmacy/store" },
           { label: "Profile", icon: User, to: "/pharmacy/profile" },
-          // { label: 'Inventory', icon: Package, to: '/pharmacy/drugs' },
           { label: "Orders", icon: ShoppingBag, to: "/pharmacy/orders" },
         ]
       : [
           { label: "Store", icon: Store, to: "/pharmacy/store" },
           { label: "Profile", icon: User, to: "/pharmacy/profile" },
         ],
-
     client: [
       { label: 'Search', icon: Home, to: '/client/MedicineSearchPage', end: true },
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
@@ -99,14 +91,26 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
   const items = menuItems[role] || [];
 
   return (
-    <div className="h-screen w-64 bg-blue-700 text-white flex flex-col shadow-lg fixed left-0 top-0">
+    <div className="h-full w-full bg-blue-700 text-white flex flex-col">
+      {/* CLOSE BUTTON (MOBILE ONLY) */}
+      {isMobile && (
+        <div className="flex justify-end p-4">
+          <button
+            onClick={() => onNavigate && onNavigate()}
+            className="text-white hover:text-blue-200"
+          >
+            <X size={24} />
+          </button>
+        </div>
+      )}
+
       {/* LOGO */}
       <div className="flex items-center gap-3 p-5 border-b border-blue-500">
         <img src="/l.png" alt="Logo" className="w-14 h-14 object-contain" />
         <h1 className="text-xl font-semibold">Drug Finder</h1>
       </div>
 
-      {/* MENU */}
+      {/* MENU ITEMS */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
        {items.map(({ label, icon: Icon, to, end }, index) => {
   const isCart = label === 'Cart';
@@ -138,7 +142,7 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
 })}
 
 
-        {/* LOGOUT button */}
+        {/* LOGOUT BUTTON */}
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-4 px-4 py-2 rounded-md hover:bg-blue-800 transition-all mt-4"

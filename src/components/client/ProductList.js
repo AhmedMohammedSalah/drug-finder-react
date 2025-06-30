@@ -2,6 +2,8 @@ import { Grid, List, Loader2, Search, X, PackageX } from "lucide-react";
 import MedicineCard from "../pharamcieslist/pharmaStoreView/MedicineCard";
 import Pagination from "../../components/medicine/Pagination";
 
+const DEFAULT_MEDICINE_IMAGE = "/defaultMedicineImage.png";
+
 const ProductList = ({
   products = [],
   viewMode,
@@ -34,7 +36,7 @@ const ProductList = ({
 
   const SkeletonCard = () => (
     <div className="bg-gray-100 rounded-lg p-4 animate-pulse">
-      <div className="h-40 bg-gray-200 rounded mb-4"></div>
+      <div className="h-32 sm:h-40 bg-gray-200 rounded mb-4"></div>
       <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
     </div>
@@ -49,12 +51,12 @@ const ProductList = ({
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-blue-50 to-white">
-      <div className="bg-white/80 backdrop-blur-sm p-2 sm:p-4 rounded-xl shadow-sm border border-gray-100">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
         {/* Sort buttons and view mode toggle */}
         <div className="bg-white px-4 py-3 border-b">
-          <div className="flex items-center justify-between gap-4 overflow-x-auto">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4 overflow-x-auto">
               <span className="text-sm text-gray-600 whitespace-nowrap">
                 Sort by:
               </span>
@@ -72,7 +74,6 @@ const ProductList = ({
                 </button>
               ))}
             </div>
-            {/* View mode toggle */}
             <div className="flex gap-1 bg-gray-100 p-1 rounded-lg border border-gray-200">
               <button
                 onClick={() => toggleViewMode("grid")}
@@ -102,7 +103,7 @@ const ProductList = ({
 
         {/* Letter filter */}
         <div className="bg-white px-4 py-2 border-b">
-          <div className="flex items-center gap-2 overflow-x-auto">
+          <div className="flex flex-wrap items-center gap-2 overflow-x-auto">
             <span className="text-sm text-gray-600 whitespace-nowrap">
               Filter by letter:
             </span>
@@ -132,7 +133,7 @@ const ProductList = ({
 
         {/* Search bar */}
         <div className="bg-white px-4 py-3 border-b">
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative w-full max-w-md mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -182,8 +183,8 @@ const ProductList = ({
             <div
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                  : "flex flex-col gap-4"
+                  ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8"
+                  : "flex flex-col gap-6 sm:gap-8"
               }
             >
               {loading
@@ -192,24 +193,27 @@ const ProductList = ({
                   ))
                 : products.map((product) => {
                     const medicine = {
-                      ...product,
-                      brand_name: product.name || product.brand_name,
-                      generic_name:
-                        product.description || product.generic_name || "",
-                      id: product.id,
-                      price: product.price,
-                      stock: product.stock || 0,
-                      image: product.image || "/placeholder.png",
+                      id: product.id || product.FLAVOUR,
+                      brand_name: product.brand_name || product.name || "Unknown",
+                      generic_name: product.generic_name || product.description || "",
+                      chemical_name: product.chemical_name || "",
+                      description: product.description || "",
+                      atc_code: product.atc_code || "",
+                      cas_number: product.cas_number || "",
+                      price: Number(product.price) || 0,
+                      stock: Number(product.stock) || 0,
+                      image: product.image || DEFAULT_MEDICINE_IMAGE,
                     };
 
                     return (
                       <div
-                        key={product.id}
+                        key={product.id || product.FLAVOUR}
                         className={
                           viewMode === "grid"
-                            ? "transform transition-all hover:-translate-y-1 hover:shadow-md"
+                            ? "w-full max-w-[240px] mx-auto"
                             : "border-b border-gray-100 last:border-b-0 pb-4 last:pb-0"
                         }
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <MedicineCard
                           medicine={medicine}
@@ -221,7 +225,7 @@ const ProductList = ({
                   })}
             </div>
             {totalPages > 1 && (
-              <div className="mt-4">
+              <div className="mt-6 sm:mt-8">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

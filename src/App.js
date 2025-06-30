@@ -19,11 +19,11 @@ import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import PharmacistProfile from "./pages/pharmacist_pages/PharmacistProfile.jsx";
-import Users from "./pages/usersAdminPage.js";
-import Medicines from "./pages/medicineAdminPage.js";
-import Stores from "./pages/storesAdminPage.js";
+import Users from "./pages/admin/usersAdminPage.js";
+import Medicines from "./pages/admin/medicineAdminPage.js";
+import Stores from "./pages/admin/storesAdminPage.js";
 import Requests from "./pages/admin/PharmacistRequestsPage.jsx";
-import OrdersAd from "./pages/ordersAdminPage.js";
+import OrdersAd from "./pages/admin/ordersAdminPage.js";
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
 import OrderHistory from "./pages/orderhistory.js";
@@ -116,7 +116,7 @@ function App() {
         <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
-          <Route path="pharmacy/:id" element={<PharmacyPage />} />
+          {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU] ANOTHER WRONG PATH */}
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
         </Route> 
 
@@ -162,7 +162,7 @@ function App() {
             <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
             <Route path="order" element={<OrderHistory />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="pharmacy/:id" element={<PharmacyPage />} />
+            {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU]  WRGON PATH */}
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
           <Route path="order-success" element={<OrderSuccess />} />
