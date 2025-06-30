@@ -1,18 +1,19 @@
-import IconButton from '../shared/btn';
-import apiEndpoints from '../../services/api';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../features/cartSlice';
+import IconButton from "../shared/btn";
+import apiEndpoints from "../../services/api";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../features/cartSlice";
 
-{/* [OKS *0-0*]  Product Card changes with grid change */}
-
+{
+  /* [OKS *0-0*]  Product Card changes with grid change */
+}
 
 const ProductCard = ({ product, viewMode, loading }) => {
   const [adding, setAdding] = useState(false);
   const dispatch = useDispatch();
   const imageUrl = product.image
-    ? `http://localhost:8000/inventory/medicines/${product.image}`
-    : 'https://placehold.co/300x200?text=No+Image'; // Use a reliable placeholder
+    ? `https://ahmedmsalah.pythonanywhere.com/inventory/medicines/${product.image}`
+    : "https://placehold.co/300x200?text=No+Image"; // Use a reliable placeholder
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -20,7 +21,7 @@ const ProductCard = ({ product, viewMode, loading }) => {
       // Dispatch just the product object, as expected by cartSlice
       await dispatch(addToCart(product));
     } catch (err) {
-      console.error('Add to cart failed', err);
+      console.error("Add to cart failed", err);
       // Optionally, show a toast or notification here
     } finally {
       setAdding(false);
@@ -28,27 +29,32 @@ const ProductCard = ({ product, viewMode, loading }) => {
   };
 
   return (
-    <div className={`mx-auto transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:scale-105 hover:shadow-lg border-2 border-transparent hover:border-blue-500 ${
-      viewMode === 'grid' ? 'w-50 h-100' : 'w-full flex max-w-3xl'
-    }`}>
-      <img 
-        className={viewMode === 'grid' 
-          ? 'h-48 w-full object-cover object-center' 
-          : 'h-48 w-64 object-cover object-center'
+    <div
+      className={`mx-auto transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-md duration-300 hover:scale-105 hover:shadow-lg border-2 border-transparent hover:border-blue-500 ${
+        viewMode === "grid" ? "w-50 h-100" : "w-full flex max-w-3xl"
+      }`}
+    >
+      <img
+        className={
+          viewMode === "grid"
+            ? "h-48 w-full object-cover object-center"
+            : "h-48 w-64 object-cover object-center"
         }
         src={imageUrl}
-        alt={product.generic_name || product.brand_name || 'Medicine'}
+        alt={product.generic_name || product.brand_name || "Medicine"}
         onError={(e) => {
-          if (e.target.src !== 'https://placehold.co/300x200?text=Image+Not+Found') {
-            e.target.src = 'https://placehold.co/300x200?text=Image+Not+Found';
+          if (
+            e.target.src !== "https://placehold.co/300x200?text=Image+Not+Found"
+          ) {
+            e.target.src = "https://placehold.co/300x200?text=Image+Not+Found";
           }
         }}
       />
-      <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''} relative`}>
+      <div className={`p-4 ${viewMode === "list" ? "flex-1" : ""} relative`}>
         <h2 className="mb-2 text-lg font-medium dark:text-white text-gray-900">
           {product.generic_name}
         </h2>
-         <p className="mb-1 text-base text-gray-700 dark:text-gray-300">
+        <p className="mb-1 text-base text-gray-700 dark:text-gray-300">
           <span className="font-semibold">store_id:</span> {product.store}
         </p>
         <p className="mb-1 text-base text-gray-700 dark:text-gray-300">
@@ -75,7 +81,7 @@ const ProductCard = ({ product, viewMode, loading }) => {
             hoverShade={600}
             focusShade={400}
             textColor="white"
-            text={adding ? 'Adding...' : 'Add to Cart'}
+            text={adding ? "Adding..." : "Add to Cart"}
             onClick={handleAddToCart}
             disabled={adding}
           />
@@ -84,6 +90,5 @@ const ProductCard = ({ product, viewMode, loading }) => {
     </div>
   );
 };
-
 
 export default ProductCard;

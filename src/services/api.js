@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: "http://localhost:8000/",
+  baseURL: "https://ahmedmsalah.pythonanywhere.com/",
   timeout: 30000,
   headers: {
     Accept: "application/json",
@@ -25,7 +25,7 @@ api.interceptors.request.use(
 );
 
 const apiFileUpload = axios.create({
-  baseURL: "http://localhost:8000/",
+  baseURL: "https://ahmedmsalah.pythonanywhere.com/",
   timeout: 30000, // Longer timeout for file uploads
   headers: {
     Accept: "application/json",
@@ -61,7 +61,7 @@ apiFileUpload.interceptors.response.use(
 
         // Refresh the token
         const response = await axios.post(
-          "http://localhost:8000/users/login/refresh/",
+          "https://ahmedmsalah.pythonanywhere.com/users/login/refresh/",
           {
             refresh: refreshToken,
           }
@@ -103,7 +103,7 @@ apiFileUpload.interceptors.response.use(
 
 //         // Refresh the token
 //         const response = await axios.post(
-//           "http://localhost:8000/users/login/refresh/",
+//           "https://ahmedmsalah.pythonanywhere.com/users/login/refresh/",
 //           {
 //             refresh: refreshToken,
 //           }
@@ -261,4 +261,4 @@ const apiEndpoints = {
 // [AMS]
 // Add to apiEndpoints object
 
-  export { api, apiFileUpload, apiEndpoints as default };
+export { api, apiFileUpload, apiEndpoints as default };

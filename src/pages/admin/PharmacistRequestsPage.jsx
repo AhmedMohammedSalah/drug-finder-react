@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard';
-import PharmacistFilter from '../../components/admin/PharmacistFilter';
-import SummaryStatisticsCard from '../../components/admin/SummaryStatisticsCard';
-import LoadingOverlay from '../../components/shared/LoadingOverlay';
-import Pagination from '../../components/admin/Pagination';
-import PharmacistModal from '../../components/admin/PharmacistModal';
-import { Inbox } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import PharmacistRequestCard from "../../components/admin/PharmacistRequestCard";
+import PharmacistFilter from "../../components/admin/PharmacistFilter";
+import SummaryStatisticsCard from "../../components/admin/SummaryStatisticsCard";
+import LoadingOverlay from "../../components/shared/LoadingOverlay";
+import Pagination from "../../components/admin/Pagination";
+import PharmacistModal from "../../components/admin/PharmacistModal";
+import { Inbox } from "lucide-react";
 
 const PharmacistRequestsPage = () => {
   const [selectedPharmacist, setSelectedPharmacist] = useState(null);
@@ -29,24 +29,26 @@ const PharmacistRequestsPage = () => {
     const fetchPharmacists = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('access_token');
-        const res = await axios.get('http://localhost:8000/users/pharmacists/', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const token = localStorage.getItem("access_token");
+        const res = await axios.get(
+          "https://ahmedmsalah.pythonanywhere.com/users/pharmacists/",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = res.data.results;
 
-
-        console.log('Fetched pharmacists:', data);
+        console.log("Fetched pharmacists:", data);
 
         setPharmacists(data);
         setFilteredPharmacists(data);
         updateStatistics(data);
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
           totalItems: data.length,
         }));
       } catch (err) {
-        console.error('Failed to fetch pharmacists:', err);
+        console.error("Failed to fetch pharmacists:", err);
       } finally {
         setLoading(false);
       }
@@ -56,9 +58,9 @@ const PharmacistRequestsPage = () => {
   }, []);
 
   const updateStatistics = (data) => {
-    const pending = data.filter(p => p.license_status === 'pending').length;
-    const approved = data.filter(p => p.license_status === 'approved').length;
-    const rejected = data.filter(p => p.license_status === 'rejected').length;
+    const pending = data.filter((p) => p.license_status === "pending").length;
+    const approved = data.filter((p) => p.license_status === "approved").length;
+    const rejected = data.filter((p) => p.license_status === "rejected").length;
 
     setStats({
       pending,
@@ -71,61 +73,60 @@ const PharmacistRequestsPage = () => {
   const handleFilterChange = (filters) => {
     let filtered = [...pharmacists];
 
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(p => p.license_status === filters.status);
+    if (filters.status !== "all") {
+      filtered = filtered.filter((p) => p.license_status === filters.status);
     }
 
     filtered.sort((a, b) => {
-      if (filters.sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
-      if (filters.sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
-      if (filters.sort === 'name_asc') return a.name.localeCompare(b.name);
-      if (filters.sort === 'name_desc') return b.name.localeCompare(a.name);
+      if (filters.sort === "newest")
+        return new Date(b.created_at) - new Date(a.created_at);
+      if (filters.sort === "oldest")
+        return new Date(a.created_at) - new Date(b.created_at);
+      if (filters.sort === "name_asc") return a.name.localeCompare(b.name);
+      if (filters.sort === "name_desc") return b.name.localeCompare(a.name);
       return 0;
     });
 
     setFilteredPharmacists(filtered);
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 1,
       totalItems: filtered.length,
     }));
   };
 
-  const handleUpdatePharmacist = async (id, newStatus, rejectMessage = '') => {
+  const handleUpdatePharmacist = async (id, newStatus, rejectMessage = "") => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/users/pharmacists/${id}/`,
+        `https://ahmedmsalah.pythonanywhere.com/users/pharmacists/${id}/`,
         {
           license_status: newStatus,
-          ...(newStatus === 'rejected' && { reject_message: rejectMessage })
+          ...(newStatus === "rejected" && { reject_message: rejectMessage }),
         },
         {
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-            'Content-Type': 'application/json' 
-          }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
         }
       );
-  
+
       // Update local state
-      setPharmacists(prev => prev.map(p => 
-        p.id === id ? { ...p, license_status: newStatus } : p
-      ));
-      
-    } catch (err) {
-    }
+      setPharmacists((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, license_status: newStatus } : p))
+      );
+    } catch (err) {}
   };
-  
 
   const handlePageChange = (page) => {
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: page,
     }));
   };
 
   const handleItemsPerPageChange = (itemsPerPage) => {
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       itemsPerPage,
       currentPage: 1,
@@ -143,21 +144,34 @@ const PharmacistRequestsPage = () => {
     <div className="relative min-h-screen">
       {loading && <LoadingOverlay />}
 
-      <div className={`container mx-auto px-4 pb-24 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">Pharmacist Requests</h1>
+      <div
+        className={`container mx-auto px-4 pb-24 ${
+          loading ? "opacity-50 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">
+          Pharmacist Requests
+        </h1>
 
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:w-3/4 flex flex-col">
-            <div className="overflow-y-auto pb-4" style={{ maxHeight: 'calc(100vh - 220px)' }}>
+            <div
+              className="overflow-y-auto pb-4"
+              style={{ maxHeight: "calc(100vh - 220px)" }}
+            >
               {filteredPharmacists.length === 0 && !loading ? (
                 <div className="bg-white p-10 rounded-lg shadow text-center flex flex-col items-center justify-center gap-4 text-gray-500">
                   <Inbox className="w-20 h-20 text-gray-300" />
-                  <p className="text-lg font-medium text-gray-600">No pharmacists found</p>
-                  <p className="text-sm text-gray-400">Try adjusting the filters to see different results.</p>
+                  <p className="text-lg font-medium text-gray-600">
+                    No pharmacists found
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Try adjusting the filters to see different results.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4 pr-2">
-                  {getCurrentItems().map(pharmacist => (
+                  {getCurrentItems().map((pharmacist) => (
                     <PharmacistRequestCard
                       key={pharmacist.id}
                       pharmacist={pharmacist}
