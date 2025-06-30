@@ -3,7 +3,7 @@ import axios from 'axios';
 import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard';
 import PharmacistFilter from '../../components/admin/PharmacistFilter';
 import SummaryStatisticsCard from '../../components/admin/SummaryStatisticsCard';
-import LoadingOverlay from '../../components/shared/LoadingOverlay';
+import AdminLoader from '../../components/admin/adminLoader';
 import Pagination from '../../components/admin/Pagination';
 import PharmacistModal from '../../components/admin/PharmacistModal';
 import { Inbox } from 'lucide-react';
@@ -140,30 +140,7 @@ const PharmacistRequestsPage = () => {
 
   return (
     <div className="relative min-h-screen">
-      {/* [SARA] : Modern loading/error overlay with blurred, dimmed background and premium spinner */}
-      {(loading || error) && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 p-8 bg-white/60 rounded-xl shadow-lg">
-            {loading && (
-              <>
-                {/* [SARA] : Premium animated border spinner for loading */}
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-lg font-semibold text-blue-700">Loading pharmacist requests...</span>
-              </>
-            )}
-            {error && (
-              <>
-                {/* [SARA] : Error icon and message overlay */}
-                <svg className="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
-                </svg>
-                <span className="text-lg font-semibold text-red-700">{error}</span>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-      {/* [SARA] : Main content is dimmed and non-interactive while loading or error */}
+      <AdminLoader loading={loading} error={error} loadingMessage="Loading pharmacist requests..." />
       <div className={`container mx-auto px-4 pb-24 ${loading || error ? 'opacity-50 pointer-events-none select-none' : 'opacity-100'}`}>
         <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">Pharmacist Requests</h1>
 

@@ -1,6 +1,8 @@
 // [SARA]: Import dependencies
 import React, { useEffect, useState } from 'react';
-import FileUpload from '../components/shared/FileUpload';
+import FileUpload from '../../components/shared/FileUpload';
+import Pagination from '../../components/shared/pagination';
+import AdminLoader from '../../components/admin/adminLoader';
 
 function StoresAdminPage() {
   const [stores, setStores] = useState([]);
@@ -179,29 +181,7 @@ function StoresAdminPage() {
   // Render
   return (
     <div className="relative min-h-screen">
-      {/* [SARA] : Modern loading/error overlay with blurred, dimmed background and premium spinner */}
-      {(loading || error) && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 p-8 bg-white/60 rounded-xl shadow-lg">
-            {loading && (
-              <>
-                {/* [SARA] : Premium animated border spinner for loading */}
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-lg font-semibold text-blue-700">Loading stores data...</span>
-              </>
-            )}
-            {error && (
-              <>
-                {/* [SARA] : Error icon and message overlay */}
-                <svg className="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
-                </svg>
-                <span className="text-lg font-semibold text-red-700">{error}</span>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <AdminLoader loading={loading} error={error} loadingMessage="Loading stores data..." />
       {/* [SARA] : Main content is dimmed and non-interactive while loading or error */}
       <div className={`container mx-auto px-4 pb-24 ${loading || error ? 'opacity-50 pointer-events-none select-none' : 'opacity-100'}`}>
         <div className={`flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white rounded-lg p-2 sm:p-4 md:p-6 transition-opacity duration-300 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
@@ -476,35 +456,7 @@ function StoresAdminPage() {
             </>
           )}
           {/* Pagination controls */}
-          <div className="flex gap-2 items-center flex-wrap justify-center my-4 sm:my-8 w-full">
-            <div className="flex gap-2 items-center flex-wrap justify-center mx-auto w-fit bg-white bg-opacity-90 rounded-xl shadow-lg px-4 sm:px-6 py-2 sm:py-3 border border-blue-200 z-40">
-              <button
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold transition"
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Previous
-              </button>
-              {/* Page number buttons */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                <button
-                  key={num}
-                  className={`px-3 py-1 rounded-lg border font-semibold transition ${num === page ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white text-gray-800 border-gray-300 hover:bg-blue-100'}`}
-                  onClick={() => setPage(num)}
-                  disabled={num === page}
-                >
-                  {num}
-                </button>
-              ))}
-              <button
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold transition"
-                disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </div>
       </div>
       {/* Loader and error overlays removed: now handled at the top level for consistency */}
