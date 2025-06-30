@@ -1,10 +1,9 @@
 import React from 'react';
 import PharmacyLocator from '../components/client/PharmacyLocator';
-
+import PharmacyLocatorContainer from '../components/client/PharmacyLocator/index';
 const PharmacyMapPage = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <PharmacyLocator city="minya" />    </div>
+      <PharmacyLocatorContainer city="minya" />   
   );
 };
 
