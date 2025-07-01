@@ -104,12 +104,14 @@ export default function EditClientProfilePage() {
 
   return (
     <>
-     <Sidebar />
-    <div className="ml-64 px-2 py-3 bg-gradient-to-br from-white via-blue-50 to-white min-h-screen">
-        <div className="max-w-5xl mx-auto bg-white/40 backdrop-blur-lg shadow-2xl rounded-3xl border border-white/20 p-10 transition-all hover:shadow-3xl">
-          {/* Profile Header */}
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-          <h2 className="text-3xl font-bold text-blue-800 mb-6">Edit Profile</h2>
+      <Sidebar />
+      <div className="ml-64 px-2 py-3 bg-white min-h-screen">
+        <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
+
+          {/* Centered Title */}
+          <h2 className="text-3xl font-bold text-blue-800 mb-8 text-center">
+            Edit Profile
+          </h2>
 
           {success && (
             <div className="p-4 mb-6 text-sm text-green-800 bg-green-100 rounded-lg border border-green-400">
@@ -117,7 +119,7 @@ export default function EditClientProfilePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 w-full">
             {/* Profile image */}
             <div className="flex flex-col items-center gap-3">
               {preview && (
@@ -217,7 +219,6 @@ export default function EditClientProfilePage() {
           </form>
         </div>
       </div>
-    </div>
     </>
   );
 }

@@ -25,7 +25,6 @@ export default function ClientProfilePage() {
   }, []);
 
   if (!clientData) return <LoadingOverlay />;
-    // return <div className="text-center mt-20 text-lg font-semibold">Loading...</div>;
 
   const renderBoolean = (val) =>
     val ? (
@@ -52,44 +51,43 @@ export default function ClientProfilePage() {
   return (
     <>
       <Sidebar />
-      <div className="ml-64 px-6 py-10 bg-gradient-to-br from-white via-blue-50 to-white min-h-screen">
-        <div className="max-w-5xl mx-auto bg-white/40 backdrop-blur-lg shadow-2xl rounded-3xl border border-white/20 p-10 transition-all hover:shadow-3xl">
+      <div className="ml-64 px-6 py-10 bg-white min-h-screen">
+        <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <img
-              src={clientData.image_profile || DEFAULT_IMAGE}
-              alt="Profile"
-              className="w-36 h-36 rounded-full object-cover border-4 border-blue-500 shadow-lg transition-transform hover:scale-105"
-            />
+            {/* Image */}
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <img
+                src={clientData.image_profile || DEFAULT_IMAGE}
+                alt="Profile"
+                className="w-36 h-36 rounded-full object-cover border-4 border-blue-500 shadow-lg transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Name and Email */}
             <div className="text-center md:text-left space-y-1">
-              <h2 className="text-4xl font-extrabold bg-gradient-to-r from-blue-700 via-blue-500 to-blue-800 text-transparent bg-clip-text">
+              <h2 className="text-4xl font-extrabold text-blue-800">
                 {clientData.name}
               </h2>
               <p className="text-gray-600 flex justify-center md:justify-start items-center gap-2">
                 <FaEnvelope className="text-blue-500" /> {clientData.email}
               </p>
-              <p className="text-gray-700">
-                Disease Info:{" "}
-                <span className="font-medium">
-                  {clientData.info_disease || "N/A"}
-                </span>
-              </p>
             </div>
           </div>
 
+          {/* Disease Info above locations */}
+          <div className="mt-8 mb-6 text-gray-700 text-center md:text-left">
+            <p>
+              Disease Info:{" "}
+              <span className="font-medium">{clientData.info_disease || "N/A"}</span>
+            </p>
+          </div>
+
           {/* Divider */}
-          <div className="border-t border-gray-200 mt-8 mb-6" />
+          <div className="border-t border-gray-300 mb-6" />
 
           {/* Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-[17px] leading-7">
-            <div>
-              <span className="font-semibold">Email Verified:</span>{" "}
-              {renderBoolean(clientData.email_verified)}
-            </div>
-            <div>
-              <span className="font-semibold">Purchase Verified:</span>{" "}
-              {renderBoolean(clientData.is_verified_purchase)}
-            </div>
             <div>
               <span className="font-semibold">Last Known Location:</span>{" "}
               {renderLocation(clientData.last_latitude, clientData.last_longitude)}

@@ -91,7 +91,8 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
   const items = menuItems[role] || [];
 
   return (
-    <div className="h-full w-full bg-blue-700 text-white flex flex-col">
+   <div className="fixed top-0 left-0 h-full w-64 bg-blue-700 text-white flex flex-col z-20">
+
       {/* CLOSE BUTTON (MOBILE ONLY) */}
       {isMobile && (
         <div className="flex justify-end p-4">
