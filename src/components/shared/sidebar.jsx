@@ -91,8 +91,7 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
   const items = menuItems[role] || [];
 
   return (
-   <div className="fixed top-0 left-0 h-full w-64 bg-blue-700 text-white flex flex-col z-20">
-
+    <div className="fixed top-0 left-0 h-full w-64 bg-blue-700 text-white flex flex-col z-20">
       {/* CLOSE BUTTON (MOBILE ONLY) */}
       {isMobile && (
         <div className="flex justify-end p-4">
@@ -105,43 +104,84 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
         </div>
       )}
 
+      {/* USER PROFILE */}
+      <div className="border-t border-blue-600 p-4 flex items-center gap-4 relative group">
+        <div className="relative">
+          {role === "admin" ? (
+            <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full border-2 border-yellow-400 shadow-md group-hover:scale-105 transition-transform">
+              <ShieldCheck
+                size={24}
+                className="text-yellow-500 animate-pulse"
+                title="Admin"
+              />
+            </div>
+          ) : (
+            <div className="relative group">
+              <img
+                src={user.avatar}
+                alt="User Avatar"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md group-hover:scale-105 transition-transform"
+              />
+              <div className="absolute inset-0 rounded-full bg-blue-800 opacity-0 group-hover:opacity-20 transition-opacity" />
+            </div>
+          )}
+
+          {role === "admin" && (
+            <div className="absolute -bottom-1 -right-1 bg-blue-700 text-yellow-400 rounded-full p-1 shadow-sm">
+              <ShieldCheck size={16} title="Admin" />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-white truncate text-lg transition-all group-hover:text-blue-100">
+            {user.name}
+          </p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs font-medium text-blue-100 bg-blue-800/50 px-2 py-0.5 rounded-full capitalize">
+              {role}
+            </p>
+            {role !== "admin" && (
+              <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+            )}
+          </div>
+        </div>
+      </div>
       {/* LOGO */}
-      <div className="flex items-center gap-3 p-5 border-b border-blue-500">
+      {/* <div className="flex items-center gap-3 p-5 border-b border-blue-500">
         <img src="/l.png" alt="Logo" className="w-14 h-14 object-contain" />
         <h1 className="text-xl font-semibold">Drug Finder</h1>
-      </div>
+      </div> */}
 
       {/* MENU ITEMS */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-       {items.map(({ label, icon: Icon, to, end }, index) => {
-  const isCart = label === 'Cart';
+        {items.map(({ label, icon: Icon, to, end }, index) => {
+          const isCart = label === "Cart";
 
-  return (
-    <NavLink
-      key={index}
-      to={to}
-      end={end}
-      className={({ isActive }) =>
-        `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
-          isActive ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
-        }`
-      }
-    >
-      {/* Icon with badge */}
-      <div className="relative">
-        <Icon size={20} className="text-white" />
-        {isCart && cartItemCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none shadow">
-            {cartItemCount}
-          </span>
-        )}
-      </div>
+          return (
+            <NavLink
+              key={index}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
+                  isActive ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
+                }`
+              }
+            >
+              {/* Icon with badge */}
+              <div className="relative">
+                <Icon size={20} className="text-white" />
+                {isCart && cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none shadow">
+                    {cartItemCount}
+                  </span>
+                )}
+              </div>
 
-      <span>{label}</span>
-    </NavLink>
-  );
-})}
-
+              <span>{label}</span>
+            </NavLink>
+          );
+        })}
 
         {/* LOGOUT BUTTON */}
         <button
@@ -152,39 +192,6 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
           <span>Logout</span>
         </button>
       </nav>
-
-      {/* USER PROFILE */}
-      <div className="border-t border-blue-500 p-4 flex items-center gap-3 relative">
-        <div className="relative">
-          {role === "admin" ? (
-            <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full border-2 border-yellow-400">
-              <ShieldCheck
-                size={20}
-                className="text-yellow-500"
-                title="Admin"
-              />
-            </div>
-          ) : (
-            <img
-              src={user.avatar}
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full object-cover border-2 border-white"
-            />
-          )}
-
-          {role === "admin" && (
-            <ShieldCheck
-              size={16}
-              className="absolute -bottom-1 -right-1 bg-blue-700 text-yellow-400 rounded-full p-0.5"
-              title="Admin"
-            />
-          )}
-        </div>
-        <div className="text-sm">
-          <p className="font-semibold truncate">{user.name}</p>
-          <p className="text-xs text-blue-200 capitalize">{role}</p>
-        </div>
-      </div>
     </div>
   );
 };

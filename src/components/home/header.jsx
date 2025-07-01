@@ -45,13 +45,13 @@ export default function Header() {
               Pharmacies
             </Link>
             <Link
-              to="/about"
+              to="/#services"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               About
             </Link>
             <Link
-              to="/contact"
+              to="/#contact"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Contact
