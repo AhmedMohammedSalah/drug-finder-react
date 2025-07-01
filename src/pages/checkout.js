@@ -74,7 +74,7 @@ const CheckoutForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="shipping_location" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label htmlFor="shipping_location" className="block mb-2 text-sm font-medium text-gray-900 ">
           Shipping Location
         </label>
         <input
@@ -83,13 +83,13 @@ const CheckoutForm = ({
           type="text"
           value={formData.shipping_location}
           onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
           required
         />
       </div>
 
       {formData.paymentMethod === 'card' && (
-        <div className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg">
+        <div className="border border-gray-200  p-4 rounded-lg">
           <h4 className="text-lg font-medium mb-3">Card Details</h4>
           <CardElement
             options={{
@@ -111,7 +111,7 @@ const CheckoutForm = ({
       )}
 
       {(error || localError) && (
-        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg " role="alert">
           {error || localError}
         </div>
       )}
@@ -119,7 +119,7 @@ const CheckoutForm = ({
       <button
         type="submit"
         disabled={loading || localLoading || (formData.paymentMethod === 'card' && !stripe)}
-        className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
       >
         {(loading || localLoading) ? (
           <span className="flex items-center justify-center">
@@ -234,20 +234,20 @@ const Checkout = () => {
 
   return (
     <Elements stripe={stripePromise}>
-      <section className="bg-gray-50 py-8 dark:bg-gray-900 md:py-16">
+      <section className="bg-gray-50 py-8 md:py-16">
         <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Checkout</h1>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Checkout</h1>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 ">
               <div className="bg-blue-600 h-2.5 rounded-full w-2/3"></div>
             </div>
-            <ol className="flex items-center mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-              <li className="flex items-center text-blue-600 dark:text-blue-500">
-                <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500">1</span>
+            <ol className="flex items-center mt-4 text-sm font-medium text-gray-500 ">
+              <li className="flex items-center text-blue-600 ">
+                <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs border border-blue-600 rounded-full shrink-0 ">1</span>
                 Cart
               </li>
-              <li className="flex items-center ml-4 text-blue-600 dark:text-blue-500">
-                <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500">2</span>
+              <li className="flex items-center ml-4 text-blue-600 ">
+                <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs border border-blue-600 rounded-full shrink-0 ">2</span>
                 Checkout
               </li>
               <li className="flex items-center ml-4">
@@ -259,8 +259,8 @@ const Checkout = () => {
 
           <div className="mt-6 sm:mt-8 lg:flex lg:gap-8 xl:gap-12">
             <div className="flex-1 space-y-6">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Shipping Information</h2>
+              <div className="bg-white  p-6 rounded-lg shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900  mb-4">Shipping Information</h2>
                 <CheckoutForm 
                   formData={formData} 
                   handleChange={handleChange} 
@@ -271,10 +271,10 @@ const Checkout = () => {
                 />
               </div>
 
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Payment Method</h3>
+              <div className="bg-white  p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900  mb-4">Payment Method</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                  <div className="flex items-center pl-4 border border-gray-200 rounded ">
                     <input 
                       id="card-payment" 
                       type="radio" 
@@ -282,13 +282,13 @@ const Checkout = () => {
                       value="card" 
                       checked={formData.paymentMethod === 'card'} 
                       onChange={handleChange} 
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 " 
                     />
-                    <label htmlFor="card-payment" className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    <label htmlFor="card-payment" className="w-full py-4 ml-2 text-sm font-medium text-gray-900 ">
                       Credit/Debit Card
                     </label>
                   </div>
-                  <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                  <div className="flex items-center pl-4 border border-gray-200 rounded ">
                     <input 
                       id="cash-payment" 
                       type="radio" 
@@ -296,9 +296,9 @@ const Checkout = () => {
                       value="cash" 
                       checked={formData.paymentMethod === 'cash'} 
                       onChange={handleChange} 
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 " 
                     />
-                    <label htmlFor="cash-payment" className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    <label htmlFor="cash-payment" className="w-full py-4 ml-2 text-sm font-medium text-gray-900 ">
                       Cash on Delivery
                     </label>
                   </div>
@@ -307,24 +307,24 @@ const Checkout = () => {
             </div>
 
             <div className="mt-6 w-full lg:max-w-md space-y-6">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h3>
+              <div className="bg-white  p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900  mb-4">Order Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Subtotal</span>
+                    <span className="text-gray-600 ">Subtotal</span>
                     <span className="font-medium">${(parseFloat(orderData.total_price) - parseFloat(orderData.shipping_cost) - parseFloat(orderData.tax)).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Shipping</span>
+                    <span className="text-gray-600 ">Shipping</span>
                     <span className="font-medium">${orderData.shipping_cost}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Tax</span>
+                    <span className="text-gray-600 ">Tax</span>
                     <span className="font-medium">${orderData.tax}</span>
                   </div>
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between">
-                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                    <span className="font-bold text-blue-600 dark:text-blue-500">${orderData.total_price}</span>
+                  <div className="border-t border-gray-200  pt-3 flex justify-between">
+                    <span className="font-bold text-gray-900 ">Total</span>
+                    <span className="font-bold text-blue-600 ">${orderData.total_price}</span>
                   </div>
                 </div>
               </div>
