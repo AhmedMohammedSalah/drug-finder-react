@@ -1,4 +1,3 @@
-// pages/checkout/Checkout.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiEndpoints from '../services/api';
@@ -11,7 +10,7 @@ import ErrorPopup from '../components/client/checkout/ErrorPopup';
 import {  clearCart,
 } from '../features/cartSlice';
 import { useDispatch } from 'react-redux';
-
+// [OKS]solve .env problem
 const stripePublicKey = 'pk_test_51OiLR4EI022bdeAWbHKBYqgPrQBKTXEFEUr7fbrvFRic2OsAFEUSs1tgsJG6aaSoL88nyCOpfL7xQgjwLcowPCPF00fVMpPj3W';
 const stripePromise = loadStripe(stripePublicKey);
 
