@@ -17,6 +17,7 @@ import {
   Power,
   ShieldCheck,
   X,
+  Earth
 } from "lucide-react";
 import apiEndpoints from "../../../src/services/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,7 +81,7 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
           { label: "Profile", icon: User, to: "/pharmacy/profile" },
         ],
     client: [
-      { label: 'Search', icon: Home, to: '/client/MedicineSearchPage', end: true },
+      { label: 'Search', icon: Earth, to: '/client/MedicineSearchPage', end: true },
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
