@@ -50,6 +50,10 @@ const MedicinePopup = ({
                 <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
                 <p className="text-gray-600">{medicine.description || 'No description available'}</p>
               </div>
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-700 mb-1">Stock</h4>
+                <p className="text-blue-500 font-bold ">{medicine.stock || 'Not available'}</p>
+              </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>

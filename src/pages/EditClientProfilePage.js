@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import apiEndpoints from "../services/api";
 import { toast } from "react-toastify";
 import Sidebar from "../components/shared/sidebar";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoib21hcm9rc3RhciIsImEiOiJjbDYweWZnN2kxZDh2M2dvYWtsdWZmaXpkIn0.BgrSg2_-EDey-NBxWRKeTA';
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 export default function EditClientProfilePage() {
   const [formData, setFormData] = useState({
@@ -14,13 +19,18 @@ export default function EditClientProfilePage() {
     image_profile: null,
     default_latitude: "",
     default_longitude: "",
-    last_latitude: "",
-    last_longitude: "",
   });
   const [preview, setPreview] = useState(null);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState(null);
   const navigate = useNavigate();
+  
+  //[OKS]  Mapbox refs
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const marker = useRef(null);
 
   useEffect(() => {
     apiEndpoints.client.getClientProfile().then((res) => {
@@ -34,12 +44,117 @@ export default function EditClientProfilePage() {
         image_profile: null,
         default_latitude: data.default_latitude ?? "",
         default_longitude: data.default_longitude ?? "",
-        last_latitude: data.last_latitude ?? "",
-        last_longitude: data.last_longitude ?? "",
       });
       setPreview(data.image_profile);
+      
+      if (data.default_latitude && data.default_longitude) {
+        initializeMap([data.default_longitude, data.default_latitude]);
+      } else {
+        initializeMap([-0.1276, 51.5074]); 
+      }
     });
   }, []);
+
+  const initializeMap = (center) => {
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: center,
+      zoom: 12
+    });
+
+    // Add marker if coordinates exist
+    if (formData.default_latitude && formData.default_longitude) {
+      marker.current = new mapboxgl.Marker()
+        .setLngLat(center)
+        .addTo(map.current);
+    }
+
+    // [OKS]  handle click event to update location
+    map.current.on('click', (e) => {
+      const { lng, lat } = e.lngLat;
+      
+      setFormData(prev => ({
+        ...prev,
+        default_latitude: lat.toString(),
+        default_longitude: lng.toString()
+      }));
+      
+      if (marker.current) {
+        marker.current.setLngLat([lng, lat]);
+      } else {
+        marker.current = new mapboxgl.Marker()
+          .setLngLat([lng, lat])
+          .addTo(map.current);
+      }
+    });
+  };
+
+  // [OKS] get user location geo location
+  const getCurrentLocation = () => {
+    setIsLocating(true);
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsLocating(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        setFormData(prev => ({
+          ...prev,
+          default_latitude: latitude.toString(),
+          default_longitude: longitude.toString()
+        }));
+        
+        if (map.current) {
+          map.current.flyTo({
+            center: [longitude, latitude],
+            zoom: 14
+          });
+          
+          if (marker.current) {
+            marker.current.setLngLat([longitude, latitude]);
+          } else {
+            marker.current = new mapboxgl.Marker()
+              .setLngLat([longitude, latitude])
+              .addTo(map.current);
+          }
+        }
+        
+        setIsLocating(false);
+        toast.success("Location updated successfully!");
+      },
+      (error) => {
+        let errorMessage = "Error getting location: ";
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage += "User denied the request for Geolocation.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage += "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage += "The request to get user location timed out.";
+            break;
+          default:
+            errorMessage += "An unknown error occurred.";
+        }
+        setLocationError(errorMessage);
+        setIsLocating(false);
+        toast.error(errorMessage);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -79,8 +194,6 @@ export default function EditClientProfilePage() {
       clientForm.append("info_disease", formData.info_disease);
       clientForm.append("default_latitude", formData.default_latitude);
       clientForm.append("default_longitude", formData.default_longitude);
-      clientForm.append("last_latitude", formData.last_latitude);
-      clientForm.append("last_longitude", formData.last_longitude);
       if (formData.image_profile) {
         clientForm.append("image_profile", formData.image_profile);
       }
@@ -107,8 +220,6 @@ export default function EditClientProfilePage() {
       <Sidebar />
       <div className="ml-64 px-2 py-3 bg-white min-h-screen">
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
-
-          {/* Centered Title */}
           <h2 className="text-3xl font-bold text-blue-800 mb-8 text-center">
             Edit Profile
           </h2>
@@ -179,28 +290,68 @@ export default function EditClientProfilePage() {
               />
             </div>
 
-            {/* Coordinates */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                ["default_latitude", "Default Latitude"],
-                ["default_longitude", "Default Longitude"],
-                ["last_latitude", "Last Latitude"],
-                ["last_longitude", "Last Longitude"],
-              ].map(([name, label]) => (
-                <div key={name}>
-                  <label className="block font-medium text-gray-700 mb-1">{label}</label>
-                  <input
-                    type="text"
-                    name={name}
-                    value={formData[name]}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400"
-                  />
+
+            {/*[OKS] add map  ui to get location */ }
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="font-medium text-gray-700">Default Location</h3>
+                <button
+                  type="button"
+                  onClick={getCurrentLocation}
+                  disabled={isLocating}
+                  className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm transition"
+                >
+                  {isLocating ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Locating...
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Use My Current Location
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {locationError && (
+                <div className="text-red-600 text-sm p-2 bg-red-50 rounded">
+                  {locationError}
                 </div>
-              ))}
+              )}
+
+              <div 
+                ref={mapContainer} 
+                className="w-full h-64 rounded-lg border border-gray-300 overflow-hidden"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  ["default_latitude", "Latitude"],
+                  ["default_longitude", "Longitude"],
+                ].map(([name, label]) => (
+                  <div key={name}>
+                    <label className="block font-medium text-gray-700 mb-1">{label}</label>
+                    <input
+                      type="text"
+                      name={name}
+                      value={formData[name]}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400"
+                      readOnly
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-4 pt-6">
               <button
                 type="button"

@@ -215,6 +215,8 @@ const apiEndpoints = {
     getClientProfile: () => api.get("users/client/profile/"),
     updateClientProfile: (data) =>
       apiFileUpload.patch("users/client/profile/", data),
+    
+    
   },
   aiChat: {
     ask: (question) => api.post("AI-chat/ask/", { question }),
@@ -235,6 +237,7 @@ const apiEndpoints = {
     },
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
+    getOrder: (orderId) => api.get(`orders/${orderId}/`), //[OKS] for order details
 
     //[OKS] Convenience methods
     getOrdersByStatus: (status, page = 1, pageSize = 10) =>

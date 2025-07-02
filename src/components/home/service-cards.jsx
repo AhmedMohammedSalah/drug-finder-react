@@ -37,7 +37,7 @@ const services = [
 
 export default function ServiceCards() {
   return (
-    <section className="py-16 px-4">
+    <section className="py-16 px-4" id="services" >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Core Services</h2>
