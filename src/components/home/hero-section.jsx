@@ -3,15 +3,15 @@ import { ArrowRight, Play } from "lucide-react"
 export default function HeroSection() {
   return (
     <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 <span className="text-blue-600">Drug </span>
                 <br />
-                Finder
+                Frinder
                 <br />
                 More Easy
               </h1>
@@ -50,19 +50,20 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right Content - Huge Doctor Image */}
-          <div className="relative flex justify-center items-center">
+          {/* Right Content - Doctor Image */}
+          <div className="relative">
             <div className="relative z-10">
-              <img
-                src="heroSectionImage.webp"
+              <img  
+               src="images/drug-finder-1.png"
                 alt="Healthcare Professional"
-                className="w-full max-w-[800px] lg:max-w-[1000px] xl:max-w-[1200px] h-auto rounded-3xl"
+                // className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto-2xl "
+
               />
             </div>
-
             {/* Background Elements */}
-            <div className="absolute -top-6 -right-6 w-96 h-96 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
-            <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-indigo-200 rounded-full blur-2xl opacity-40"></div>
+            {/* <div className="absolute -top-4 -right-4 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute -bottom-4 -left-4 w-48 h-48 bg-indigo-200 rounded-full blur-2xl opacity-40"></div> */}
           </div>
         </div>
       </div>

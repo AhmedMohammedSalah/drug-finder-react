@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Package, Clock, CheckCircle, XCircle, RefreshCw, 
-  Truck, CreditCard, AlertCircle, Loader,
-  ChevronLeft, ChevronRight, Image as ImageIcon
+  Truck, CreditCard, AlertCircle, Loader, Image as ImageIcon 
 } from 'lucide-react';
 import apiEndpoints from '../services/api';
 import Pagination from '../components/shared/pagination';
 import SharedLoadingComponent from '../components/shared/medicalLoading'; // Added import
+import { toast } from 'react-toastify'; 
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null); // State to track specific order being cancelled
   const [pagination, setPagination] = useState({
     count: 0,
     currentPage: 1,
@@ -19,27 +24,48 @@ const OrderHistory = () => {
     pageSize: 10
   });
 
+  const notify = {
+    success: (title, message) => toast.success(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { icon: <CheckCircle className="text-green-500" />, position: "top-right", autoClose: 3000 }
+    ),
+    error: (title, message) => toast.error(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { icon: <XCircle className="text-red-500" />, position: "top-right", autoClose: 5000 }
+    ),
+    info: (title, message) => toast.info(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { position: "top-right", autoClose: 3000 }
+    ),
+  };
+
   const fetchOrders = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiEndpoints.orders.getPaginatedOrders(
-        page, 
+        page,
         pagination.pageSize,
         { ordering: '-created_at' }
       );
-      
-      // [OKS] Process orders with item details
+
       const processedOrders = await Promise.all(
         response.data.results.map(async (order) => {
-          console.log("response ", order);
           if (!order.items_details || order.items_details.length === 0) {
             const itemsWithDetails = await Promise.all(
               order.items.map(async (item) => {
                 try {
                   const itemDetail = await apiEndpoints.inventory.getItemDetails(item.product);
-                  console.log("item details: " , itemDetail);
                   return {
                     ...item,
                     name: itemDetail.data.name,
@@ -47,8 +73,7 @@ const OrderHistory = () => {
                     image: itemDetail.data.image,
                     category: itemDetail.data.category
                   };
-                } catch (err) {
-                  console.error('Error fetching item details:', err);
+                } catch {
                   return {
                     ...item,
                     name: `Item ${item.product}`,
@@ -73,8 +98,9 @@ const OrderHistory = () => {
         totalPages: Math.ceil(response.data.count / prev.pageSize)
       }));
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to load orders');
-      console.error('Error fetching orders:', err);
+      const errorMessage = err.response?.data?.detail || err.message || 'Failed to load orders';
+      setError(errorMessage);
+      notify.error('Error loading orders', errorMessage); // Use react-toastify for error
     } finally {
       setLoading(false);
     }
@@ -84,19 +110,41 @@ const OrderHistory = () => {
     fetchOrders();
   }, []);
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'pending': return <Clock className="h-4 w-4 text-amber-500" />;
-      case 'processing': return <Loader className="h-4 w-4 text-blue-500 animate-spin" />;
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'shipped': return <Truck className="h-4 w-4 text-indigo-500" />;
-      case 'cancelled': return <XCircle className="h-4 w-4 text-red-500" />;
-      default: return <Clock className="h-4 w-4 text-gray-500" />;
+  const handleCancelOrder = async (orderId) => {
+    const result = await MySwal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to cancel this order? This action cannot be undone.',
+      imageUrl: '/images/order_cancel.png',
+      imageHeight: 200, 
+      imageAlt: 'cancel',
+      showCancelButton: true,
+      confirmButtonColor: '#d33', 
+      cancelButtonColor: '#3085d6', 
+      confirmButtonText: 'Yes, cancel it!',
+      cancelButtonText: 'No, keep it'
+    });
+
+    if (!result.isConfirmed) {
+      notify.info('Cancellation avoided', `Order #${orderId} was not cancelled.`);
+      return;
+    }
+
+    try {
+      setCancellingOrderId(orderId); 
+      await apiEndpoints.orders.cancelOrder(orderId);
+      
+      await MySwal.fire('Cancelled!', `Order #${orderId} has been cancelled successfully.`, 'success');
+      
+      fetchOrders(pagination.currentPage); // Refresh orders to reflect the change
+    } catch (err) {
+      await MySwal.fire('Error!', err.response?.data?.detail || 'Failed to cancel order.', 'error');
+    } finally {
+      setCancellingOrderId(null); // Clear specific order loading
     }
   };
 
-  const getStatusColor = (order_status) => {
-    switch(order_status.toLowerCase()) {
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
       case 'pending': return 'bg-amber-100 text-amber-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'completed': return 'bg-green-100 text-green-800';
@@ -106,22 +154,17 @@ const OrderHistory = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const formatDate = (date) => new Date(date).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
   const handleRefresh = () => {
+    notify.info('Refreshing', 'Loading latest orders...');
     fetchOrders(pagination.currentPage);
-  };
-
-  const handlePageChange = (newPage) => {
-    fetchOrders(newPage);
   };
 
   return (
@@ -136,7 +179,7 @@ const OrderHistory = () => {
             </span>
           )}
         </h1>
-        <button 
+        <button
           onClick={handleRefresh}
           disabled={loading}
           className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
@@ -152,7 +195,7 @@ const OrderHistory = () => {
             <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
             <p className="text-red-700">{error}</p>
           </div>
-          <button 
+          <button
             onClick={handleRefresh}
             className="mt-2 text-sm text-red-600 hover:text-red-800"
           >
@@ -161,7 +204,8 @@ const OrderHistory = () => {
         </div>
       )}
 
-      {loading ? (
+
+      {loading && !cancellingOrderId ? (
         <SharedLoadingComponent 
           loadingText="Loading your order history..."
           subText="Gathering all your past purchases..."
@@ -192,7 +236,7 @@ const OrderHistory = () => {
                     Total: ${parseFloat(order.total_price || 0).toFixed(2)}
                   </div>
                 </div>
-                
+
                 <div className="p-4">
                   <div className="mb-4">
                     <h3 className="font-medium mb-2">Items ({order.items.length})</h3>
@@ -201,8 +245,8 @@ const OrderHistory = () => {
                         <div key={index} className="flex gap-3 py-2">
                           <div className="flex-shrink-0">
                             {item.image ? (
-                              <img 
-                                src={item.image} 
+                              <img
+                                src={item.image}
                                 alt={item.name}
                                 className="w-12 h-12 rounded-md object-cover border border-gray-200"
                               />
@@ -225,6 +269,28 @@ const OrderHistory = () => {
                       ))}
                     </div>
                   </div>
+
+                  {order.order_status === 'pending' && (
+                    <div className="pt-2">
+                      <button
+                        onClick={() => handleCancelOrder(order.id)} // This triggers the SweetAlert2 confirmation
+                        disabled={cancellingOrderId === order.id || loading}
+                        className="px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-md hover:bg-red-100 transition disabled:opacity-50 flex items-center"
+                      >
+                        {cancellingOrderId === order.id ? (
+                          <>
+                            <Loader className="h-4 w-4 mr-1 animate-spin" />
+                            Cancelling...
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Cancel Order
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -234,7 +300,7 @@ const OrderHistory = () => {
             <Pagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
-              onPageChange={handlePageChange}
+              onPageChange={(page) => fetchOrders(page)}
             />
           )}
         </>

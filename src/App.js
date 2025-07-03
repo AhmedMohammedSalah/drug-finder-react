@@ -46,12 +46,14 @@ import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
 import SharedLoadingComponent from "./components/shared/medicalLoading.js";
 
+
 // Guards
 import {
   RequireAuth,
   RequireRole,
   RequireNoRole,
 } from "./guards/authorization-guard.js";
+import ArchivePage from "./pages/pharmacist_pages/pharamacist_archieve.jsx";
 
 // Services
 
@@ -124,14 +126,11 @@ function App() {
         {/*===========================================================*/}
 
           <Route path="/profile" element={<ClientProfilePage/>} />
-  <Route path="/profile/edit" element={<EditClientProfilePage/>} />
+        <Route path="/profile/edit" element={<EditClientProfilePage/>} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
-        {/* <Route element={<RequireNoRole />}> */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-
+        
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
@@ -174,6 +173,7 @@ function App() {
             {/* <Route index element={<Drugs />} /> */}
             <Route path="store" element={<PharmacistStoreProfilePage />} />
             {/* <Route path="drugs" element={<Drugs />} /> */}
+            <Route path="archive" element={<ArchivePage />} />
             <Route path="drugs/add" element={<AddDrug />} />
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />

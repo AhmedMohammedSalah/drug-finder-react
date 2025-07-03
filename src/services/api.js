@@ -188,9 +188,16 @@ const apiEndpoints = {
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
-    updateMedicine: (id, data) =>
-      apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    updateMedicine: (id, data) =>apiFileUpload.patch(`inventory/medicines/${id}/`, data),
     deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`),
+
+    // SENU:
+    getDeletedMedicinesByStore: (storeId) =>
+    api.get("inventory/medicines/deleted_by_store/", {
+      params: { store_id: storeId },
+    }),
+
+
   },
   // {amira} added cart endpoints
   cart: {
@@ -238,6 +245,13 @@ const apiEndpoints = {
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
     getOrder: (orderId) => api.get(`orders/${orderId}/`), //[OKS] for order details
+   // [OKS] add cancel-order end-point
+    cancelOrder: (orderId) => {
+    return api.post(`/orders/${orderId}/update_status/`, {
+    status: 'cancelled'
+   })
+  },
+
 
     //[OKS] Convenience methods
     getOrdersByStatus: (status, page = 1, pageSize = 10) =>
