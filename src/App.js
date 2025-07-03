@@ -124,14 +124,11 @@ function App() {
         {/*===========================================================*/}
 
           <Route path="/profile" element={<ClientProfilePage/>} />
-  <Route path="/profile/edit" element={<EditClientProfilePage/>} />
+        <Route path="/profile/edit" element={<EditClientProfilePage/>} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
-        {/* <Route element={<RequireNoRole />}> */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-
+        
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
