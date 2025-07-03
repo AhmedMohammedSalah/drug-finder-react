@@ -238,6 +238,13 @@ const apiEndpoints = {
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
     getOrder: (orderId) => api.get(`orders/${orderId}/`), //[OKS] for order details
+   // apiEndpoints.orders
+    cancelOrder: (orderId) => {
+    return api.post(`/orders/${orderId}/update_status/`, {
+    status: 'cancelled'
+   })
+  },
+
 
     //[OKS] Convenience methods
     getOrdersByStatus: (status, page = 1, pageSize = 10) =>
