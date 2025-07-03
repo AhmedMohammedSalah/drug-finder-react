@@ -17,9 +17,9 @@ export default function Header() {
   };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // Always use array for cartItems to avoid undefined errors with backend cart
-  const cartItems = useSelector((state) =>
-    Array.isArray(state.cart.cart?.items) ? state.cart.cart.items : []
-  );
+  const cart = useSelector((state) => state.cart.cart);
+  const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
@@ -88,16 +88,19 @@ export default function Header() {
             ) : (
               <>
                 <Link to="/cart" className="relative flex items-center">
-                  <ShoppingCart size={32} className="text-gray-800" />
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center">
-                      {cartItems.length}
-                    </span>
-                  )}
+                  <div className="relative">
+                    <ShoppingCart size={20} className="text-gray-700" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none shadow">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </div>
                 </Link>
+
                 <NotificationDropdown />
                 <Link
-                  to="/MyProfile"
+                  to="/profile"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <User className="w-5 h-5" />
@@ -170,12 +173,13 @@ export default function Header() {
                   >
                     <ShoppingCart size={20} className="mr-2" />
                     Cart
-                    {cartItems.length > 0 && (
+                    {cartItemCount > 0 && (
                       <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {cartItems.length}
+                        {cartItemCount}
                       </span>
                     )}
                   </Link>
+
                   <Link
                     to="/profile"
                     className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors mb-2"
