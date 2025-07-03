@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Pagination from '../components/shared/pagination';
 import OrderList from '../components/shared/order/orderList';
-import AdminLoader from '../components/admin/adminLoader';
-// import { useAuth } from '../context/AuthContext';
+import SharedLoadingComponent from '../components/shared/medicalLoading';
 
 function OrdersPage() {
-  // const { user, token } = useAuth();
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
   const pharmacistId = user ? user.id : null;
@@ -21,25 +19,18 @@ function OrdersPage() {
   const [allOrders, setAllOrders] = useState([]);
   const [clientCache, setClientCache] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
-
-  // Get store id from API by pharmacist id (user.id)
   const [storeId, setStoreId] = useState(null);
-// console.log("user ", pharmacistId)
+
   useEffect(() => {
     if (!user?.id || !token) return;
-    // Fetch store for this pharmacist
-    // console.log("user ", user)
     fetch(`http://localhost:8000/medical_stores/?owner_id=${pharmacistId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(data => {
-        console.log("stores" , data.results)
-        // If paginated, expect { results: [...] }
         const stores = Array.isArray(data) ? data.results : data.results;
         if (stores && stores.length > 0) {
-          console.log("store ", stores[0].id)
-          setStoreId(stores[0].id); // Use the first store found
+          setStoreId(stores[0].id);
         } else {
           setStoreId(null);
         }
@@ -47,14 +38,12 @@ function OrdersPage() {
       .catch(() => setStoreId(null));
   }, [user, token]);
 
-  // Fetch orders for this store
   useEffect(() => {
     if (!storeId || !token) return;
     setLoading(true);
-    fetch(`http://localhost:8000/orders/?store_id=${storeId}&page=${page}&page_size=${pageSize}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+    fetch(`http://localhost:8000/orders/?store_id=${storeId}&page=${page}&page_size=${pageSize}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -72,7 +61,6 @@ function OrdersPage() {
       });
   }, [token, storeId, page, pageSize]);
 
-  // Fetch all orders for search (only when search is not empty)
   useEffect(() => {
     if (!storeId || !token || search.trim() === "") {
       setAllOrders([]);
@@ -92,7 +80,6 @@ function OrdersPage() {
       .catch(() => setAllOrders([]));
   }, [search, token, storeId]);
 
-  // Filter orders by search (id or status)
   const filteredOrders = (search.trim() === "" ? orders : allOrders)
     .filter(order =>
       ((order.id + '').includes(search) ||
@@ -100,7 +87,6 @@ function OrdersPage() {
       (statusFilter === "" || order.order_status === statusFilter)
     );
 
-  // Helper to fetch client details by ID
   const fetchClientById = async (clientId) => {
     if (!clientId) return "!clientId";
     if (clientCache[clientId]) return clientCache[clientId];
@@ -117,18 +103,15 @@ function OrdersPage() {
     }
   };
 
-  // Edit order modal state
   const [editOrder, setEditOrder] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  // Handle edit button click
   const handleEdit = (order) => {
     setEditOrder(order);
     setEditForm({ order_status: order.order_status });
   };
-  // Handle status change in modal
   const handleEditChange = (e) => setEditForm({ ...editForm, [e.target.name]: e.target.value });
-  // Submit status update
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editOrder || !editOrder.id) return;
@@ -156,7 +139,15 @@ function OrdersPage() {
 
   return (
     <div className="relative min-h-screen">
-      <AdminLoader loading={loading} error={error} loadingMessage="Loading orders data..." />
+      {loading && (
+        <SharedLoadingComponent
+          gif="/ordersLoading.gif"
+          loadingText="Loading orders data..."
+          subText="Hang tight, your orders are coming!"
+          color="blue"
+        />
+      )}
+
       <div className={`container mx-auto px-4 pb-24 ${loading || error ? 'opacity-50 pointer-events-none select-none' : 'opacity-100'}`}>
         <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-100 rounded-lg p-2 sm:p-4 md:p-6 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
           <div className="w-full max-w-5xl flex flex-col items-center mb-4 sm:mb-8">
@@ -198,7 +189,6 @@ function OrdersPage() {
             fetchClientById={fetchClientById}
           />
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-          {/* Edit order modal */}
           {editOrder && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
               <form onSubmit={handleEditSubmit} className="bg-white rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col gap-6 min-w-[90vw] sm:min-w-[350px] max-w-[95vw] max-h-[90vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn w-full max-w-md">

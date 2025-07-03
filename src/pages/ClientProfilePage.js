@@ -10,7 +10,7 @@ import {
   FaEnvelope,
   FaUserShield,
 } from "react-icons/fa";
-import LoadingOverlay from "../components/shared/LoadingOverlay";
+import SharedLoadingComponent from "../components/shared/medicalLoading"; // [SENU] Replaced LoadingOverlay
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/150/cccccc/ffffff?text=No+Image";
 
@@ -24,7 +24,15 @@ export default function ClientProfilePage() {
       .catch(() => setClientData(null));
   }, []);
 
-  if (!clientData) return <LoadingOverlay />;
+  if (!clientData) return (
+    <div className="flex">
+      <Sidebar />
+      <SharedLoadingComponent 
+        loadingText="Loading your profile..."
+        gif="/profileLoading.gif"
+      />
+    </div>
+  ); // [SENU] Updated loading component with sidebar
 
   const renderBoolean = (val) =>
     val ? (
@@ -88,10 +96,7 @@ export default function ClientProfilePage() {
 
           {/* Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-[17px] leading-7">
-            <div>
-              <span className="font-semibold">Last Known Location:</span>{" "}
-              {renderLocation(clientData.last_latitude, clientData.last_longitude)}
-            </div>
+           
             <div>
               <span className="font-semibold">Default Delivery Location:</span>{" "}
               {renderLocation(clientData.default_latitude, clientData.default_longitude)}

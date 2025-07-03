@@ -3,7 +3,9 @@ import PharmacyLocator from '../components/client/PharmacyLocator';
 import PharmacyLocatorContainer from '../components/client/PharmacyLocator/index';
 const PharmacyMapPage = () => {
   return (
-      <PharmacyLocatorContainer city="minya" />   
+    <div className='bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200'>  
+    
+      <PharmacyLocatorContainer city="minya" />    </div>
   );
 };
 

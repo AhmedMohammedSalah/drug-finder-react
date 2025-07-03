@@ -63,7 +63,6 @@ export default function EditClientProfilePage() {
       zoom: 12
     });
 
-    // Add marker if coordinates exist
     if (formData.default_latitude && formData.default_longitude) {
       marker.current = new mapboxgl.Marker()
         .setLngLat(center)

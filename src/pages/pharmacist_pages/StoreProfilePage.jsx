@@ -5,9 +5,10 @@ import ProfileImageSection from '../../components/pharamcieslist/pharamStoreCrea
 import InputSection from '../../components/pharamcieslist/pharamStoreCreation/InputSection';
 import MapLoadingOverlay from '../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay';
 import { Pencil } from 'lucide-react';
-import MedicineManager from "../../components/medicine/MedicineManager";
-import PendingLicenseCard from '../../components/medicine/PendingLicenseCard'; 
+import MedicineManager from '../../components/medicine/MedicineManager';
+import PendingLicenseCard from '../../components/medicine/PendingLicenseCard';
 import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
+import SharedLoadingComponent  from '../../components/shared/medicalLoading';
 
 const StoreProfileForm = () => {
   const {
@@ -35,13 +36,12 @@ const StoreProfileForm = () => {
 
   const canEdit = isEditMode || !hasStore;
 
-  if (hasStore && isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-        <span className="mt-4 text-base sm:text-lg">Loading store data...</span>
-      </div>
-    );
+  // Debugging: Log the loading state
+  console.log('isLoading:', isLoading, 'hasStore:', hasStore);
+
+  // Show MedicalLoadingComponent while data is loading
+  if (isLoading) {
+    return <SharedLoadingComponent gif="/jarLoading.gif" />;
   }
 
   return (
@@ -144,7 +144,7 @@ const StoreProfileForm = () => {
             ) : licenseStatus === 'pending' ? (
               <PendingLicenseCard />
             ) : licenseStatus === 'rejected' ? (
-              <RejectedLicenseCard 
+              <RejectedLicenseCard
                 adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
                 appealLink="/pharmacy/profile/"
               />

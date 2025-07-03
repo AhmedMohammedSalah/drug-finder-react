@@ -82,6 +82,25 @@ const Checkout = () => {
     setPopupMessage('');
   };
 
+
+
+
+  const [clientProfile, setClientProfile] = useState(null);
+
+useEffect(() => {
+  const fetchClientProfile = async () => {
+    try {
+      const res = await apiEndpoints.client.getClientProfile();
+      setClientProfile(res.data);
+    } catch (err) {
+      console.error("Failed to fetch client profile:", err);
+    }
+  };
+
+  fetchClientProfile();
+}, []);
+
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -128,39 +147,50 @@ const Checkout = () => {
   };
 
   const handleOrderSubmit = async (orderPayload) => {
-    setLoading(true);
-    setError(null);
-    try {
-      if (location.latitude && location.longitude) {
-        orderPayload.delivery_lat = location.latitude;
-        orderPayload.delivery_lng = location.longitude;
-      }
-      
-      const response = await apiEndpoints.orders.createOrder(orderPayload);
+  setLoading(true);
+  setError(null);
 
-      if (response.data) {
-      try {
-             dispatch(clearCart(cart.id));
-         
-        } catch (err) {
-          console.error("Error clearing cart:", err);
-        }
-
-
-        if (orderPayload.payment_method === 'cash') {
-          navigate('/order-success', { state: { orderId: response.data.order.id } });
-        }
-        return response.data;
-      }
-    } catch (err) {
-      console.error(err);
-      const errorMessage = err.response?.data?.message || 'Failed to place order';
-      setError(errorMessage);
-      showErrorPopup(errorMessage);
-    } finally {
-      setLoading(false);
+  try {
+    if (
+      location.latitude &&
+      location.longitude &&
+      clientProfile &&
+      (
+        parseFloat(location.latitude).toFixed(4) !== parseFloat(clientProfile.default_latitude).toFixed(4) ||
+        parseFloat(location.longitude).toFixed(4) !== parseFloat(clientProfile.default_longitude).toFixed(4)
+      )
+    ) {
+      const updatedLocation = new FormData();
+      updatedLocation.append('default_latitude', location.latitude);
+      updatedLocation.append('default_longitude', location.longitude);
+      await apiEndpoints.client.updateClientProfile(updatedLocation);
+      console.log(' Updated client default location before order.');
     }
-  };
+
+    const response = await apiEndpoints.orders.createOrder(orderPayload);
+
+    if (response.data) {
+      try {
+        dispatch(clearCart(cart.id));
+      } catch (err) {
+        console.error("Error clearing cart:", err);
+      }
+
+      if (orderPayload.payment_method === 'cash') {
+        navigate('/order-success', { state: { orderId: response.data.order.id } });
+      }
+      return response.data;
+    }
+  } catch (err) {
+    console.error(err);
+    const errorMessage = err.response?.data?.message || 'Failed to place order';
+    setError(errorMessage);
+    showErrorPopup(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!cart) return <div className="flex justify-center items-center h-64">Loading cart data...</div>;
 
