@@ -12,11 +12,12 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
     atc_code: "",
     cas_number: "",
     description: "",
-    stock: 0,
+    stock: 1, // Changed default from 0 to 1
     price: 0.0,
     image: null,
   });
 
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   // ⏎ Fill form when editing
@@ -29,16 +30,40 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
         atc_code: initialData.atc_code || "",
         cas_number: initialData.cas_number || "",
         description: initialData.description || "",
-        stock: initialData.stock || 0,
+        stock: initialData.stock || 1, // Changed default from 0 to 1
         price: initialData.price || 0.0,
         image: null, // Don't prefill image
       });
     }
   }, [initialData]);
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (formData.stock <= 0) {
+      newErrors.stock = "Quantity must be greater than 0";
+    }
+    
+    if (formData.price < 0) {
+      newErrors.price = "Price cannot be negative";
+    }
+    
+    if (!formData.brand_name.trim()) {
+      newErrors.brand_name = "Brand name is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const handleImageChange = (e) => {
@@ -46,9 +71,13 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     const form = new FormData();
     for (const key in formData) {
-      if (formData[key]) {
+      if (formData[key] !== null && formData[key] !== undefined) {
         form.append(key, formData[key]);
       }
     }
@@ -106,23 +135,31 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
         {/* Form Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            ["brand_name", "Brand Name"],
-            ["generic_name", "Generic Name"],
-            ["chemical_name", "Chemical Name"],
-            ["atc_code", "ATC Code"],
-            ["cas_number", "CAS Number"],
-            ["stock", "Stock", "number"],
-            ["price", "Price (EGP)", "number"],
-          ].map(([name, label, type = "text"]) => (
-            <div key={name}>
-              <label className="block text-gray-600 mb-1">{label}</label>
+            ["brand_name", "Brand Name *", "text", true],
+            ["generic_name", "Generic Name", "text", false],
+            ["chemical_name", "Chemical Name", "text", false],
+            ["atc_code", "ATC Code", "text", false],
+            ["cas_number", "CAS Number", "text", false],
+            ["stock", "Stock *", "number", true, { min: 1 }],
+            ["price", "Price (EGP) *", "number", true, { min: 0, step: "0.01" }],
+          ].map(([name, label, type = "text", required = false, inputProps = {}]) => (
+            <div key={name} className="mb-2">
+              <label className="block text-gray-600 mb-1">
+                {label}
+                {required && <span className="text-red-500"> *</span>}
+              </label>
               <input
                 type={type}
                 name={name}
                 value={formData[name]}
                 onChange={handleChange}
-                className="border border-gray-300 rounded w-full px-3 py-2"
+                className={`border ${errors[name] ? 'border-red-500' : 'border-gray-300'} rounded w-full px-3 py-2`}
+                required={required}
+                {...inputProps}
               />
+              {errors[name] && (
+                <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
+              )}
             </div>
           ))}
         </div>
@@ -140,7 +177,13 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
         </div>
 
         {/* Submit */}
-        <div className="mt-6 text-right">
+        <div className="mt-6 flex justify-end space-x-3">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
           <button
             onClick={handleSubmit}
             disabled={submitting}
@@ -151,7 +194,7 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
                 ? "Updating..."
                 : "Saving..."
               : isEditMode
-              ? "Update"
+              ? "Update Medicine"
               : "Add Medicine"}
           </button>
         </div>
