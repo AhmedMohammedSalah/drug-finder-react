@@ -26,9 +26,11 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <img src="images/logo1.svg" width="40px" alt="" />
             <h1 className="text-2xl font-bold text-blue-600">Drug Finder</h1>
           </div>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -46,28 +48,29 @@ export default function Header() {
             </Link>
             <Link
               to="/#services"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-600  font-medium transition-colors"
             >
               About
             </Link>
-            <Link
+            {/* <Link
               to="/#contact"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Contact
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Search and User Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
+            <div className="flex items-center w-[400px] bg-white border border-gray-300 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+              <Search className="text-gray-400 w-5 h-5 mr-2" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full outline-none text-base"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
+
 
             {!user ? (
               <>

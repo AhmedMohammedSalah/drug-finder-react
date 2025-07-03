@@ -54,7 +54,7 @@ export default function HeroSection() {
           <div className="relative">
             <div className="relative z-10">
               <img  
-               src="images/drug-finder-1.png"
+               src="images/image6.webp"
                 alt="Healthcare Professional"
                 // className="w-full h-auto rounded-2xl shadow-2xl"
                 className="w-full h-auto-2xl "
