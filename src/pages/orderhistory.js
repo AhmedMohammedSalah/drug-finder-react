@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import apiEndpoints from '../services/api';
 import Pagination from '../components/shared/pagination';
+import SharedLoadingComponent from '../components/shared/medicalLoading'; // Added import
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -161,9 +162,12 @@ const OrderHistory = () => {
       )}
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader className="animate-spin h-8 w-8 text-blue-500" />
-        </div>
+        <SharedLoadingComponent 
+          loadingText="Loading your order history..."
+          subText="Gathering all your past purchases..."
+          color="blue"
+          gif="/ordersLoading.gif"
+        />
       ) : orders.length === 0 ? (
         <div className="bg-blue-50 rounded-lg p-6 text-center">
           <Package className="h-10 w-10 mx-auto text-blue-400 mb-3" />
@@ -185,7 +189,7 @@ const OrderHistory = () => {
                     </span>
                   </div>
                   <div className="text-sm font-medium">
-                Total: ${parseFloat(order.total_price || 0).toFixed(2)}
+                    Total: ${parseFloat(order.total_price || 0).toFixed(2)}
                   </div>
                 </div>
                 
@@ -216,7 +220,6 @@ const OrderHistory = () => {
                           </div>
                           <p className="font-medium">
                             ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-
                           </p>
                         </div>
                       ))}

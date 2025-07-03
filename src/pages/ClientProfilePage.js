@@ -10,7 +10,7 @@ import {
   FaEnvelope,
   FaUserShield,
 } from "react-icons/fa";
-import LoadingOverlay from "../components/shared/LoadingOverlay";
+import SharedLoadingComponent from "../components/shared/medicalLoading"; // [SENU] Replaced LoadingOverlay
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/150/cccccc/ffffff?text=No+Image";
 
@@ -24,7 +24,15 @@ export default function ClientProfilePage() {
       .catch(() => setClientData(null));
   }, []);
 
-  if (!clientData) return <LoadingOverlay />;
+  if (!clientData) return (
+    <div className="flex">
+      <Sidebar />
+      <SharedLoadingComponent 
+        loadingText="Loading your profile..."
+        gif="/profileLoading.gif"
+      />
+    </div>
+  ); // [SENU] Updated loading component with sidebar
 
   const renderBoolean = (val) =>
     val ? (

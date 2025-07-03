@@ -1,4 +1,3 @@
-// src/pages/CartPage.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -12,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import IconButton from '../components/shared/btn';
 import { Trash2, Plus, Minus, X } from 'lucide-react';
 import { toast } from 'react-toastify';
-import LoadingOverlay from '../components/shared/LoadingOverlay';
+import SharedLoadingComponent from '../components/shared/medicalLoading';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -21,8 +20,6 @@ const CartPage = () => {
 
   useEffect(() => {
     dispatch(fetchCart());
-   
-
   }, [dispatch]);
 
   useEffect(() => {
@@ -55,7 +52,13 @@ const CartPage = () => {
     dispatch(clearCart(cart.id));
   };
 
-  if (status === 'loading')return <LoadingOverlay />;
+  if (status === 'loading') {
+    return <SharedLoadingComponent 
+      loadingText="Loading your cart items..."
+      gif="/cartLoading.gif"
+      gifWidth="50%"
+    />;
+  }
   
   if (!cart || !cart.items?.length) {
     return (
@@ -103,8 +106,8 @@ const CartPage = () => {
                   <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
                     {item.image ? (
                       <img 
-                         src={item.image}
-    alt={item.name || `Product ${item.product}`}
+                        src={item.image}
+                        alt={item.name || `Product ${item.product}`}
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -210,18 +213,15 @@ const CartPage = () => {
               </div>
             </div>
 
-           
             {/* Checkout Button */}
-              <Link to="/client/checkout">
-            <button className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
-              PROCEED TO CHECKOUT
-            </button>
-          </Link>
-
+            <Link to="/client/checkout">
+              <button className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
+                PROCEED TO CHECKOUT
+              </button>
+            </Link>
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

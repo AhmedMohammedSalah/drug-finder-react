@@ -44,7 +44,7 @@ import NotFoundPage from "./pages/Notfound.js";
 import ClientProfilePage from "./pages/ClientProfilePage.js";
 import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
-import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
+import SharedLoadingComponent from "./components/shared/medicalLoading.js";
 
 // Guards
 import {
@@ -109,7 +109,7 @@ function App() {
         </Route>
 
         
-        <Route path="test" element={<MedicalLoadingComponent />} />
+        <Route path="test" element={<SharedLoadingComponent />} />
         <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/* Guest Routes (No auth required) */}
@@ -171,9 +171,9 @@ function App() {
         {/* Pharmacist Routes */}
         <Route element={<RequireRole allowedRoles={["pharmacist"]} />}>
           <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-            <Route index element={<Drugs />} />
+            {/* <Route index element={<Drugs />} /> */}
             <Route path="store" element={<PharmacistStoreProfilePage />} />
-            <Route path="drugs" element={<Drugs />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
             <Route path="drugs/add" element={<AddDrug />} />
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
@@ -198,7 +198,7 @@ function App() {
           <Route path="/chat" element={<AI_ChatPage />} />
         </Route>
         {/* Utility Routes */}
-        <Route path="/test" element={<MedicalLoadingComponent />} />
+        <Route path="/test" element={<SharedLoadingComponent />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
