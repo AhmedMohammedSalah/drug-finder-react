@@ -28,24 +28,22 @@ const ClientMedicineViewer = ({ storeId }) => {
         cancelTokenSource.current.cancel('New request triggered');
       }
       cancelTokenSource.current = axios.CancelToken.source();
-  
+
       try {
         setLoading(true);
         setError(null);
-  
+
         const params = {
           page,
           page_size: itemsPerPage,
           ordering: `${sortOrder === 'desc' ? '-' : ''}${sortBy}`,
         };
-  
+
         if (query) params.search = query;
         if (startsWith) params.brand_startswith = startsWith;
-  
+
         const res = await apiEndpoints.pharmacies.getMedicinesForStore(storeId, params);
-  
-        console.log('Fetched medicines:', res);
-  
+
         setMedicines(res.results || []);
         setTotalItems(res.count || 0);
         setTotalPages(Math.ceil((res.count || 0) / itemsPerPage));
@@ -119,43 +117,36 @@ const ClientMedicineViewer = ({ storeId }) => {
   };
 
   const SkeletonCard = () => (
-    <div className="bg-gray-100 rounded-lg p-4 animate-pulse">
-      <div className="h-40 bg-gray-200 rounded mb-4"></div>
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    <div className="bg-gray-100 rounded-lg p-3 animate-pulse w-full max-w-xs">
+      <div className="h-32 bg-gray-200 rounded mb-3"></div>
+      <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
     </div>
   );
 
-  if (loading && medicines.length === 0) {
-    return (
-      <div className="flex justify-center items-center py-8 text-gray-600">
-        <div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mr-2" />
-        <span>Loading medicines...</span>
-      </div>
-    );
-  }
-
   return (
-    <div className="mt-8 bg-white border rounded-xl overflow-hidden">
-      <div className="sticky top-0 z-10 bg-white">
-        <div className="bg-blue-600 px-6 py-4">
-          <h2 className="text-2xl font-semibold text-white">Medicine Inventory</h2>
+    <div className="mt-4 md:mt-6 lg:mt-8 bg-white border rounded-lg lg:rounded-xl overflow-hidden w-full px-2 overflow-x-hidden">
+      {/* Header Section */}
+      <div className="sticky top-0 z-10 bg-white shadow-sm">
+        <div className="bg-blue-600 px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white">Medicine Inventory</h2>
           {totalItems > 0 && (
-            <p className="text-blue-100 text-sm mt-1">
+            <p className="text-blue-100 text-xs sm:text-sm mt-1">
               Showing {(currentPage - 1) * itemsPerPage + 1}–
               {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} medicines
             </p>
           )}
         </div>
 
-        <div className="bg-white px-6 py-4 border-b">
-          <div className="flex items-center gap-4 overflow-x-auto">
-            <span className="text-sm text-gray-600 whitespace-nowrap">Sort by:</span>
+        {/* Sort Controls */}
+        <div className="bg-white px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-3 border-b overflow-x-auto">
+          <div className="flex flex-wrap items-center gap-2 min-w-full">
+            <span className="text-xs text-gray-600 whitespace-nowrap">Sort:</span>
             {['brand_name', 'generic_name', 'price', 'stock'].map((field) => (
               <button
                 key={field}
                 onClick={() => toggleSort(field)}
-                className={`px-3 py-1 rounded-md text-sm flex items-center gap-1 whitespace-nowrap ${
+                className={`px-2 py-1 rounded-md text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap ${
                   sortField === field
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -167,78 +158,88 @@ const ClientMedicineViewer = ({ storeId }) => {
           </div>
         </div>
 
-        <div className="bg-white px-6 py-2 border-b">
-          <div className="flex items-center gap-2 overflow-x-auto">
-            <span className="text-sm text-gray-600 whitespace-nowrap">Filter by letter:</span>
+        {/* Alphabet Filter */}
+        <div className="bg-white px-2 py-1 sm:px-3 sm:py-2 border-b overflow-x-auto">
+          <div className="flex flex-wrap items-center gap-1 min-w-full">
+            <span className="text-xs text-gray-600 whitespace-nowrap">Letters:</span>
             {selectedLetter && (
               <button
                 onClick={handleClearSearch}
-                className="px-3 py-1 rounded-md text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition whitespace-nowrap"
+                className="px-2 py-0.5 rounded-md text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 transition whitespace-nowrap"
               >
-                Clear Filter
+                Clear
               </button>
             )}
-            {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
-              <button
-                key={letter}
-                onClick={() => handleLetterClick(letter)}
-                className={`px-2 py-1 rounded-md text-sm flex items-center gap-1 whitespace-nowrap ${
-                  selectedLetter === letter
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {letter}
-              </button>
-            ))}
+            <div className="flex gap-3 flex-wrap justify-center">
+              {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
+                <button
+                  key={letter}
+                  onClick={() => handleLetterClick(letter)}
+                  className={`px-2 py-1 rounded text-sm font-semibold flex items-center ${
+                    selectedLetter === letter
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {letter}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white px-6 py-4 border-b">
-          <div className="relative flex-1 min-w-[200px]">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+        {/* Search Bar */}
+        <div className="bg-white px-3 py-2 sm:px-4 sm:py-3 border-b">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search by brand, generic, or chemical name..."
-              className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Search medicines..."
+              className="block w-full max-w-full pl-8 pr-8 py-1 sm:py-2 text-sm border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={searchQuery}
               onChange={handleSearchChange}
             />
             {searchQuery && (
               <button
                 onClick={handleClearSearch}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-2 flex items-center"
                 aria-label="Clear search"
               >
-                <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
               </button>
             )}
             {isSearchLoading && (
-              <div className="absolute inset-y-0 right-0 pr-10 flex items-center pointer-events-none">
-                <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+              <div className="absolute inset-y-0 right-0 pr-8 flex items-center pointer-events-none">
+                <div className="animate-spin w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full" />
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="p-6">
-        {error && <div className="text-center text-red-500 py-4">{error}</div>}
+      {/* MAIN CONTENT */}
+      <div className="px-2 py-3 sm:px-3 sm:py-4 md:px-4 md:py-5 lg:px-6 lg:py-6">
+        {error && (
+          <div className="text-center text-red-500 py-3 sm:py-4">
+            {error}
+          </div>
+        )}
+
         {medicines.length === 0 && !loading ? (
-          <div className="text-center text-gray-500 py-12">
-            <PackageX className="w-20 h-20 mx-auto text-gray-300 mb-4" />
-            <p className="text-lg font-medium">
+          <div className="text-center text-gray-500 py-6 sm:py-8 md:py-10 lg:py-12">
+            <PackageX className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto text-gray-300 mb-2 sm:mb-3 md:mb-4" />
+            <p className="text-sm sm:text-base md:text-lg font-medium">
               {searchQuery ? 'No matching medicines found' : 'No medicines available'}
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-400 mt-1">
               {searchQuery ? 'Try a different search term' : 'This pharmacy has no medicines listed'}
             </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
               {loading ? (
                 Array.from({ length: itemsPerPage }).map((_, index) => (
                   <SkeletonCard key={index} />
@@ -249,14 +250,15 @@ const ClientMedicineViewer = ({ storeId }) => {
                     key={medicine.id}
                     medicine={medicine}
                     isReadOnly={true}
-                    onDeleted={() => {}} // No-op
-                    onEdit={() => {}} // No-op
+                    onDeleted={() => {}}
+                    onEdit={() => {}}
                   />
                 ))
               )}
             </div>
+
             {totalPages > 1 && (
-              <div className="mt-6">
+              <div className="mt-3 sm:mt-4 md:mt-5 lg:mt-6">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

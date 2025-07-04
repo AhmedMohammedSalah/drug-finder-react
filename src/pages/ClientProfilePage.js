@@ -10,7 +10,7 @@ import {
   FaEnvelope,
   FaUserShield,
 } from "react-icons/fa";
-import LoadingOverlay from "../components/shared/LoadingOverlay";
+import SharedLoadingComponent from "../components/shared/medicalLoading"; // [SENU] Replaced LoadingOverlay
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/150/cccccc/ffffff?text=No+Image";
 
@@ -24,7 +24,15 @@ export default function ClientProfilePage() {
       .catch(() => setClientData(null));
   }, []);
 
-  if (!clientData) return <LoadingOverlay />;
+  if (!clientData) return (
+    <div className="flex">
+      <Sidebar />
+      <SharedLoadingComponent 
+        loadingText="Loading your profile..."
+        gif="/profileLoading.gif"
+      />
+    </div>
+  ); // [SENU] Updated loading component with sidebar
 
   const renderBoolean = (val) =>
     val ? (
@@ -51,7 +59,7 @@ export default function ClientProfilePage() {
   return (
     <>
       <Sidebar />
-      <div className="ml-64 px-6 py-10 bg-white min-h-screen">
+      <div className="  px-6 py-10 bg-white min-h-screen">
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
@@ -88,10 +96,7 @@ export default function ClientProfilePage() {
 
           {/* Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-[17px] leading-7">
-            <div>
-              <span className="font-semibold">Last Known Location:</span>{" "}
-              {renderLocation(clientData.last_latitude, clientData.last_longitude)}
-            </div>
+           
             <div>
               <span className="font-semibold">Default Delivery Location:</span>{" "}
               {renderLocation(clientData.default_latitude, clientData.default_longitude)}
@@ -108,7 +113,7 @@ export default function ClientProfilePage() {
           {/* Edit Button */}
           <div className="mt-10 text-end">
             <Link
-              to="/profile/edit"
+              to="/client/profile/edit"
               className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <FaUserEdit /> Edit Profile

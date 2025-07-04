@@ -44,7 +44,8 @@ import NotFoundPage from "./pages/Notfound.js";
 import ClientProfilePage from "./pages/ClientProfilePage.js";
 import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
-import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
+import SharedLoadingComponent from "./components/shared/medicalLoading.js";
+
 
 // Guards
 import {
@@ -52,6 +53,7 @@ import {
   RequireRole,
   RequireNoRole,
 } from "./guards/authorization-guard.js";
+import ArchivePage from "./pages/pharmacist_pages/pharamacist_archieve.jsx";
 
 // Services
 
@@ -109,7 +111,7 @@ function App() {
         </Route>
 
         
-        <Route path="test" element={<MedicalLoadingComponent />} />
+        <Route path="test" element={<SharedLoadingComponent />} />
         <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/* Guest Routes (No auth required) */}
@@ -123,15 +125,10 @@ function App() {
 
         {/*===========================================================*/}
 
-          <Route path="/profile" element={<ClientProfilePage/>} />
-  <Route path="/profile/edit" element={<EditClientProfilePage/>} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
-        {/* <Route element={<RequireNoRole />}> */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-
+        
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
@@ -149,6 +146,9 @@ function App() {
         {/* Client Routes */}
         <Route element={<RequireRole allowedRoles={["client"]} />}>
           <Route path="/client" element={<ClientLayout />}>
+          
+          <Route path="profile" element={<ClientProfilePage/>} />
+        <Route path="profile/edit" element={<EditClientProfilePage/>} />
             <Route index element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
@@ -171,9 +171,10 @@ function App() {
         {/* Pharmacist Routes */}
         <Route element={<RequireRole allowedRoles={["pharmacist"]} />}>
           <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-            <Route index element={<Drugs />} />
+            {/* <Route index element={<Drugs />} /> */}
             <Route path="store" element={<PharmacistStoreProfilePage />} />
-            <Route path="drugs" element={<Drugs />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
+            <Route path="archive" element={<ArchivePage />} />
             <Route path="drugs/add" element={<AddDrug />} />
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
@@ -198,7 +199,7 @@ function App() {
           <Route path="/chat" element={<AI_ChatPage />} />
         </Route>
         {/* Utility Routes */}
-        <Route path="/test" element={<MedicalLoadingComponent />} />
+        <Route path="/test" element={<SharedLoadingComponent />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

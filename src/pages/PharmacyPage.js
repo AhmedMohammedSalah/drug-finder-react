@@ -123,8 +123,8 @@ const PharmacyPage = ({ storeId }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col">
+      <div className="flex-grow w-full px-1 sm:px-2 lg:px-4 py-4 sm:py-6 lg:py-8">
         <ProductList
           products={products}
           viewMode={viewMode}

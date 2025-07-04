@@ -63,7 +63,6 @@ export default function EditClientProfilePage() {
       zoom: 12
     });
 
-    // Add marker if coordinates exist
     if (formData.default_latitude && formData.default_longitude) {
       marker.current = new mapboxgl.Marker()
         .setLngLat(center)
@@ -203,7 +202,7 @@ export default function EditClientProfilePage() {
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
-        navigate("/profile");
+        navigate("/client/profile");
       }, 2000);
     } catch (err) {
       console.error("Update failed:", err);
@@ -212,13 +211,13 @@ export default function EditClientProfilePage() {
   };
 
   const handleCancel = () => {
-    navigate("/profile");
+    navigate("/client/profile");
   };
 
   return (
     <>
       <Sidebar />
-      <div className="ml-64 px-2 py-3 bg-white min-h-screen">
+      <div className="px-2 py-3 bg-white min-h-screen">
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
           <h2 className="text-3xl font-bold text-blue-800 mb-8 text-center">
             Edit Profile
