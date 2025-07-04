@@ -61,7 +61,7 @@ export function validateRegisterForm(data) {
   }
 
   // ROLE
-  if (!data.role || !["client", "pharmacist"].includes(data.role)) {
+  if (!data.role || !["client", "pharmacist", "delivery"].includes(data.role)) {
     errors.role = "Please select a valid role";
     valid = false;
   }
@@ -84,14 +84,14 @@ export function validateRegisterForm(data) {
     valid = false;
   }
 
-  // FILE VALIDATION FOR PHARMACIST
-  if (data.role === "pharmacist") {
+  // FILE VALIDATION FOR PHARMACIST & DELIVERY
+  if (["pharmacist", "delivery"].includes(data.role)) {
     if (!data.imageProfile || data.imageProfile === "skip") {
-      errors.imageProfile = "Profile image is required for pharmacists";
+      errors.imageProfile = `Profile image is required for ${data.role}s`;
       valid = false;
     }
     if (!data.imageLicense || data.imageLicense === "skip") {
-      errors.imageLicense = "License image is required for pharmacists";
+      errors.imageLicense = `${data.role === "delivery" ? "Delivery license" : "License"} image is required for ${data.role}s`;
       valid = false;
     }
   }

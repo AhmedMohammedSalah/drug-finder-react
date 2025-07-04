@@ -45,7 +45,9 @@ import ClientProfilePage from "./pages/ClientProfilePage.js";
 import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
 import SharedLoadingComponent from "./components/shared/medicalLoading.js";
-
+import DeliveriesAdminPage from "./pages/admin/DeliveriesAdminPage.jsx";
+import DeliveryOrdersPage from "./pages/DeliveryOrdersPage.js";
+import DeliveryProfilePage from "./pages/DeliveryProfilePage.js";
 
 // Guards
 import {
@@ -191,6 +193,7 @@ function App() {
             <Route path="medicines" element={<Medicines />} />
             <Route path="stores" element={<Stores />} />
             <Route path="orders" element={<OrdersAd />} />
+            <Route path="deliveries" element={<DeliveriesAdminPage />} />
           </Route>
         </Route>
 
@@ -202,6 +205,12 @@ function App() {
         <Route path="/test" element={<SharedLoadingComponent />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<NotFoundPage />} />
+
+        {/* Delivery Routes */}
+        <Route element={<RequireRole allowedRoles={["delivery"]} />}>
+          <Route path="/delivery/orders" element={<DeliveryOrdersPage />} />
+          <Route path="/delivery/profile" element={<DeliveryProfilePage />} />
+        </Route>
       </Routes>
     </Router>
   );

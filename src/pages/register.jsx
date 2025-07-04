@@ -41,6 +41,7 @@ export default function RegisterPage() {
   const roleOptions = [
     { id: "client", name: "Client" },
     { id: "pharmacist", name: "Pharmacist" },
+    { id: "delivery", name: "Delivery" },
   ];
 
   const handleProfileImage = (file) => {
@@ -77,8 +78,8 @@ export default function RegisterPage() {
 
     const validationResult = validateRegisterForm({
       fullName, email, role, password, confirmPassword,
-      imageProfile: role === "pharmacist" ? imageProfile : "skip",
-      imageLicense: role === "pharmacist" ? imageLicense : "skip",
+      imageProfile: ["pharmacist", "delivery"].includes(role) ? imageProfile : "skip",
+      imageLicense: ["pharmacist", "delivery"].includes(role) ? imageLicense : "skip",
     });
 
     setErrors(validationResult.errors);
@@ -196,7 +197,7 @@ export default function RegisterPage() {
                 onChange={(e) => setRole(e.target.value)}
                 error={errors.role || getErrorString("role")}
               />
-              {role === "pharmacist" && (
+              {["pharmacist", "delivery"].includes(role) && (
                 <FileUpload
                   label="Profile Image"
                   onFileChange={handleProfileImage}
@@ -205,9 +206,9 @@ export default function RegisterPage() {
                   required
                 />
               )}
-              {role === "pharmacist" && (
+              {["pharmacist", "delivery"].includes(role) && (
                 <FileUpload
-                  label="License Image"
+                  label={role === "delivery" ? "Delivery License Image" : "License Image"}
                   onFileChange={handleLicenseImage}
                   accept="image/*"
                   error={errors.imageLicense || getErrorString("image_license")}

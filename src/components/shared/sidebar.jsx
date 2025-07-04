@@ -69,6 +69,7 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
       { label: "Medicines", icon: ClipboardList, to: "/admin/medicines" },
       { label: "Stores", icon: WarehouseIcon, to: "/admin/stores" },
       { label: "Orders", icon: ShoppingCart, to: "/admin/orders" },
+      { label: "Deliveries", icon: ShieldCheck, to: "/admin/deliveries" },
     ],
     pharmacist: hasStore
       ? [
@@ -87,6 +88,10 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
       { label: 'Profile', icon: CircleUser, to: '/client/profile' },
+    ],
+    delivery: [
+      { label: 'Orders', icon: ShoppingBag, to: '/delivery/orders', end: true },
+      { label: 'Profile', icon: CircleUser, to: '/delivery/profile' },
     ],
   };
 

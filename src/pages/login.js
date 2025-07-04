@@ -23,6 +23,7 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const { loading, error: authError } = useSelector((state) => state.auth);
   const [backendError, setBackendError] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLoginSuccess = (result) => {
@@ -37,6 +38,8 @@ export default function LoginPage() {
       } else {
         navigate("/pharmacy");
       }
+    } else if (role === "delivery") {
+      navigate("/delivery/orders");
     } else if (role === "client") {
       navigate("/client");
     } else {
@@ -68,6 +71,7 @@ export default function LoginPage() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      setGoogleLoading(true);
       dispatch(clearError());
       setBackendError("");
 
@@ -87,6 +91,8 @@ export default function LoginPage() {
         error.payload ||
         "Google login failed. Please try again."
       );
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -154,23 +160,25 @@ export default function LoginPage() {
             <div className="flex justify-center gap-4">
           
               <div className="border px-2 py-1 rounded hover:bg-gray-100 transition">
+                {googleLoading ? (
+                  <div className="px-4 py-2 text-gray-500">Signing in...</div>
+                ) : (
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() =>
                     setBackendError("Google login failed. Please try again.")
                   }
-                  useOneTap
-                  auto_select
                   size="medium"
                   width="200"
                 />
+                )}
               </div>
            
             </div>
 
             {/* Sign up link */}
             <p className="text-center text-sm text-gray-600 mt-6">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/register" className="text-blue-500 font-medium hover:underline">
                 Sign up
               </Link>
