@@ -27,6 +27,8 @@ const Checkout = () => {
     latitude: null,
     longitude: null
   });
+  const [shippingError, setShippingError] = useState('');
+
 
   const accessToken = localStorage.getItem('access_token');
 
@@ -149,6 +151,13 @@ useEffect(() => {
   const handleOrderSubmit = async (orderPayload) => {
   setLoading(true);
   setError(null);
+  if (!formData.shipping_location || formData.shipping_location.trim().length < 5) {
+    setShippingError("Shipping address must be at least 5 characters.");
+    setLoading(false);
+    return;
+  } else {
+    setShippingError('');
+  }
 
   try {
     if (
@@ -224,7 +233,7 @@ useEffect(() => {
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping Information</h2>
                 <div className="space-y-4">
-                  <div>
+                 <div>
                     <label htmlFor="shipping_location" className="block mb-2 text-sm font-medium text-gray-900">
                       Shipping Address
                     </label>
@@ -234,11 +243,14 @@ useEffect(() => {
                       type="text"
                       value={formData.shipping_location}
                       onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                      required
+                      className={`bg-gray-50 border ${
+                        shippingError ? 'border-red-500' : 'border-gray-300'
+                      } text-gray-900 text-sm rounded-lg block w-full p-2.5`}
                     />
+                    {shippingError && (
+                      <p className="text-red-500 text-sm mt-1">{shippingError}</p>
+                    )}
                   </div>
-                  
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-900">
                       Delivery Location
