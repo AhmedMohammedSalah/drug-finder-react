@@ -31,7 +31,7 @@ function OrdersAdminPage() {
       })
       .then(res => res.json())
       .then(data => {
-        // console.log('Fetched orders:', data);
+        console.log('Fetched orders:', data);
         // If paginated, expect { results, count }
         if (Array.isArray(data)) {
           setOrders(data);
