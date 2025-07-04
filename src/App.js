@@ -14,7 +14,7 @@ import DashboardLayout from "./components/layout/admin-layout";
 import Home from "./pages/homePage";
 import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
-// import Orders from "./pages/pharmacist_pages/ordersPage.js";
+import Orders from "./pages/pharmacist_pages/ordersPage.js";
 import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
@@ -175,7 +175,7 @@ function App() {
             <Route path="store" element={<PharmacistStoreProfilePage />} />
             {/* <Route path="drugs" element={<Drugs />} /> */}
             {/* <Route path="drugs/add" element={<AddDrug />} /> */}
-            {/* <Route path="orders" element={<Orders />} /> */}
+            <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
             <Route path="notifications" element={<NotificationPage />} />
           </Route>
