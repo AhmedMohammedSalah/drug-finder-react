@@ -269,12 +269,12 @@ function OrdersAdminPage() {
                     required
                   >
                     <option value="">Select Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="on_process">On Process</option>
-                    <option value="shipping">Shipping</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="canceled">Canceled</option>
+                    {editOrder?.order_status !== 'pending' && <option value="pending">Pending</option>}
+                    {editOrder?.order_status !== 'paid' && <option value="paid">Paid</option>}
+                    {editOrder?.order_status !== 'on_process' && <option value="on_process">On Process</option>}
+                    {editOrder?.order_status !== 'shipping' && <option value="shipping">Shipping</option>}
+                    {editOrder?.order_status !== 'delivered' && <option value="delivered">Delivered</option>}
+                    {editOrder?.order_status !== 'canceled' && <option value="canceled">Canceled</option>}
                   </select>
                 </div>
                 <div className="flex gap-3 mt-4 justify-end">
