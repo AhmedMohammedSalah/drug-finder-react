@@ -149,7 +149,7 @@ function App() {
           
           <Route path="profile" element={<ClientProfilePage/>} />
         <Route path="profile/edit" element={<EditClientProfilePage/>} />
-            <Route index element={<PharmacyMapPage />} />
+            <Route index element={<MedicineSearchPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="pharmacies" element={<PharmacyList />} />
