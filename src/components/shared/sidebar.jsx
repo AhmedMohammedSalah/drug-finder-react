@@ -86,7 +86,7 @@ const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity
       { label: 'Pharmacies', icon: StoreIcon, to: '/client/pharmacies' },
       { label: 'Cart', icon: ShoppingCart, to: '/client/cart' },
       { label: 'Order', icon: ShoppingBag, to: '/client/order' },
-      { label: 'Profile', icon: CircleUser, to: '/profile' },
+      { label: 'Profile', icon: CircleUser, to: '/client/profile' },
     ],
   };
 
@@ -156,6 +156,18 @@ return (
 
     {/* MENU ITEMS */}
     <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+       {/* <NavLink
+    to="/"
+    end
+    className={({ isActive }) =>
+      `flex items-center gap-4 px-4 py-2 rounded-md transition-all ${
+        isActive ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
+      }`
+    }
+  >
+    <Home size={20} className="text-white" />
+    <span>Home</span>
+  </NavLink> */}
               {items.map(({ label, icon: Icon, to, end }, index) => {
           const isCart = label === "Cart";
 

@@ -62,14 +62,14 @@ export default function Header() {
 
           {/* Search and User Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center w-[400px] bg-white border border-gray-300 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+            {/* <div className="flex items-center w-[400px] bg-white border border-gray-300 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500">
               <Search className="text-gray-400 w-5 h-5 mr-2" />
               <input
                 type="text"
                 placeholder="Search..."
                 className="w-full outline-none text-base"
               />
-            </div>
+            </div> */}
 
 
             {!user ? (
@@ -90,7 +90,7 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link to="/cart" className="relative flex items-center">
+                <Link to="/client/cart" className="relative flex items-center">
                   <div className="relative">
                     <ShoppingCart size={20} className="text-gray-700" />
                     {cartItemCount > 0 && (
@@ -103,7 +103,7 @@ export default function Header() {
 
                 <NotificationDropdown />
                 <Link
-                  to="/profile"
+                  to="/client/profile"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <User className="w-5 h-5" />
@@ -184,7 +184,7 @@ export default function Header() {
                   </Link>
 
                   <Link
-                    to="/profile"
+                    to="/client/profile"
                     className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors mb-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
