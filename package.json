@@ -32,14 +32,15 @@
     "react-router-dom": "^7.6.1",
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.5",
-    "source-map-loader": "^5.0.0",
     "socket.io-client": "^4.8.1",
+    "source-map-loader": "^5.0.0",
+    "sweetalert2": "^11.22.2",
+    "sweetalert2-react-content": "^5.1.0",
     "three": "^0.177.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npm run start-react",
-    "start-react": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -78,7 +79,6 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.8",
     "autoprefixer": "^10.4.21",
-    "concurrently": "^9.1.2",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.1"
   }

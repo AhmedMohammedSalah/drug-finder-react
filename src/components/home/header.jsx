@@ -17,18 +17,20 @@ export default function Header() {
   };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // Always use array for cartItems to avoid undefined errors with backend cart
-  const cartItems = useSelector((state) =>
-    Array.isArray(state.cart.cart?.items) ? state.cart.cart.items : []
-  );
+  const cart = useSelector((state) => state.cart.cart);
+  const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <img src="images/logo1.svg" width="40px" alt="" />
             <h1 className="text-2xl font-bold text-blue-600">Drug Finder</h1>
           </div>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -46,28 +48,29 @@ export default function Header() {
             </Link>
             <Link
               to="/#services"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-600  font-medium transition-colors"
             >
               About
             </Link>
-            <Link
+            {/* <Link
               to="/#contact"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Contact
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Search and User Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
+            {/* <div className="flex items-center w-[400px] bg-white border border-gray-300 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+              <Search className="text-gray-400 w-5 h-5 mr-2" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full outline-none text-base"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            </div>
+            </div> */}
+
 
             {!user ? (
               <>
@@ -87,17 +90,20 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link to="/cart" className="relative flex items-center">
-                  <ShoppingCart size={32} className="text-gray-800" />
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center">
-                      {cartItems.length}
-                    </span>
-                  )}
+                <Link to="/client/cart" className="relative flex items-center">
+                  <div className="relative">
+                    <ShoppingCart size={20} className="text-gray-700" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none shadow">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </div>
                 </Link>
+
                 <NotificationDropdown />
                 <Link
-                  to="/MyProfile"
+                  to="/client/profile"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <User className="w-5 h-5" />
@@ -170,14 +176,15 @@ export default function Header() {
                   >
                     <ShoppingCart size={20} className="mr-2" />
                     Cart
-                    {cartItems.length > 0 && (
+                    {cartItemCount > 0 && (
                       <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {cartItems.length}
+                        {cartItemCount}
                       </span>
                     )}
                   </Link>
+
                   <Link
-                    to="/profile"
+                    to="/client/profile"
                     className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors mb-2"
                     onClick={() => setIsMenuOpen(false)}
                   >

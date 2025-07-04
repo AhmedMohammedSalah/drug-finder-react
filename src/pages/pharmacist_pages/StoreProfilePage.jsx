@@ -5,8 +5,8 @@ import ProfileImageSection from '../../components/pharamcieslist/pharamStoreCrea
 import InputSection from '../../components/pharamcieslist/pharamStoreCreation/InputSection';
 import MapLoadingOverlay from '../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay';
 import { Pencil } from 'lucide-react';
-import MedicineManager from "../../components/medicine/MedicineManager";
-import PendingLicenseCard from '../../components/medicine/PendingLicenseCard'; 
+import MedicineManager from '../../components/medicine/MedicineManager';
+import PendingLicenseCard from '../../components/medicine/PendingLicenseCard';
 import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
 import AdminLoader from '../../components/admin/adminLoader';
 
@@ -142,7 +142,7 @@ const StoreProfileForm = () => {
             ) : licenseStatus === 'pending' ? (
               <PendingLicenseCard />
             ) : licenseStatus === 'rejected' ? (
-              <RejectedLicenseCard 
+              <RejectedLicenseCard
                 adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
                 appealLink="/pharmacy/profile/"
               />

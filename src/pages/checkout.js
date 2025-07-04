@@ -27,6 +27,8 @@ const Checkout = () => {
     latitude: null,
     longitude: null
   });
+  const [shippingError, setShippingError] = useState('');
+
 
   const accessToken = localStorage.getItem('access_token');
 
@@ -82,6 +84,25 @@ const Checkout = () => {
     setPopupMessage('');
   };
 
+
+
+
+  const [clientProfile, setClientProfile] = useState(null);
+
+useEffect(() => {
+  const fetchClientProfile = async () => {
+    try {
+      const res = await apiEndpoints.client.getClientProfile();
+      setClientProfile(res.data);
+    } catch (err) {
+      console.error("Failed to fetch client profile:", err);
+    }
+  };
+
+  fetchClientProfile();
+}, []);
+
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -128,39 +149,57 @@ const Checkout = () => {
   };
 
   const handleOrderSubmit = async (orderPayload) => {
-    setLoading(true);
-    setError(null);
-    try {
-      if (location.latitude && location.longitude) {
-        orderPayload.delivery_lat = location.latitude;
-        orderPayload.delivery_lng = location.longitude;
-      }
-      
-      const response = await apiEndpoints.orders.createOrder(orderPayload);
+  setLoading(true);
+  setError(null);
+  if (!formData.shipping_location || formData.shipping_location.trim().length < 5) {
+    setShippingError("Shipping address must be at least 5 characters.");
+    setLoading(false);
+    return;
+  } else {
+    setShippingError('');
+  }
 
-      if (response.data) {
-      try {
-             dispatch(clearCart(cart.id));
-         
-        } catch (err) {
-          console.error("Error clearing cart:", err);
-        }
-
-
-        if (orderPayload.payment_method === 'cash') {
-          navigate('/order-success', { state: { orderId: response.data.order.id } });
-        }
-        return response.data;
-      }
-    } catch (err) {
-      console.error(err);
-      const errorMessage = err.response?.data?.message || 'Failed to place order';
-      setError(errorMessage);
-      showErrorPopup(errorMessage);
-    } finally {
-      setLoading(false);
+  try {
+    if (
+      location.latitude &&
+      location.longitude &&
+      clientProfile &&
+      (
+        parseFloat(location.latitude).toFixed(4) !== parseFloat(clientProfile.default_latitude).toFixed(4) ||
+        parseFloat(location.longitude).toFixed(4) !== parseFloat(clientProfile.default_longitude).toFixed(4)
+      )
+    ) {
+      const updatedLocation = new FormData();
+      updatedLocation.append('default_latitude', location.latitude);
+      updatedLocation.append('default_longitude', location.longitude);
+      await apiEndpoints.client.updateClientProfile(updatedLocation);
+      console.log(' Updated client default location before order.');
     }
-  };
+
+    const response = await apiEndpoints.orders.createOrder(orderPayload);
+
+    if (response.data) {
+      try {
+        dispatch(clearCart(cart.id));
+      } catch (err) {
+        console.error("Error clearing cart:", err);
+      }
+
+      if (orderPayload.payment_method === 'cash') {
+        navigate('/order-success', { state: { orderId: response.data.order.id } });
+      }
+      return response.data;
+    }
+  } catch (err) {
+    console.error(err);
+    const errorMessage = err.response?.data?.message || 'Failed to place order';
+    setError(errorMessage);
+    showErrorPopup(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!cart) return <div className="flex justify-center items-center h-64">Loading cart data...</div>;
 
@@ -194,7 +233,7 @@ const Checkout = () => {
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping Information</h2>
                 <div className="space-y-4">
-                  <div>
+                 <div>
                     <label htmlFor="shipping_location" className="block mb-2 text-sm font-medium text-gray-900">
                       Shipping Address
                     </label>
@@ -204,11 +243,14 @@ const Checkout = () => {
                       type="text"
                       value={formData.shipping_location}
                       onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                      required
+                      className={`bg-gray-50 border ${
+                        shippingError ? 'border-red-500' : 'border-gray-300'
+                      } text-gray-900 text-sm rounded-lg block w-full p-2.5`}
                     />
+                    {shippingError && (
+                      <p className="text-red-500 text-sm mt-1">{shippingError}</p>
+                    )}
                   </div>
-                  
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-900">
                       Delivery Location

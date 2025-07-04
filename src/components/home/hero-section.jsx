@@ -53,15 +53,17 @@ export default function HeroSection() {
           {/* Right Content - Doctor Image */}
           <div className="relative">
             <div className="relative z-10">
-              <img
-                src="images/home/drug_finder.png"
+              <img  
+               src="images/image6.webp"
                 alt="Healthcare Professional"
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                // className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto-2xl "
+
               />
             </div>
             {/* Background Elements */}
-            <div className="absolute -top-4 -right-4 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
-            <div className="absolute -bottom-4 -left-4 w-48 h-48 bg-indigo-200 rounded-full blur-2xl opacity-40"></div>
+            {/* <div className="absolute -top-4 -right-4 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute -bottom-4 -left-4 w-48 h-48 bg-indigo-200 rounded-full blur-2xl opacity-40"></div> */}
           </div>
         </div>
       </div>

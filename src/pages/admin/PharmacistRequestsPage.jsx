@@ -4,7 +4,7 @@ import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard'
 import PharmacistFilter from '../../components/admin/PharmacistFilter';
 import SummaryStatisticsCard from '../../components/admin/SummaryStatisticsCard';
 import AdminLoader from '../../components/admin/adminLoader';
-import Pagination from '../../components/admin/Pagination';
+import Pagination from '../../components/shared/pagination';
 import PharmacistModal from '../../components/admin/PharmacistModal';
 import { Inbox } from 'lucide-react';
 
@@ -123,14 +123,6 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
-  const handleItemsPerPageChange = (itemsPerPage) => {
-    setPagination(prev => ({
-      ...prev,
-      itemsPerPage,
-      currentPage: 1,
-    }));
-  };
-
   const getCurrentItems = () => {
     const { currentPage, itemsPerPage } = pagination;
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -175,13 +167,11 @@ const PharmacistRequestsPage = () => {
       </div>
       {filteredPharmacists.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg py-3">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-2">
             <Pagination
               currentPage={pagination.currentPage}
-              itemsPerPage={pagination.itemsPerPage}
-              totalItems={pagination.totalItems}
+              totalPages={Math.ceil(pagination.totalItems / pagination.itemsPerPage)}
               onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
         </div>
