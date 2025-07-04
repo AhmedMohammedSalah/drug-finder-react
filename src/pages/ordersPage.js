@@ -174,7 +174,7 @@ function OrdersPage() {
 
   // Check if order can be canceled (not delivered)
   const canCancelOrder = (orderStatus) => {
-    return orderStatus !== "delivered";
+    return orderStatus !== "delivered" || orderStatus !== "canceled";
   };
 
   return (

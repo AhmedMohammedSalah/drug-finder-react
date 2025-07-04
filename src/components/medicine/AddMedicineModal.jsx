@@ -39,19 +39,19 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (formData.stock <= 0) {
       newErrors.stock = "Quantity must be greater than 0";
     }
-    
+
     if (formData.price < 0) {
       newErrors.price = "Price cannot be negative";
     }
-    
+
     if (!formData.brand_name.trim()) {
       newErrors.brand_name = "Brand name is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -59,10 +59,10 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
@@ -141,27 +141,43 @@ const AddMedicineModal = ({ onClose, onSuccess, storeId, initialData }) => {
             ["atc_code", "ATC Code", "text", false],
             ["cas_number", "CAS Number", "text", false],
             ["stock", "Stock *", "number", true, { min: 1 }],
-            ["price", "Price (EGP) *", "number", true, { min: 0, step: "0.01" }],
-          ].map(([name, label, type = "text", required = false, inputProps = {}]) => (
-            <div key={name} className="mb-2">
-              <label className="block text-gray-600 mb-1">
-                {label}
-                {required && <span className="text-red-500"> *</span>}
-              </label>
-              <input
-                type={type}
-                name={name}
-                value={formData[name]}
-                onChange={handleChange}
-                className={`border ${errors[name] ? 'border-red-500' : 'border-gray-300'} rounded w-full px-3 py-2`}
-                required={required}
-                {...inputProps}
-              />
-              {errors[name] && (
-                <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
-              )}
-            </div>
-          ))}
+            [
+              "price",
+              "Price (EGP) *",
+              "number",
+              true,
+              { min: 0, step: "0.01" },
+            ],
+          ].map(
+            ([
+              name,
+              label,
+              type = "text",
+              required = false,
+              inputProps = {},
+            ]) => (
+              <div key={name} className="mb-2">
+                <label className="block text-gray-600 mb-1">
+                  {label}
+                  {required && <span className="text-red-500"> *</span>}
+                </label>
+                <input
+                  type={type}
+                  name={name}
+                  value={formData[name]}
+                  onChange={handleChange}
+                  className={`border ${
+                    errors[name] ? "border-red-500" : "border-gray-300"
+                  } rounded w-full px-3 py-2`}
+                  required={required}
+                  {...inputProps}
+                />
+                {errors[name] && (
+                  <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
+                )}
+              </div>
+            )
+          )}
         </div>
 
         {/* Description */}
