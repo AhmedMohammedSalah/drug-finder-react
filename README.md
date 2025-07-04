@@ -1,70 +1,168 @@
-# Getting Started with Create React App
+# Drug Finder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Drug Finder is a full-stack web application that helps users (clients/patients) find medicines and medical devices, locate pharmacies, manage orders, and interact with an AI-powered assistant for health and project-related queries. The system supports multiple user roles: clients, pharmacists, and admins, each with tailored dashboards and features.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Key Features
 
-### `npm start`
+- **Medicine & Device Search:** Search for medicines/devices, view details, and find pharmacies that stock them.
+- **Pharmacy Locator:** Map and list views to find nearby pharmacies.
+- **Shopping Cart & Orders:** Add items to cart, checkout, and track order history.
+- **Payments:** Integrated payment system for order processing.
+- **Reviews & Ratings:** Clients can review pharmacies and products.
+- **Notifications:** Real-time notifications for order status, reminders, and more.
+- **AI Chatbot:** Intelligent assistant that answers health, medicine, and project-related questions using advanced NLP and retrieval-augmented generation (RAG).
+- **Role-based Dashboards:** Separate interfaces and features for clients, pharmacists, and admins.
+- **Admin Panel:** Manage users, pharmacies, medicines, orders, and handle pharmacist requests.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Tech Stack
 
-### `npm test`
+### Backend
+- **Framework:** Django 5, Django REST Framework
+- **AI/NLP:** LangChain, HuggingFace Transformers, RAG (Retrieval-Augmented Generation)
+- **Database:** PostgreSQL (with Postgres full-text search and Trigram similarity)
+- **Vector Store:** Supabase (for document embeddings and retrieval)
+- **Real-time:** Django Channels, Redis, Socket.io (Node.js microservice for real-time features)
+- **Payments:** Stripe
+- **Other:** Google Auth, CORS, JWT authentication
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Frontend
+- **Framework:** React (Create React App)
+- **State Management:** Redux Toolkit
+- **Styling:** Tailwind CSS
+- **Maps:** Mapbox GL, Google Maps API
+- **UI Libraries:** Headless UI, Heroicons, Lucide, React Icons, Framer Motion
+- **Testing:** React Testing Library, Jest
+- **Notifications:** React Hot Toast, React Toastify, SweetAlert2
+- **Real-time:** Socket.io-client
+- **AI Chat:** Integrated chatbox with backend AI endpoint
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📁 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Backend
+```
+backend-drug-finder/
+├── config/                # Project settings and configuration
+├── users/                 # User models (User, Client, Pharmacist)
+├── medical_stores/        # Pharmacy/store models
+├── inventory/             # Medicines and medical devices
+├── orders/                # Cart and order management
+├── payments/              # Payment processing
+├── reviews/               # Reviews and ratings
+├── notifications/         # User notifications
+├── AI_chat/               # AI assistant logic and endpoints
+├── manage.py              # Django management script
+├── requirements.txt       # Python dependencies
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Frontend
+```
+front-drug-finder/
+├── src/
+│   ├── pages/             # Main app pages (client, pharmacist, admin, AI chat, etc.)
+│   ├── components/        # Reusable UI components
+│   ├── features/          # Redux slices and feature logic
+│   ├── services/          # API service layer (axios)
+│   ├── context/           # React context providers
+│   ├── hooks/             # Custom React hooks
+│   ├── utils/             # Utility functions
+│   ├── app/               # App-level config
+│   └── index.js           # App entry point
+├── public/                # Static assets
+├── package.json           # JS dependencies and scripts
+├── tailwind.config.js     # Tailwind CSS config
+```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚡ Setup & Installation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Backend
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. **Install dependencies:**
+   ```bash
+   cd backend-drug-finder
+   pip install -r requirements.txt
+   ```
+2. **Run migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+3. **Start the backend server:**
+   ```bash
+   python manage.py runserver
+   ```
+4. **(Optional) Start Node.js real-time server:**
+   ```bash
+   npm install
+   node server.js
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Frontend
 
-## Learn More
+1. **Install dependencies:**
+   ```bash
+   cd front-drug-finder
+   npm install
+   ```
+2. **Start the frontend server:**
+   ```bash
+   npm start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🧑‍💻 Usage
 
-### Code Splitting
+- Access the frontend at `http://localhost:3000`
+- Backend API runs at `http://localhost:8000`
+- Use the AI Chatbot via the floating chat button or `/chat` route
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 🤖 AI Chatbot
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Capabilities:** Answers health, medicine, pharmacy, and project-related questions.
+- **Tech:** Uses LangChain, HuggingFace, and Supabase for RAG.
+- **How to use:** Type your question in the chatbox. The bot can answer follow-ups, provide pharmacy locations, and explain project features.
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 👥 User Roles
 
-### Advanced Configuration
+- **Client:** Search medicines, order, review, chat with AI.
+- **Pharmacist:** Manage store inventory, orders, profile.
+- **Admin:** Manage users, pharmacies, medicines, orders, and handle requests.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🤝 Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🙏 Credits
+
+- [Create React App](https://github.com/facebook/create-react-app)
+- [Django](https://www.djangoproject.com/)
+- [LangChain](https://www.langchain.com/)
+- [HuggingFace](https://huggingface.co/)
+- [Supabase](https://supabase.com/)
+- [Stripe](https://stripe.com/)
+- [Mapbox](https://www.mapbox.com/) 
