@@ -59,7 +59,7 @@ export default function ClientProfilePage() {
   return (
     <>
       <Sidebar />
-      <div className="ml-64 px-6 py-10 bg-white min-h-screen">
+      <div className="  px-6 py-10 bg-white min-h-screen">
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl border border-gray-300 p-10 transition-all hover:shadow-3xl">
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
@@ -113,7 +113,7 @@ export default function ClientProfilePage() {
           {/* Edit Button */}
           <div className="mt-10 text-end">
             <Link
-              to="/profile/edit"
+              to="/client/profile/edit"
               className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <FaUserEdit /> Edit Profile

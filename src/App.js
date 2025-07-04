@@ -125,8 +125,6 @@ function App() {
 
         {/*===========================================================*/}
 
-          <Route path="/profile" element={<ClientProfilePage/>} />
-        <Route path="/profile/edit" element={<EditClientProfilePage/>} />
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
@@ -148,6 +146,9 @@ function App() {
         {/* Client Routes */}
         <Route element={<RequireRole allowedRoles={["client"]} />}>
           <Route path="/client" element={<ClientLayout />}>
+          
+          <Route path="profile" element={<ClientProfilePage/>} />
+        <Route path="profile/edit" element={<EditClientProfilePage/>} />
             <Route index element={<PharmacyMapPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
