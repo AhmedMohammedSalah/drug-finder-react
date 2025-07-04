@@ -9,6 +9,7 @@ import SharedLoadingComponent from '../components/shared/medicalLoading'; // Add
 import { toast } from 'react-toastify'; 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import OrderList from '../components/shared/order/orderList';
 
 const MySwal = withReactContent(Swal);
 
@@ -23,6 +24,10 @@ const OrderHistory = () => {
     totalPages: 1,
     pageSize: 10
   });
+  const [detailsOrder, setDetailsOrder] = useState(null);
+  const [editOrder, setEditOrder] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [modalLoading, setModalLoading] = useState(false);
 
   const notify = {
     success: (title, message) => toast.success(
@@ -220,82 +225,68 @@ const OrderHistory = () => {
         </div>
       ) : (
         <>
-          <div className="space-y-4 mb-6">
-            {orders.map((order) => (
-              <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(order.order_status)}`}>
-                      {order.order_status}
-                    </div>
-                    <span className="text-sm text-gray-500">
-                      #{order.id} • {formatDate(order.timestamp)}
-                    </span>
-                  </div>
-                  <div className="text-sm font-medium">
-                    Total: ${parseFloat(order.total_price || 0).toFixed(2)}
-                  </div>
+          <OrderList
+            orders={orders}
+            detailsOrder={detailsOrder}
+            setDetailsOrder={setDetailsOrder}
+            handleEdit={(order) => {
+              if (order.order_status !== 'delivered') {
+                setEditOrder(order);
+                setEditForm({ order_status: 'delivered' });
+              } else {
+                toast.info('Order is already delivered.');
+              }
+            }}
+            fetchClientById={null}
+            isHistoryPage={true}
+          />
+          {editOrder && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setModalLoading(true);
+                  try {
+                    await apiEndpoints.orders.updateOrderStatus(editOrder.id, editForm.order_status);
+                    toast.success('Order status updated to delivered.');
+                    setEditOrder(null);
+                    fetchOrders(pagination.currentPage);
+                  } catch (err) {
+                    toast.error('Failed to update order status.');
+                  } finally {
+                    setModalLoading(false);
+                  }
+                }}
+                className="bg-white rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col gap-6 min-w-[90vw] sm:min-w-[350px] max-w-[95vw] max-h-[90vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn w-full max-w-md"
+              >
+                <button type="button" className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl font-bold focus:outline-none" onClick={() => setEditOrder(null)} aria-label="Close">&times;</button>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl font-extrabold text-blue-700 tracking-wide">Change Order Status</span>
                 </div>
-
-                <div className="p-4">
-                  <div className="mb-4">
-                    <h3 className="font-medium mb-2">Items ({order.items.length})</h3>
-                    <div className="space-y-3">
-                      {order.items_details?.map((item, index) => (
-                        <div key={index} className="flex gap-3 py-2">
-                          <div className="flex-shrink-0">
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="w-12 h-12 rounded-md object-cover border border-gray-200"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center border border-gray-200">
-                                <ImageIcon className="h-5 w-5 text-gray-400" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-gray-500 capitalize">
-                              {item.category} • Qty: {item.quantity}
-                            </p>
-                          </div>
-                          <p className="font-medium">
-                            ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {order.order_status === 'pending' && (
-                    <div className="pt-2">
-                      <button
-                        onClick={() => handleCancelOrder(order.id)} // This triggers the SweetAlert2 confirmation
-                        disabled={cancellingOrderId === order.id || loading}
-                        className="px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-md hover:bg-red-100 transition disabled:opacity-50 flex items-center"
-                      >
-                        {cancellingOrderId === order.id ? (
-                          <>
-                            <Loader className="h-4 w-4 mr-1 animate-spin" />
-                            Cancelling...
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-4 w-4 mr-1" />
-                            Cancel Order
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="edit-status" className="font-semibold text-gray-700 mb-1">Order Status</label>
+                  <select
+                    id="edit-status"
+                    name="order_status"
+                    value={editForm.order_status}
+                    onChange={e => setEditForm({ order_status: e.target.value })}
+                    className="border border-blue-300 rounded-lg px-4 py-2 bg-white text-gray-900 shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 text-base font-semibold"
+                    required
+                  >
+                    <option value="delivered">Delivered</option>
+                  </select>
                 </div>
-              </div>
-            ))}
-          </div>
-
+                <div className="flex gap-3 mt-4 justify-end">
+                  <button type="submit" disabled={modalLoading} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    {modalLoading ? 'Saving...' : 'Save'}
+                  </button>
+                  <button type="button" className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg font-semibold shadow transition-all focus:outline-none" onClick={() => setEditOrder(null)}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
           {pagination.totalPages > 1 && (
             <Pagination
               currentPage={pagination.currentPage}

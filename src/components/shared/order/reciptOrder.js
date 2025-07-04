@@ -7,15 +7,21 @@ import StaticMap from './staticMap';
 // [SARA] : Shared ReceiptOrder component for admin pages
 const ReceiptOrder = ({ order, fetchClientById }) => {
   const isOpen = true; // Always open when used as a component in details
-  // [OKS] Parse lat/lng from `order.client.shipping_location
+  // [OKS] Parse lat/lng from order.shipping_location or order.client.default_latitude/longitude
  let mapLocation = null;
-  if (order.client?.default_latitude && order.client?.default_longitude) {
-    mapLocation = {
-      lat: order.client.default_latitude,
-      lng: order.client.default_longitude,
-      label: "Delivery Location" 
-    };
-  }
+ if (order.shipping_location && typeof order.shipping_location === 'object' && order.shipping_location.lat && order.shipping_location.lng) {
+   mapLocation = {
+     lat: order.shipping_location.lat,
+     lng: order.shipping_location.lng,
+     label: 'Delivery Location'
+   };
+ } else if (order.client?.default_latitude && order.client?.default_longitude) {
+   mapLocation = {
+     lat: order.client.default_latitude,
+     lng: order.client.default_longitude,
+     label: 'Delivery Location'
+   };
+ }
 
 
   return (
@@ -106,7 +112,7 @@ const ReceiptOrder = ({ order, fetchClientById }) => {
 
      {/* [OKS] Map Section - Only shown if we have location data */}
      {mapLocation && (
-  <div className="mt-8">
+  <div className="mt-8 pb-6">
     <h3 className="text-lg font-semibold text-blue-700 mb-2">Delivery Location</h3>
     <div className="h-64 md:h-96 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
       <StaticMap

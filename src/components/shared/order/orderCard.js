@@ -32,12 +32,14 @@ const OrderCard = ({ order, isOpen, onToggleDetails, onEdit, fetchClientById }) 
         >
           {isOpen ? 'Hide Details' : 'Show Details'}
         </button>
-        <button
-          className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 active:scale-95 duration-100"
-          onClick={onEdit}
-        >
-          Edit Status
-        </button>
+        {order.order_status !== 'delivered' && (
+          <button
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 active:scale-95 duration-100"
+            onClick={onEdit}
+          >
+            Edit Status
+          </button>
+        )}
       </div>
     </div>
     {isOpen && (

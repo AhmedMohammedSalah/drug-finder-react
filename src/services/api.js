@@ -232,7 +232,7 @@ const apiEndpoints = {
   orders: {
     createOrder: (data) => api.post("orders/", data),
     updateOrderStatus: (orderId, newStatus) =>
-      api.post(`orders/${orderId}/update_status/`, { status: "paid" }),
+      api.post(`orders/${orderId}/update_status/`, { status: newStatus }),
     getMyOrders: () => api.get("orders/"),
     getPaginatedOrders: (page = 1, pageSize = 10, filters = {}) => {
       const params = new URLSearchParams({
