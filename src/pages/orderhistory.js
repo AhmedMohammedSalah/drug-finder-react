@@ -28,6 +28,7 @@ const OrderHistory = () => {
   const [editOrder, setEditOrder] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [modalLoading, setModalLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
 
   const notify = {
     success: (title, message) => toast.success(
@@ -172,6 +173,11 @@ const OrderHistory = () => {
     fetchOrders(pagination.currentPage);
   };
 
+  // Filter orders by status
+  const filteredOrders = statusFilter
+    ? orders.filter(order => order.order_status === statusFilter)
+    : orders;
+
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
@@ -184,14 +190,29 @@ const OrderHistory = () => {
             </span>
           )}
         </h1>
-        <button
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex gap-2 items-center">
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="border border-blue-200 rounded-lg px-3 py-1.5 text-base text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="on_process">On Process</option>
+            <option value="shipping">Shipping</option>
+            <option value="delivered">Delivered</option>
+            <option value="canceled">Canceled</option>
+          </select>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -226,7 +247,7 @@ const OrderHistory = () => {
       ) : (
         <>
           <OrderList
-            orders={orders}
+            orders={filteredOrders}
             detailsOrder={detailsOrder}
             setDetailsOrder={setDetailsOrder}
             handleEdit={(order) => {
