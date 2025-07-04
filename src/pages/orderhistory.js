@@ -23,6 +23,7 @@ const OrderHistory = () => {
     totalPages: 1,
     pageSize: 10
   });
+  const [statusFilter, setStatusFilter] = useState("");
 
   const notify = {
     success: (title, message) => toast.success(
@@ -167,6 +168,11 @@ const OrderHistory = () => {
     fetchOrders(pagination.currentPage);
   };
 
+  // Filter orders by status
+  const filteredOrders = statusFilter
+    ? orders.filter(order => order.order_status === statusFilter)
+    : orders;
+
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
@@ -179,14 +185,29 @@ const OrderHistory = () => {
             </span>
           )}
         </h1>
-        <button
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex gap-2 items-center">
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="border border-blue-200 rounded-lg px-3 py-1.5 text-base text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="on_process">On Process</option>
+            <option value="shipping">Shipping</option>
+            <option value="delivered">Delivered</option>
+            <option value="canceled">Canceled</option>
+          </select>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -212,7 +233,7 @@ const OrderHistory = () => {
           color="blue"
           gif="/ordersLoading.gif"
         />
-      ) : orders.length === 0 ? (
+      ) : filteredOrders.length === 0 ? (
         <div className="bg-blue-50 rounded-lg p-6 text-center">
           <Package className="h-10 w-10 mx-auto text-blue-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-800 mb-1">No orders found</h3>
@@ -221,7 +242,7 @@ const OrderHistory = () => {
       ) : (
         <>
           <div className="space-y-4 mb-6">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                   <div className="flex items-center gap-3">
