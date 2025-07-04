@@ -174,7 +174,7 @@ function OrdersPage() {
 
   // Check if order can be canceled (not delivered)
   const canCancelOrder = (orderStatus) => {
-    return orderStatus !== "delivered" || orderStatus !== "canceled";
+    return orderStatus !== "delivered" && orderStatus !== "canceled";
   };
 
   return (
@@ -345,27 +345,30 @@ function OrdersPage() {
                   </div>
 
                   {/* Show Cancel option only if order isn't delivered */}
-                  {canCancelOrder(editOrder.order_status) && (
-                    <div className="flex items-center mt-2">
-                      <input
-                        type="radio"
-                        id="status-canceled"
-                        name="order_status"
-                        value="canceled"
-                        checked={editForm.order_status === "canceled"}
-                        onChange={() =>
-                          setEditForm({ order_status: "canceled" })
-                        }
-                        className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                      />
-                      <label
-                        htmlFor="status-canceled"
-                        className="ml-2 block text-red-600 font-medium"
-                      >
-                        Cancel Order
-                      </label>
-                    </div>
-                  )}
+                  {canCancelOrder(editOrder.order_status) &&
+                    !getNextStatusOptions(editOrder.order_status).includes(
+                      "canceled"
+                    ) && (
+                      <div className="flex items-center mt-2">
+                        <input
+                          type="radio"
+                          id="status-canceled"
+                          name="order_status"
+                          value="canceled"
+                          checked={editForm.order_status === "canceled"}
+                          onChange={() =>
+                            setEditForm({ order_status: "canceled" })
+                          }
+                          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+                        />
+                        <label
+                          htmlFor="status-canceled"
+                          className="ml-2 block text-red-600 font-medium"
+                        >
+                          Cancel Order
+                        </label>
+                      </div>
+                    )}
                 </div>
 
                 <div className="flex gap-3 mt-4 justify-end">
