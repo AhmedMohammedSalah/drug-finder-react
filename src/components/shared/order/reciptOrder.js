@@ -1,20 +1,32 @@
 import React from "react";
 import ClientDetails from './clientDetails';
 import StoreDetails from './storeDetails';
+import StaticMap from './staticMap'; 
+
 
 // [SARA] : Shared ReceiptOrder component for admin pages
 const ReceiptOrder = ({ order, fetchClientById }) => {
   const isOpen = true; // Always open when used as a component in details
+  // [OKS] Parse lat/lng from `order.client.shipping_location
+ let mapLocation = null;
+  if (order.client?.default_latitude && order.client?.default_longitude) {
+    mapLocation = {
+      lat: order.client.default_latitude,
+      lng: order.client.default_longitude,
+      label: "Delivery Location" 
+    };
+  }
+
+
   return (
     <div
       className="mt-6 border-t pt-6 bg-gray-50 rounded-xl overflow-hidden transition-all duration-500 ease-in-out shadow-lg border border-blue-200 max-w-2xl mx-auto px-6 pb-6"
       style={{
-        maxHeight: isOpen ? 800 : 0,
+        maxHeight: isOpen ? 1000 : 0,
         opacity: isOpen ? 1 : 0,
         transform: isOpen ? 'scaleY(1)' : 'scaleY(0.98)',
         transition: 'max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1)'
-      }}
-    >
+      }}>
       {/* Receipt Header */}
       <div className="flex items-center gap-4 mb-6 border-b pb-3 border-blue-100">
         <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" /></svg>
@@ -81,12 +93,37 @@ const ReceiptOrder = ({ order, fetchClientById }) => {
             <span>Tax:</span>
             <span>{order.tax} EGP</span>
           </div>
-          <div className="flex justify-between text-blue-700 font-bold text-base border-t border-blue-200 mt-3 pt-3">
-            <span>Total:</span>
+          <div className="flex justify-between text-black-500 font-bold text-base border-t border-blue-200 mt-3 pt-3">
+            <span>Subtotal:</span>
             <span>{order.total_price} EGP</span>
+          </div>
+          <div className="flex justify-between text-blue-700 text-xl font-bold text-base border-t border-blue-200 mt-3 pt-3">
+            <span>Total:</span>
+            <span>{order.total_with_fees} EGP</span>
           </div>
         </div>
       </div>
+
+     {/* [OKS] Map Section - Only shown if we have location data */}
+     {mapLocation && (
+  <div className="mt-8">
+    <h3 className="text-lg font-semibold text-blue-700 mb-2">Delivery Location</h3>
+    <div className="h-64 md:h-96 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+      <StaticMap
+        initialLocation={mapLocation}
+        markers={[{
+          position: mapLocation,
+          label: mapLocation.label
+        }]}
+        zoom={14}
+        style={{ height: "100%", width: "100%" }} 
+      />
+    </div>
+    <p className="text-sm text-gray-500 mt-2 text-center">
+      Red marker indicates delivery location
+    </p>
+  </div>
+)}
     </div>
   );
 };

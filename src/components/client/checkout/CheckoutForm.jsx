@@ -10,8 +10,7 @@ const CheckoutForm = ({ formData, handleChange, loading, error, orderData, onOrd
   const navigate = useNavigate();
   const [localLoading, setLocalLoading] = useState(false);
   const [localError, setLocalError] = useState(null);
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalLoading(true);
     setLocalError(null);
@@ -26,38 +25,45 @@ const CheckoutForm = ({ formData, handleChange, loading, error, orderData, onOrd
 
       if (formData.paymentMethod === 'card') {
         if (!stripe || !elements) {
-          throw new Error('Stripe has not been initialized');
+          throw new Error('Payment system not ready. Please try again.');
         }
 
-        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
-          orderResponse.client_secret,
-          {
-            payment_method: {
-              card: elements.getElement(CardElement),
-            },
+        try {
+          const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+            orderResponse.client_secret,
+            {
+              payment_method: {
+                card: elements.getElement(CardElement),
+              },
+            }
+          );
+
+          if (stripeError) {
+            throw new Error(stripeError.message || 'Payment failed. Please check your card details.');
           }
-        );
 
-        if (stripeError) throw stripeError;
-
-        if (paymentIntent.status === 'succeeded') {
-          await apiEndpoints.orders.updateOrderStatus(orderResponse.order.id, { status: 'paid' });
-          navigate('/order-success', { 
-            state: { orderId: orderResponse.order.id },
-            replace: true
-          });
+          if (paymentIntent.status === 'succeeded') {
+            await apiEndpoints.orders.updateOrderStatus(orderResponse.order.id, { status: 'paid' });
+            navigate('/order-success', { 
+              state: { orderId: orderResponse.order.id },
+              replace: true
+            });
+          }
+        } catch (stripeErr) {
+          throw new Error('Payment processing failed. Please try again or use a different payment method.');
         }
       }
 
       return orderResponse;
     } catch (err) {
-      const errorMessage = err.message || 
-                         err.error?.message || 
-                         err.response?.data?.error || 
-                         err.response?.data?.message || 
-                         'An unexpected error occurred';
-      setLocalError(errorMessage);
-      console.error('Checkout Error:', errorMessage);
+      const errorMessage = typeof err.message === 'string' 
+        ? err.message
+        : 'An unexpected error occurred during checkout.';
+      
+      const safeErrorMessage = errorMessage.replace(/client_secret=[^\s]+/, '[redacted]');
+      
+      setLocalError(safeErrorMessage);
+      console.error('Checkout Error:', err); 
     } finally {
       setLocalLoading(false);
     }
