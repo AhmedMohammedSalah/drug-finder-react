@@ -93,9 +93,13 @@ const ReceiptOrder = ({ order, fetchClientById }) => {
             <span>Tax:</span>
             <span>{order.tax} EGP</span>
           </div>
-          <div className="flex justify-between text-blue-700 font-bold text-base border-t border-blue-200 mt-3 pt-3">
-            <span>Total:</span>
+          <div className="flex justify-between text-black-500 font-bold text-base border-t border-blue-200 mt-3 pt-3">
+            <span>Subtotal:</span>
             <span>{order.total_price} EGP</span>
+          </div>
+          <div className="flex justify-between text-blue-700 text-xl font-bold text-base border-t border-blue-200 mt-3 pt-3">
+            <span>Total:</span>
+            <span>{order.total_with_fees} EGP</span>
           </div>
         </div>
       </div>
