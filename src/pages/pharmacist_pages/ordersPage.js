@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Pagination from "../components/shared/pagination";
-import OrderList from "../components/shared/order/orderList";
-import SharedLoadingComponent from "../components/shared/medicalLoading";
-
-// Updated order status flow without 'paid' status
-const STATUS_FLOW = {
-  pending: ["on_process", "canceled"], // Removed "paid" from pending options
-  on_process: ["shipping", "canceled"],
-  shipping: ["delivered", "canceled"],
-  delivered: [], // Final state - cannot be canceled
-  canceled: [], // Final state
-};
+import React, { useEffect, useState } from 'react';
+import Pagination from '../../components/shared/pagination';
+import OrderList from '../../components/shared/order/orderList';
+import AdminLoader from '../../components/admin/adminLoader';
+// import { useAuth } from '../context/AuthContext';
 
 function OrdersPage() {
   const userString = localStorage.getItem("user");
@@ -180,12 +172,7 @@ function OrdersPage() {
   return (
     <div className="relative min-h-screen">
       {loading && (
-        <SharedLoadingComponent
-          gif="/ordersLoading.gif"
-          loadingText="Loading orders data..."
-          subText="Hang tight, your orders are coming!"
-          color="blue"
-        />
+        <AdminLoader />
       )}
 
       <div

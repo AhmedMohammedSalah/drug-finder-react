@@ -5,7 +5,7 @@ import FacultyCard from '../../components/PharmacistProfile/FacultyCard';
 import LicenseCard from '../../components/PharmacistProfile/LicenseCard';
 import EmailCard from '../../components/PharmacistProfile/EmailCard';
 import { Pencil } from 'lucide-react';
-import SharedLoadingComponent from '../../components/shared/medicalLoading';
+import AdminLoader from '../../components/admin/adminLoader';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -81,7 +81,7 @@ const PharmacistProfilePage = () => {
   };
 
   if (error) return <div className="text-red-500 p-4">{error}</div>;
-  if (!user || !pharmacist) return <SharedLoadingComponent gif="/profileLoading.gif" />;
+  if (!user || !pharmacist) return <AdminLoader loading={true} error={null} loadingMessage="Loading profile..." />;
 
   return (
     <div className="bg-white max-w-6xl mx-auto mt-10 rounded-xl shadow-lg border border-gray-200 p-6 relative">

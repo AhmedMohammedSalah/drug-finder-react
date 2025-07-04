@@ -8,7 +8,7 @@ import { Pencil } from 'lucide-react';
 import MedicineManager from '../../components/medicine/MedicineManager';
 import PendingLicenseCard from '../../components/medicine/PendingLicenseCard';
 import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
-import SharedLoadingComponent  from '../../components/shared/medicalLoading';
+import AdminLoader from '../../components/admin/adminLoader';
 
 const StoreProfileForm = () => {
   const {
@@ -36,12 +36,10 @@ const StoreProfileForm = () => {
 
   const canEdit = isEditMode || !hasStore;
 
-  // Debugging: Log the loading state
-  console.log('isLoading:', isLoading, 'hasStore:', hasStore);
-
-  // Show MedicalLoadingComponent while data is loading
-  if (isLoading) {
-    return <SharedLoadingComponent gif="/jarLoading.gif" />;
+  if (hasStore && isLoading) {
+    return (
+      <AdminLoader loading={isLoading} error={null} loadingMessage="Loading store data..." />
+    );
   }
 
   return (
