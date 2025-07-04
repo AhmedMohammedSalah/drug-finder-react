@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Pagination from '../components/shared/pagination';
-import OrderList from '../components/shared/order/orderList';
-import AdminLoader from '../components/admin/adminLoader';
+import Pagination from '../../components/shared/pagination';
+import OrderList from '../../components/shared/order/orderList';
+import AdminLoader from '../../components/admin/adminLoader';
 // import { useAuth } from '../context/AuthContext';
 
 function OrdersPage() {

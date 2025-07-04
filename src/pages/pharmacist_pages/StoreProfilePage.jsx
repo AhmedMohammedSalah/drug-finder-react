@@ -8,6 +8,7 @@ import { Pencil } from 'lucide-react';
 import MedicineManager from "../../components/medicine/MedicineManager";
 import PendingLicenseCard from '../../components/medicine/PendingLicenseCard'; 
 import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
+import AdminLoader from '../../components/admin/adminLoader';
 
 const StoreProfileForm = () => {
   const {
@@ -37,10 +38,7 @@ const StoreProfileForm = () => {
 
   if (hasStore && isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-        <span className="mt-4 text-base sm:text-lg">Loading store data...</span>
-      </div>
+      <AdminLoader loading={isLoading} error={null} loadingMessage="Loading store data..." />
     );
   }
 

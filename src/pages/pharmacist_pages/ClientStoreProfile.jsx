@@ -7,6 +7,7 @@ import MapSection from '../../components/pharamcieslist/pharamStoreCreation/MapS
 import ClientMedicineViewer from '../../components/pharamcieslist/pharmaStoreView/ClientMedicineViewer';
 import apiEndpoints, { api } from '../../services/api';
 import { store } from '../../app/store';
+import AdminLoader from '../../components/admin/adminLoader';
 
 const ClientStoreProfile = () => {
   const { storeId } = useParams(); // Get store ID from URL
@@ -36,12 +37,7 @@ const ClientStoreProfile = () => {
   }, [storeId]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[400px] text-gray-500">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-        <span className="ml-4 text-lg">Loading store data...</span>
-      </div>
-    );
+    return <AdminLoader loading={isLoading} error={error} loadingMessage="Loading store data..." />;
   }
 
   if (error) {
