@@ -22,7 +22,8 @@ const OrderCard = ({ order, isOpen, onToggleDetails, onEdit, fetchClientById }) 
             'bg-gray-200 text-gray-700')
           }>{order.order_status}</span>
         </div>
-        <div className="text-sm text-blue-600 font-semibold">Total: {order.total_price} EGP</div>
+        <div className="text-sm text-blue-600 font-semibold">Subtotal: {order.total_price} EGP</div>
+        <div className="text-lg text-blue-600 font-semibold">Total: {order.total_with_fees} EGP</div>
       </div>
       <div className="flex flex-col gap-2 items-end ml-4 min-w-[120px]">
         <button
