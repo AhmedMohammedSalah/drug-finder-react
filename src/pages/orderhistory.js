@@ -4,7 +4,7 @@ import {
   Truck, CreditCard, AlertCircle, Loader, Image as ImageIcon 
 } from 'lucide-react';
 import apiEndpoints from '../services/api';
-import Pagination from '../components/shared/Pagination';
+import Pagination from '../components/shared/pagination';
 import SharedLoadingComponent from '../components/shared/medicalLoading'; // Added import
 import { toast } from 'react-toastify'; 
 import Swal from 'sweetalert2';

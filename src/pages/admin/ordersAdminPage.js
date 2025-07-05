@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Pagination from '../../components/shared/Pagination';
+import Pagination from '../../components/shared/pagination';
 import OrderList from '../../components/shared/order/orderList';
 import AdminLoader from '../../components/admin/adminLoader';
 

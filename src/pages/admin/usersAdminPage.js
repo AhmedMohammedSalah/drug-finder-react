@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import IconButton from '../../components/shared/btn';
 import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
-import Pagination from '../../components/shared/Pagination';
+import Pagination from '../../components/shared/pagination';
 
 // import Pagination from '../../components/shared/pagination'; // [SARA] : Use shared Pagination component
 
