@@ -19,7 +19,6 @@ const ArchivePage = () => {
       try {
         setLoading(true);
         
-        // Get pharmacist's store ID
         const pharmacistRes = await apiEndpoints.users.getPharmacistProfile();
         const store = pharmacistRes.data?.medical_stores_data;
 
@@ -30,9 +29,8 @@ const ArchivePage = () => {
 
         setStoreId(store.id);
 
-        // Get deleted medicines for the store
         const deletedRes = await apiEndpoints.inventory.getDeletedMedicinesByStore(store.id);
-        setDeletedMedicines(deletedRes.data.results);
+        setDeletedMedicines(deletedRes.data.results || []);
 
       } catch (error) {
         setError("Failed to load archive. Please try again later.");
@@ -47,7 +45,7 @@ const ArchivePage = () => {
 
   const handleAdjustClick = (medicine) => {
     setEditingMedicine(medicine);
-    setQuantity(0); // Start from zero as requested
+    setQuantity(0);
   };
 
   const handleQuantityChange = (e) => {
@@ -55,40 +53,33 @@ const ArchivePage = () => {
     setQuantity(Math.max(0, value));
   };
 
-  const handleConfirmAdjustment = async () => {
-    try {
-      const payload = {
-        stock: quantity,
-        is_deleted: quantity <= 0 // Only false when quantity > 0
-      };
+const handleConfirmAdjustment = async () => {
+  try {
+    const response = await apiEndpoints.inventory.updateMedicineStock(editingMedicine.id, quantity);
+    const updatedMedicine = response.data;
 
-      await apiEndpoints.inventory.updateMedicine(editingMedicine.id, payload);
+    setDeletedMedicines(prevMedicines => {
+      if (updatedMedicine.is_deleted === false) {
+        return prevMedicines.filter(m => m.id !== editingMedicine.id);
+      } else {
+        return prevMedicines.map(m => 
+          m.id === editingMedicine.id ? updatedMedicine : m
+        );
+      }
+    });
 
-      // Update local state
-      setDeletedMedicines(prevMedicines => {
-        if (quantity > 0) {
-          // Remove from deleted list if restored
-          return prevMedicines.filter(m => m.id !== editingMedicine.id);
-        } else {
-          // Update stock but keep in archive
-          return prevMedicines.map(m => 
-            m.id === editingMedicine.id ? { ...m, stock: quantity } : m
-          );
-        }
-      });
-
-      showNotification(
-        quantity > 0 
-          ? 'Medicine restored and stock updated!' 
-          : 'Stock updated (medicine remains archived)',
-        'success'
-      );
-      setEditingMedicine(null);
-    } catch (err) {
-      showNotification('Failed to update medicine stock', 'error');
-      console.error('Error updating medicine:', err);
-    }
-  };
+    showNotification(
+      updatedMedicine.is_deleted === false
+        ? 'Medicine restored and stock updated!'
+        : 'Stock updated (medicine remains archived)',
+      'success'
+    );
+    setEditingMedicine(null);
+  } catch (err) {
+    showNotification('Failed to update medicine stock', 'error');
+    console.error('Error updating medicine:', err);
+  }
+};
 
   const showNotification = (message, type) => {
     setNotification({ show: true, message, type });
@@ -140,12 +131,12 @@ const ArchivePage = () => {
               <div className="h-48 bg-gray-100 flex items-center justify-center">
                 <img 
                   src={medicine.image || '/placeholder-medicine.jpg'} 
-                  alt={medicine.name}
+                  alt={medicine.brand_name} // Updated to use brand_name
                   className="h-full w-full object-contain p-4"
                 />
               </div>
               <div className="p-4 flex-grow">
-                <h3 className="text-lg font-semibold mb-2">{medicine.name}</h3>
+                <h3 className="text-lg font-semibold mb-2">{medicine.brand_name}</h3> // Updated to use brand_name
                 <p className="text-gray-600 mb-4">Current Stock: {medicine.stock}</p>
                 
                 {editingMedicine?.id === medicine.id ? (
@@ -193,7 +184,6 @@ const ArchivePage = () => {
         </div>
       )}
 
-      {/* Notification */}
       {notification.show && (
         <div className={`fixed bottom-4 right-4 p-4 rounded-md shadow-lg text-white ${
           notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'

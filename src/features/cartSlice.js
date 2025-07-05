@@ -5,16 +5,23 @@ import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { confirmAlert } from 'react-confirm-alert';
 
+// HANDLE VIEWING THE CART AFTER FIXING THE QUANTITY ISSUE
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
   try {
     const res = await apiEndpoints.cart.getCart();
-    console.log('Cart fetched successfully:', res.data);
-    return res.data.results[0];
+    console.log('Cart API response:', res.data);
+    if (res.data.results && res.data.results.length > 0) {
+      return res.data.results[0];
+    }
+    console.warn('No cart found in API response:', res.data);
+    return null;
   } catch (err) {
+    console.error('Cart fetch error:', err.response?.data || err.message);
     toast.error('Failed to load cart.');
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }
 });
+
 
 export const updateCartItems = createAsyncThunk(
   'cart/updateItems',
@@ -55,20 +62,27 @@ export const clearCart = createAsyncThunk('cart/clearCart', async (cartId, thunk
   }
 });
 
+
+
+// [SENU]: HANDLE THE QUANTITY ON 'ADD TO CART' ACTION
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async (product, thunkAPI) => {
     try {
-      // بساطة الكود - بس ابعتي المنتج للـ backend واتركي له يتعامل مع المنطق
-      const res = await apiEndpoints.cart.createCart({ 
-        items: [{ product: product.id }] // مش محتاجة quantity لأن الـ backend هيحطها 1 تلقائياً
+      const res = await apiEndpoints.cart.createCart({
+        items: [{ product: product.id, quantity: product.quantity || 1 }],
       });
-      
-      toast.success('Product added to cart!');
-      return res.data;
-
+      // Check if response is successful
+      if (res.status >= 200 && res.status < 300) {
+        thunkAPI.dispatch(fetchCart()); // Refresh cart state
+        toast.success('Product added to cart!');
+        return res.data;
+      } else {
+        throw new Error('Unexpected response status: ' + res.status);
+      }
     } catch (err) {
-      const errorData = err.response?.data;
+      const errorData = err.response?.data || err.message;
+      console.error('Add to cart error:', errorData);
 
       if (errorData?.requires_confirmation) {
         return new Promise((resolve, reject) => {
@@ -86,11 +100,16 @@ export const addToCart = createAsyncThunk(
                         onClose();
                         try {
                           const newRes = await apiEndpoints.cart.createCart({
-                            items: [{ product: product.id }],
+                            items: [{ product: product.id, quantity: product.quantity || 1 }],
                             force_clear: true,
                           });
-                          toast.success('Cart cleared and product added!');
-                          resolve(newRes.data);
+                          if (newRes.status >= 200 && newRes.status < 300) {
+                            thunkAPI.dispatch(fetchCart());
+                            toast.success('Cart cleared and product added!');
+                            resolve(newRes.data);
+                          } else {
+                            throw new Error('Unexpected response status: ' + newRes.status);
+                          }
                         } catch (innerErr) {
                           toast.error('Failed to add product.');
                           reject(innerErr.response?.data || innerErr.message);
@@ -112,13 +131,13 @@ export const addToCart = createAsyncThunk(
                   </div>
                 </div>
               );
-            }
+            },
           });
         });
       }
 
-      toast.error('Failed to add product to cart.');
-      return thunkAPI.rejectWithValue(errorData || 'Failed to add product to cart.');
+      toast.error('Failed to add product to cart: ' + (errorData.error || 'Server error'));
+      return thunkAPI.rejectWithValue(errorData);
     }
   }
 );
