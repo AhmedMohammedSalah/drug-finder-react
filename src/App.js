@@ -174,6 +174,11 @@ function App() {
             <Route index element={<PharmacistProfile />} />
             <Route path="store" element={<PharmacistStoreProfilePage />} />
             {/* <Route path="drugs" element={<Drugs />} /> */}
+            <Route path="archive" element={<ArchivePage />} />
+            <Route path="drugs/add" element={<AddDrug />} />
+            <Route index element={<PharmacistProfile />} />
+            <Route path="store" element={<PharmacistStoreProfilePage />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
             {/* <Route path="drugs/add" element={<AddDrug />} /> */}
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
