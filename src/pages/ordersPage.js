@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Pagination from "../components/shared/pagination";
+import Pagination from '../components/shared/Pagination'; //[SENU] CHANGE TO RIGHT ONE
 import OrderList from "../components/shared/order/orderList";
 import SharedLoadingComponent from "../components/shared/medicalLoading";
 

@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import IconButton from '../../components/shared/btn';
 import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
-import Pagination from '../../components/shared/pagination'; // [SARA] : Use shared Pagination component
+import Pagination from '../../components/shared/Pagination';
+
+// import Pagination from '../../components/shared/pagination'; // [SARA] : Use shared Pagination component
 
 function UsersAdminPage() {
   // [SARA]: State for users, loading, error, editing user, and edit form

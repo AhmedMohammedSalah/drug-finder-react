@@ -1,7 +1,7 @@
 // [SARA]: Import dependencies
 import React, { useEffect, useState } from 'react';
 import apiEndpoints from '../../services/api';
-import Pagination from "../../components/shared/pagination";
+import Pagination from "../../components/shared/Pagination";
 import AdminLoader from '../../components/admin/adminLoader';
 
 function MedicineAdminPage() {
