@@ -50,6 +50,7 @@ const handleSubmit = async (e) => {
             });
           }
         } catch (stripeErr) {
+          console.error('Stripe Error:', stripeErr);
           throw new Error('Payment processing failed. Please try again or use a different payment method.');
         }
       }
