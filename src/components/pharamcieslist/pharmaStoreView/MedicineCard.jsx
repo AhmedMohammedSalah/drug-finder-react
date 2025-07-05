@@ -33,34 +33,37 @@ const MedicineCard = ({ medicine = {}, viewMode = "grid", isReadOnly = true }) =
     setShowDetailsModal(!showDetailsModal);
   };
 
-  const handleAddToCart = (e, fromModal = false) => {
-    e?.stopPropagation();
-    console.log("Handling add to cart, fromModal:", fromModal);
-    if (isCartExpanded || fromModal) {
-      setIsAdding(true);
-      try {
-        dispatch(
-          addToCart({
-            id,
-            brand_name,
-            generic_name,
-            price: Number(price),
-            image,
-            quantity: Number(quantity),
-          })
-        );
+const handleAddToCart = (e, fromModal = false) => {
+  e?.stopPropagation();
+  console.log("Handling add to cart, fromModal:", fromModal);
+  if (isCartExpanded || fromModal) {
+    setIsAdding(true);
+    dispatch(
+      addToCart({
+        id,
+        brand_name,
+        generic_name,
+        price: Number(price),
+        image,
+        quantity: Number(quantity),
+      })
+    )
+      .unwrap()
+      .then(() => {
         toast.success(`${quantity} ${brand_name} added to cart!`);
         setQuantity(1);
         setIsCartExpanded(false);
-      } catch (err) {
-        toast.error("Failed to add to cart");
-      } finally {
+      })
+      .catch((err) => {
+        toast.error(`Failed to add to cart: ${err.error || 'Server error'}`);
+      })
+      .finally(() => {
         setIsAdding(false);
-      }
-    } else {
-      setIsCartExpanded(true);
-    }
-  };
+      });
+  } else {
+    setIsCartExpanded(true);
+  }
+};
 
   const handleCancel = (e) => {
     e?.stopPropagation();
