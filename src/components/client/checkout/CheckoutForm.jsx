@@ -39,11 +39,12 @@ const handleSubmit = async (e) => {
           );
 
           if (stripeError) {
+            console.error('Stripe Error:', stripeError);
             throw new Error(stripeError.message || 'Payment failed. Please check your card details.');
           }
 
           if (paymentIntent.status === 'succeeded') {
-            await apiEndpoints.orders.updateOrderStatus(orderResponse.order.id, { status: 'paid' });
+            await apiEndpoints.orders.updateOrderStatus(orderResponse.order.id, { status: 'Paid' });
             navigate('/order-success', { 
               state: { orderId: orderResponse.order.id },
               replace: true
