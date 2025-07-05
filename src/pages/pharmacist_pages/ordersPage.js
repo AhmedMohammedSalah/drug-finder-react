@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Pagination from "../components/shared/pagination"; //[SENU] CHANGE TO RIGHT ONE
-import OrderList from "../components/shared/order/orderList";
-import SharedLoadingComponent from "../components/shared/medicalLoading";
+import Pagination from "../../components/shared/pagination"; //[SENU] CHANGE TO RIGHT ONE
+import OrderList from "../../components/shared/order/orderList";
+import SharedLoadingComponent from "../../components/shared/medicalLoading";
 
 // Updated order status flow without 'paid' status
 const STATUS_FLOW = {
