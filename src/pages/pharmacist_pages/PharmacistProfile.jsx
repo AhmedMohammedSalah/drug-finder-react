@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import ProfileInfo from '../../components/PharmacistProfile/ProfileInfo';
-import FacultyCard from '../../components/PharmacistProfile/FacultyCard';
-import LicenseCard from '../../components/PharmacistProfile/LicenseCard';
-import EmailCard from '../../components/PharmacistProfile/EmailCard';
-import { Pencil } from 'lucide-react';
-import AdminLoader from '../../components/admin/adminLoader';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import ProfileInfo from "../../components/PharmacistProfile/ProfileInfo";
+import FacultyCard from "../../components/PharmacistProfile/FacultyCard";
+import LicenseCard from "../../components/PharmacistProfile/LicenseCard";
+import EmailCard from "../../components/PharmacistProfile/EmailCard";
+import { Pencil } from "lucide-react";
+import SharedLoadingComponent from "../../components/shared/medicalLoading";
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://localhost:8000";
 
 const PharmacistProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -18,22 +18,25 @@ const PharmacistProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) return setError('No access token');
+        const token = localStorage.getItem("access_token");
+        if (!token) return setError("No access token");
 
         const userRes = await axios.get(`${BASE_URL}/users/me/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const pharmacistRes = await axios.get(`${BASE_URL}/users/me/pharmacist/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const pharmacistRes = await axios.get(
+          `${BASE_URL}/users/me/pharmacist/`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setUser(userRes.data);
         setPharmacist(pharmacistRes.data);
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch profile');
+        setError("Failed to fetch profile");
       }
     };
 
@@ -42,23 +45,31 @@ const PharmacistProfilePage = () => {
 
   const handleUpdate = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem("access_token");
       const formData = new FormData();
 
       // Set default bio if empty
-      const bio = pharmacist.pharmacist_bio || "As a licensed pharmacist, I'm committed to providing excellent pharmaceutical care and medication management to my patients.";
-      formData.append('pharmacist_bio', bio);
-      
-      formData.append('pharmacist_faculty', pharmacist.pharmacist_faculty || 'Faculty of Pharmacy');
+      const bio =
+        pharmacist.pharmacist_bio ||
+        "As a licensed pharmacist, I'm committed to providing excellent pharmaceutical care and medication management to my patients.";
+      formData.append("pharmacist_bio", bio);
+
+      formData.append(
+        "pharmacist_faculty",
+        pharmacist.pharmacist_faculty || "Faculty of Pharmacy"
+      );
 
       if (pharmacist.image_profile instanceof File) {
-        formData.append('image_profile', pharmacist.image_profile);
+        formData.append("image_profile", pharmacist.image_profile);
       }
       if (pharmacist.image_license instanceof File) {
-        formData.append('image_license', pharmacist.image_license);
+        formData.append("image_license", pharmacist.image_license);
       }
       if (pharmacist.pharmacist_faculty_logo instanceof File) {
-        formData.append('pharmacist_faculty_logo', pharmacist.pharmacist_faculty_logo);
+        formData.append(
+          "pharmacist_faculty_logo",
+          pharmacist.pharmacist_faculty_logo
+        );
       }
 
       const response = await axios.patch(
@@ -67,7 +78,7 @@ const PharmacistProfilePage = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -75,13 +86,14 @@ const PharmacistProfilePage = () => {
       setPharmacist(response.data);
       setEditMode(false);
     } catch (error) {
-      console.error('Failed to update pharmacist:', error);
-      alert('Failed to save changes. Please try again.');
+      console.error("Failed to update pharmacist:", error);
+      alert("Failed to save changes. Please try again.");
     }
   };
 
   if (error) return <div className="text-red-500 p-4">{error}</div>;
-  if (!user || !pharmacist) return <AdminLoader loading={true} error={null} loadingMessage="Loading profile..." />;
+  if (!user || !pharmacist)
+    return <SharedLoadingComponent gif="/profileLoading.gif" />;
 
   return (
     <div className="bg-white max-w-6xl mx-auto mt-10 rounded-xl shadow-lg border border-gray-200 p-6 relative">
@@ -94,9 +106,9 @@ const PharmacistProfilePage = () => {
             <div className="relative">
               <img
                 src={
-                  pharmacist.image_profile?.startsWith('/media')
+                  pharmacist.image_profile?.startsWith("/media")
                     ? `http://localhost:8000${pharmacist.image_profile}`
-                    : pharmacist.image_profile || '/default-profile.png'
+                    : pharmacist.image_profile || "/default-profile.png"
                 }
                 alt="Profile"
                 className="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg"
@@ -104,24 +116,24 @@ const PharmacistProfilePage = () => {
               {editMode && (
                 <label className="absolute bottom-0 right-0 bg-white p-1 rounded-full cursor-pointer shadow border border-gray-300">
                   <Pencil size={16} />
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        setPharmacist(prev => ({
+                        setPharmacist((prev) => ({
                           ...prev,
-                          image_profile: URL.createObjectURL(file)
+                          image_profile: URL.createObjectURL(file),
                         }));
                       }
-                    }} 
+                    }}
                   />
                 </label>
               )}
             </div>
-            
+
             {/* EDIT BUTTON AT BOTTOM LEFT */}
             <button
               onClick={() => setEditMode(!editMode)}
@@ -141,9 +153,9 @@ const PharmacistProfilePage = () => {
               editMode={editMode}
               setPharmacist={setPharmacist}
             />
-            
+
             <EmailCard email={user.email} />
-            
+
             <FacultyCard
               pharmacist={pharmacist}
               editMode={editMode}
