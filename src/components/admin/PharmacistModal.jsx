@@ -45,7 +45,7 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
       }
 
       await axios.patch(
-        `https://ahmedmsalah.pythonanywhere.com/users/pharmacists/${pharmacist.id}/`,
+        `http://localhost:8000/users/pharmacists/${pharmacist.id}/`,
         body,
         {
           headers: {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckCircle, XCircle, Clock } from 'lucide-react'; // optional Lucide icons
 
 const PharmacistRequestCard = ({ pharmacist, onClick }) => {
