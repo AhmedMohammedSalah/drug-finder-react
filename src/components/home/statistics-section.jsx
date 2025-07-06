@@ -38,6 +38,10 @@ export default function StatisticsSection() {
               alt="Medical Team"
               className="w-full h-auto rounded-2xl shadow-xl"
             />
+            {/* <div className="absolute -bottom-6 -right-6 bg-blue-600 text-white p-6 rounded-2xl shadow-lg">
+              <div className="text-2xl font-bold">Excellence</div>
+              <div className="text-blue-100">in Healthcare</div>
+            </div> */}
             {/* <div className={`absolute -bottom-6 ${isRTL ? '-left-6' : '-right-6'} bg-blue-600 text-white p-6 rounded-2xl shadow-lg`}> */}
               {/* <div className="text-2xl font-bold">Excellence</div>
               <div className="text-blue-100">in Healthcare</div> */}

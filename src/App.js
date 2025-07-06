@@ -127,9 +127,9 @@ function App() {
         {/* [AMS] default layout for guest */}
 
         {/* [AMS] this is default layout for guest / client */}
+        <Route path="" element={<Home />} />
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
-          <Route path="" element={<Home />} />
           <Route path="/pharmacies" element={<PharmacyList />} />
           <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
           {/* [AMS] 🔔 notification page  */}

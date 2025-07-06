@@ -72,12 +72,12 @@ export default function Header() {
             >
               {t('header.nav.home')}
             </Link>
-            <Link
+            {/* <Link
               to="/pharmacies"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
-              {t('header.nav.pharmacies')}
-            </Link>
+              Pharmacies
+            </Link> */}
             <Link
               to="/#services"
               className="text-gray-700 hover:text-blue-600  font-medium transition-colors"

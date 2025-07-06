@@ -28,7 +28,9 @@ export default function HeroSection() {
                 {t('hero.getStarted')}
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="inline-flex items-center gap-2 text-blue-600 px-8 py-4 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-colors font-semibold text-lg">
+              <button className="inline-flex items-center gap-2 text-blue-600 px-8 py-4 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-colors font-semibold text-lg"
+                onClick={() => window.open('https://www.youtube.com/watch?v=tQlR_hg_RrI&ab_channel=OmarKhaled', '_blank')}
+              >
                 <Play className="w-5 h-5" />
                 {t('hero.watchDemo')}
               </button>
