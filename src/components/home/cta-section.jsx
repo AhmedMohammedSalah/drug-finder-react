@@ -1,8 +1,11 @@
 import { ArrowRight } from "lucide-react"
+import { useLanguage } from "./translation/LanguageContext"
 
 export default function CTASection() {
+  const { t, isRTL } = useLanguage();
+
   return (
-    <section className="mx-4 my-16">
+    <section className="mx-4 my-16" style={{ direction: isRTL ? 'rtl' : 'ltr' }}>
       <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-3xl px-8 py-16 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -20,17 +23,15 @@ export default function CTASection() {
           </div>
 
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Make Medical Billing
-            <br />
-            Effortless Today
+            {t('cta.title')}
           </h2>
 
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Contact us or sign up for our medical billing services now.
+            {t('cta.subtitle')}
           </p>
 
           <button className="inline-flex items-center gap-2 bg-white text-blue-600 font-semibold px-8 py-4 rounded-full hover:bg-gray-50 transition-colors duration-300 shadow-lg hover:shadow-xl">
-            Get Started Today!
+            {t('cta.button')}
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
