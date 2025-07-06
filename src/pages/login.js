@@ -11,6 +11,10 @@ import {
 } from "../features/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import Header from "../components/home/header.jsx";
+import LoadingOverlay from "../components/shared/LoadingOverlay.jsx";
+import MedicalLoadingComponent from "../components/shared/medicalLoading.js";
+import Footer from "../components/home/footer.jsx";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -27,7 +31,12 @@ export default function LoginPage() {
     if (role === "admin") {
       navigate("/admin");
     } else if (role === "pharmacist") {
-      navigate("/pharmacy");
+      const hasStore = result?.user?.pharmacist?.has_store;
+      if (hasStore === false) {
+        navigate("/pharmacy/store");
+      } else {
+        navigate("/pharmacy");
+      }
     } else if (role === "client") {
       navigate("/client");
     } else {
@@ -37,38 +46,16 @@ export default function LoginPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-  
     const { valid, errors: validationErrors } = validateLoginForm(email, password);
     setErrors(validationErrors);
-  
+
     if (valid) {
       try {
         dispatch(clearError());
         setBackendError("");
-  
+
         const result = await dispatch(loginUser({ email, password })).unwrap();
-  
-        const role = result?.user?.role?.toLowerCase();
-  
-        if (role === "admin") {
-          navigate("/admin");
-        } else if (role === "pharmacist") {
-          const hasStore = result?.user?.pharmacist?.has_store;
-  
-          // ✅ Debug output (optional)
-          console.log("hasStore =", hasStore);
-  
-          if (hasStore === false) {
-            navigate("/pharmacy/store"); // redirect to store creation page
-          } else {
-            navigate("/pharmacy"); // go to pharmacist dashboard
-          }
-        } else if (role === "client") {
-          navigate("/client");
-        } else {
-          navigate("/");
-        }
-  
+        handleLoginSuccess(result);
       } catch (error) {
         if (error?.error === "email_not_verified") {
           setBackendError("Please verify your email before logging in");
@@ -78,7 +65,7 @@ export default function LoginPage() {
       }
     }
   };
-  
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       dispatch(clearError());
@@ -97,36 +84,35 @@ export default function LoginPage() {
       console.error("Google login error:", error);
       setBackendError(
         error.message ||
-          error.payload ||
-          "Google login failed. Please try again."
+        error.payload ||
+        "Google login failed. Please try again."
       );
     }
   };
 
   return (
-    <GoogleOAuthProvider
-      clientId={
-        "830041637628-d3troc4aqg9q48q7rmncg1d62sc3q26b.apps.googleusercontent.com"
-      }
-      redirectUri="http://localhost:3000"
-    >
-      <div className="min-h-screen flex items-center justify-center bg-blue-100">
-        <div className="bg-white shadow-md grid grid-cols-2 w-[1000px] border border-gray-300 rounded-lg">
-          {/* LEFT-COL - Form */}
-          <FormWrapper className="p-10 flex flex-col gap-10" onSubmit={submit}>
+    <GoogleOAuthProvider clientId="830041637628-d3troc4aqg9q48q7rmncg1d62sc3q26b.apps.googleusercontent.com">
+       {loading && <LoadingOverlay/>}
+      <Header/>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="bg-white shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+          {/* Left Column – Form */}
+          <FormWrapper className="p-10 flex flex-col gap-6 justify-center" onSubmit={submit}>
+            {/* Backend Error */}
             {backendError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              <div className="bg-red-100 border border-red-400 text-red-700 text-sm px-4 py-3 rounded">
                 {backendError}
               </div>
             )}
-            <div className="text-center">
-              <h1 className="text-4xl font-bold mb-2">Welcome back</h1>
-              <h1 className="text-2xl text-gray-500">
-                Find your Medicine with no time
-              </h1>
+
+            {/* Heading */}
+            <div className="text-center mb-2">
+              <h1 className="text-3xl font-extrabold text-blue-600 mb-1">Welcome Back </h1>
+              <p className="text-gray-500 text-base">Find your medicine in no time</p>
             </div>
 
-            {/* EMAIL */}
+            {/* Email */}
             <InputField
               label="Email"
               type="email"
@@ -134,17 +120,16 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
+              className="mt-2"
             />
 
-            {/* PASSWORD LABEL + FORGET LINK */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-medium">Password</label>
-                {/* <a href="#" className="text-md hover:underline">
-                  Forgot password?
-                </a> */}
+            {/* Password */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mt-2">
+                <label className="text-sm font-medium">Password</label>
+                {/* <a href="#" className="text-sm text-blue-500 hover:underline">Forgot password?</a> */}
               </div>
-              {/* PASSWORD */}
+              
               <InputField
                 type="password"
                 placeholder="Enter your password"
@@ -155,57 +140,61 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* SUBMIT [BIG BUTTON] */}
-            <BigBtn text="Login" onClick={submit} />
+            {/* Login Button */}
+            <BigBtn text="Login" bg-blue-500 onClick={submit} className="mt-4" />
 
-            {/* SEPARATOR */}
-            <div className="flex items-center">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500">Or Continue with</span>
-              <div className="flex-grow border-t border-gray-300"></div>
+            {/* OR separator */}
+            <div className="flex items-center gap-3 my-4 text-gray-400 text-sm">
+              <div className="flex-grow border-t" />
+              <span>OR</span>
+              <div className="flex-grow border-t" />
             </div>
 
-            {/* AUTH BUTTONS */}
-            <div className="flex justify-between">
-              {/* <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
-                <i className="fa-brands fa-facebook-f fa-2x"></i>
-              </button> */}
-              <div className="border rounded-md hover:bg-gray-100 overflow-hidden">
+            {/* Social Login */}
+            <div className="flex justify-center gap-4">
+          
+              <div className="border px-2 py-1 rounded hover:bg-gray-100 transition">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() =>
                     setBackendError("Google login failed. Please try again.")
                   }
-                  useOneTap={true} // Enable Google One Tap
-                  auto_select={true} // Automatically sign in returning users
+                  useOneTap
+                  auto_select
                   size="medium"
                   width="200"
                 />
               </div>
-              {/* <button className="border px-9 py-3 rounded-md hover:bg-gray-100">
-                <i className="fa-brands fa-twitter fa-2x"></i>
-              </button> */}
+           
             </div>
 
-            {/* SIGN UP DIRECTION */}
-            <p className="text-center text-lg mt-2">
-              Don’t have another account?{" "}
-              <Link to="/register" className="underline font-medium">
+            {/* Sign up link */}
+            <p className="text-center text-sm text-gray-600 mt-6">
+              Don’t have an account?{" "}
+              <Link to="/register" className="text-blue-500 font-medium hover:underline">
                 Sign up
               </Link>
             </p>
           </FormWrapper>
 
-          {/* RGHT-Col - IMG */}
-          <div className="bg-gray-200 h-full w-full">
-            <img
-              src="./images/login/drugLogin.png"
-              alt="Login illustration"
-              className="w-full h-full object-cover rounded-r-md"
-            />
-          </div>
+          {/* Right Column – Image */}
+        {/* Right Column – Image / Branding */}
+<div className="hidden md:flex flex-col items-center justify-center bg-blue-500 text-white p-8">
+  <img
+    src="/logo.png"
+    alt="Pharmacy illustration"
+    className="w-28 h-28 object-contain mb-6 drop-shadow-md"
+  />
+
+  <h5 className="text-3xl font-bold mb-2">Drug Finder</h5>
+  <p className="text-center text-base font-medium opacity-90 leading-relaxed">
+    Find your medicine in no time....
+  </p>
+</div>
+
         </div>
       </div>
+      <Footer />
     </GoogleOAuthProvider>
   );
 }

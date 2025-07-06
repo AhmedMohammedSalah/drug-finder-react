@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // [SARA]: Import dependencies
 import React, { useEffect, useState } from "react";
 import apiEndpoints from "../services/api";
@@ -664,3 +665,5 @@ function MedicineAdminPage() {
 }
 
 export default MedicineAdminPage;
+=======
+>>>>>>> main

@@ -6,6 +6,7 @@ import SearchInput from '../components/pharamcieslist/SearchInput';
 import Pagination from '../components/pharamcieslist/Pagination';
 import { BuildingStorefrontIcon, ExclamationTriangleIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom'; // <== Don't forget this!
+import SharedLoadingComponent from '../components/shared/medicalLoading'; // <== Added loading component
 
 const PharmacyList = () => {
   const dispatch = useDispatch();
@@ -40,12 +41,12 @@ const PharmacyList = () => {
   };
 
   if (status === 'loading') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-gray-600 font-medium">Loading pharmacy data...</p>
-      </div>
-    );
+    return <SharedLoadingComponent 
+      loadingText="Loading pharmacy data..."
+      subText="Fetching the latest pharmacy information..."
+      color="blue"
+      gif='/jarLoading.gif' 
+    />;
   }
 
   if (status === 'failed') {
@@ -139,7 +140,7 @@ const PharmacyList = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-6">
               {/* FIRST BLUE CARD */}
               <Link
                 to="/client/PharmacyPage" // <-- Change this to your desired route

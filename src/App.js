@@ -14,16 +14,16 @@ import DashboardLayout from "./components/layout/admin-layout";
 import Home from "./pages/homePage";
 import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
-import Orders from "./pages/ordersPage";
+import Orders from "./pages/pharmacist_pages/ordersPage.js";
 import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
 import PharmacistProfile from "./pages/pharmacist_pages/PharmacistProfile.jsx";
-import Users from "./pages/usersAdminPage.js";
-import Medicines from "./pages/medicineAdminPage.js";
-import Stores from "./pages/storesAdminPage.js";
+import Users from "./pages/admin/usersAdminPage.js";
+import Medicines from "./pages/admin/medicineAdminPage.js";
+import Stores from "./pages/admin/storesAdminPage.js";
 import Requests from "./pages/admin/PharmacistRequestsPage.jsx";
-import OrdersAd from "./pages/ordersAdminPage.js";
+import OrdersAd from "./pages/admin/ordersAdminPage.js";
 import Checkout from "./pages/checkout.js";
 import OrderSuccess from "./pages/ordersucess.js";
 import OrderHistory from "./pages/orderhistory.js";
@@ -33,13 +33,19 @@ import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.jsx";
 import NotificationPage from "./components/notifications/notification-page.jsx";
 import CartPage from "./pages/cart.js";
-import ProfilePage from "./pages/profilePage.js";
+import { setCredentials } from "./features/authSlice.js";
+import ProfilePage from "./pages/ClientProfilePage.js";
+import apiEndpoints from "./services/api.js";
+// import IconButton from './components/shared/iconButton';
 import PharmacistStoreProfilePage from "./pages/pharmacist_pages/StoreProfilePage.jsx";
 import ChatBox from "./pages/AI_chatBox.js";
 import UnauthorizedPage from "./pages/unauthorized.js";
 import NotFoundPage from "./pages/Notfound.js";
+import ClientProfilePage from "./pages/ClientProfilePage.js";
+import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
-import MedicalLoadingComponent from "./components/shared/medicalLoading.js";
+import SharedLoadingComponent from "./components/shared/medicalLoading.js";
+
 
 // Guards
 import {
@@ -47,10 +53,9 @@ import {
   RequireRole,
   RequireNoRole,
 } from "./guards/authorization-guard.js";
+import ArchivePage from "./pages/pharmacist_pages/pharamacist_archieve.jsx";
 
 // Services
-import apiEndpoints from "./services/api.js";
-import { setCredentials } from "./features/authSlice.js";
 
 function App() {
   const [showChat, setShowChat] = useState(false);
@@ -104,22 +109,47 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
-        <Route path="test" element={<MedicalLoadingComponent />} />
+
+        
+        <Route path="test" element={<SharedLoadingComponent />} />
         <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/* Guest Routes (No auth required) */}
         <Route path="/" element={<DefaultLayout />}>
           <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
-          <Route path="pharmacy/:id" element={<PharmacyPage />} />
+          {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU] ANOTHER WRONG PATH */}
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
+        </Route> 
+
+
+        {/*===========================================================*/}
+
+        {/* PHARMACY DASHBOARD */}
+        <Route path="/cart" element={<CartPage />}></Route>
+        {/* [AMS] default layout for guest */}
+        
+        {/* [AMS] this is default layout for guest / client */}
+        <Route path="/" element={<DefaultLayout />}>
+          {/*[AMS] any route here will have auto header and footer */}
+          <Route path="" element={<Home />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />{" "}
+          {/* [AMS] 🔔 notification page  */}
+          <Route path="/notifications" element={<NotificationPage />} />
+          <Route path="/pharmacies" element={<PharmacyList />} />
+          <Route path="/PharmacyPage" element={<PharmacyPage />} />
+          <Route path="/PharmacyMapPage" element={<PharmacyMapPage />} />
           <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
         </Route>
 
         {/* Client Routes */}
         <Route element={<RequireRole allowedRoles={["client"]} />}>
           <Route path="/client" element={<ClientLayout />}>
-            <Route index element={<PharmacyMapPage />} />
+          
+          <Route path="profile" element={<ClientProfilePage/>} />
+        <Route path="profile/edit" element={<EditClientProfilePage/>} />
+            <Route index element={<MedicineSearchPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="pharmacies" element={<PharmacyList />} />
@@ -132,7 +162,7 @@ function App() {
             <Route path="MedicineSearchPage" element={<MedicineSearchPage />} />
             <Route path="order" element={<OrderHistory />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="pharmacy/:id" element={<PharmacyPage />} />
+            {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU]  WRGON PATH */}
             <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
           </Route>
           <Route path="order-success" element={<OrderSuccess />} />
@@ -141,10 +171,15 @@ function App() {
         {/* Pharmacist Routes */}
         <Route element={<RequireRole allowedRoles={["pharmacist"]} />}>
           <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-            <Route index  element={<PharmacistStoreProfilePage />} />
-            <Route  path="store" element={<PharmacistStoreProfilePage />} />
-            <Route path="drugs" element={<Drugs />} />
+            <Route index element={<PharmacistProfile />} />
+            <Route path="store" element={<PharmacistStoreProfilePage />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
+            <Route path="archive" element={<ArchivePage />} />
             <Route path="drugs/add" element={<AddDrug />} />
+            <Route index element={<PharmacistProfile />} />
+            <Route path="store" element={<PharmacistStoreProfilePage />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
+            {/* <Route path="drugs/add" element={<AddDrug />} /> */}
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
             <Route path="notifications" element={<NotificationPage />} />
@@ -168,7 +203,7 @@ function App() {
           <Route path="/chat" element={<AI_ChatPage />} />
         </Route>
         {/* Utility Routes */}
-        <Route path="/test" element={<MedicalLoadingComponent />} />
+        <Route path="/test" element={<SharedLoadingComponent />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // [SARA]: Import dependencies
 import React, { useEffect, useState } from "react";
 import FileUpload from "../components/shared/FileUpload";
@@ -974,3 +975,5 @@ function StoresAdminPage() {
 }
 
 export default StoresAdminPage;
+=======
+>>>>>>> main

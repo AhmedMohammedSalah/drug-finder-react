@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // [SARA]: Import dependencies and icons
 import React, { useEffect, useState } from "react";
 import IconButton from "../components/shared/btn";
@@ -1129,3 +1130,5 @@ function UsersAdminPage() {
 }
 
 export default UsersAdminPage;
+=======
+>>>>>>> main

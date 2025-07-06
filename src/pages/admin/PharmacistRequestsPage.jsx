@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PharmacistRequestCard from "../../components/admin/PharmacistRequestCard";
@@ -7,12 +8,24 @@ import LoadingOverlay from "../../components/shared/LoadingOverlay";
 import Pagination from "../../components/admin/Pagination";
 import PharmacistModal from "../../components/admin/PharmacistModal";
 import { Inbox } from "lucide-react";
+=======
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard';
+import PharmacistFilter from '../../components/admin/PharmacistFilter';
+import SummaryStatisticsCard from '../../components/admin/SummaryStatisticsCard';
+import AdminLoader from '../../components/admin/adminLoader';
+import Pagination from '../../components/shared/pagination';
+import PharmacistModal from '../../components/admin/PharmacistModal';
+import { Inbox } from 'lucide-react';
+>>>>>>> main
 
 const PharmacistRequestsPage = () => {
   const [selectedPharmacist, setSelectedPharmacist] = useState(null);
   const [pharmacists, setPharmacists] = useState([]);
   const [filteredPharmacists, setFilteredPharmacists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     pending: 0,
     approved: 0,
@@ -29,6 +42,7 @@ const PharmacistRequestsPage = () => {
     const fetchPharmacists = async () => {
       try {
         setLoading(true);
+<<<<<<< HEAD
         const token = localStorage.getItem("access_token");
         const res = await axios.get(
           "https://ahmedmsalah.pythonanywhere.com/users/pharmacists/",
@@ -39,6 +53,17 @@ const PharmacistRequestsPage = () => {
         const data = res.data.results;
 
         console.log("Fetched pharmacists:", data);
+=======
+        setError(null);
+        const token = localStorage.getItem('access_token');
+        const res = await axios.get('http://localhost:8000/users/all-pharmacists/', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = res.data; // New endpoint returns array directly, not paginated
+
+        // see the data that comming from backend
+        console.log('Fetched pharmacists:', data);
+>>>>>>> main
 
         setPharmacists(data);
         setFilteredPharmacists(data);
@@ -48,7 +73,12 @@ const PharmacistRequestsPage = () => {
           totalItems: data.length,
         }));
       } catch (err) {
+<<<<<<< HEAD
         console.error("Failed to fetch pharmacists:", err);
+=======
+        setError('Failed to fetch pharmacists. Please try again.');
+        console.error('Failed to fetch pharmacists:', err);
+>>>>>>> main
       } finally {
         setLoading(false);
       }
@@ -68,6 +98,8 @@ const PharmacistRequestsPage = () => {
       rejected,
       total: data.length,
     });
+    // Log stats to verify pending count
+    console.log('Stats:', { pending, approved, rejected, total: data.length });
   };
 
   const handleFilterChange = (filters) => {
@@ -93,6 +125,8 @@ const PharmacistRequestsPage = () => {
       currentPage: 1,
       totalItems: filtered.length,
     }));
+    // Log filtered pharmacists
+    console.log('Filtered pharmacists:', filtered);
   };
 
   const handleUpdatePharmacist = async (id, newStatus, rejectMessage = "") => {
@@ -112,12 +146,27 @@ const PharmacistRequestsPage = () => {
       );
 
       // Update local state
+<<<<<<< HEAD
       setPharmacists((prev) =>
         prev.map((p) => (p.id === id ? { ...p, license_status: newStatus } : p))
       );
     } catch (err) {}
   };
 
+=======
+      setPharmacists(prev => prev.map(p => 
+        p.id === id ? { ...p, license_status: newStatus } : p
+      ));
+      setFilteredPharmacists(prev => prev.map(p => 
+        p.id === id ? { ...p, license_status: newStatus } : p
+      ));
+      updateStatistics(pharmacists); // Update stats after status change
+    } catch (err) {
+      console.error('Failed to update pharmacist:', err);
+    }
+  };
+  
+>>>>>>> main
   const handlePageChange = (page) => {
     setPagination((prev) => ({
       ...prev,
@@ -125,6 +174,7 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
+<<<<<<< HEAD
   const handleItemsPerPageChange = (itemsPerPage) => {
     setPagination((prev) => ({
       ...prev,
@@ -133,15 +183,20 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
+=======
+>>>>>>> main
   const getCurrentItems = () => {
     const { currentPage, itemsPerPage } = pagination;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredPharmacists.slice(startIndex, endIndex);
+    const items = filteredPharmacists.slice(startIndex, endIndex);
+    console.log('Current items:', items);
+    return items;
   };
 
   return (
     <div className="relative min-h-screen">
+<<<<<<< HEAD
       {loading && <LoadingOverlay />}
 
       <div
@@ -152,6 +207,11 @@ const PharmacistRequestsPage = () => {
         <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">
           Pharmacist Requests
         </h1>
+=======
+      <AdminLoader loading={loading} error={error} loadingMessage="Loading pharmacist requests..." />
+      <div className={`container mx-auto px-4 pb-24 ${loading || error ? 'opacity-50 pointer-events-none select-none' : 'opacity-100'}`}>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">Pharmacist Requests</h1>
+>>>>>>> main
 
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:w-3/4 flex flex-col">
@@ -189,22 +249,17 @@ const PharmacistRequestsPage = () => {
           </div>
         </div>
       </div>
-
       {filteredPharmacists.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg py-3">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-2">
             <Pagination
               currentPage={pagination.currentPage}
-              itemsPerPage={pagination.itemsPerPage}
-              totalItems={pagination.totalItems}
+              totalPages={Math.ceil(pagination.totalItems / pagination.itemsPerPage)}
               onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
         </div>
       )}
-
-      {/* ✅ MODAL */}
       {selectedPharmacist && (
         <PharmacistModal
           pharmacist={selectedPharmacist}

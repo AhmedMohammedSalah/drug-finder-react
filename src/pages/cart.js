@@ -1,5 +1,5 @@
 // src/pages/CartPage.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect , useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -12,11 +12,13 @@ import { useNavigate } from 'react-router-dom';
 import IconButton from '../components/shared/btn';
 import { Trash2, Plus, Minus, X } from 'lucide-react';
 import { toast } from 'react-toastify';
+import SharedLoadingComponent from '../components/shared/medicalLoading';
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cart, status } = useSelector((state) => state.cart);
+const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -52,7 +54,13 @@ const CartPage = () => {
     dispatch(clearCart(cart.id));
   };
 
-  if (status === 'loading') return <p>Loading cart...</p>;
+  if (status === 'loading') {
+    return <SharedLoadingComponent 
+      loadingText="Loading your cart items..."
+      gif="/cartLoading.gif"
+      gifWidth="50%"
+    />;
+  }
   
   if (!cart || !cart.items?.length) {
     return (
@@ -98,10 +106,10 @@ const CartPage = () => {
                 {/* Product Info */}
                 <div className="col-span-2 flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                    {item.medicine_image ? (
+                    {item.image ? (
                       <img 
-                        src={item.medicine_image} 
-                        alt={item.medicine_name || `Product ${item.product}`}
+                        src={item.image}
+                        alt={item.name || `Product ${item.product}`}
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -117,9 +125,7 @@ const CartPage = () => {
                     <h3 className="font-medium text-gray-900">
                       {item.name || `Medicine #${item.product}`}
                     </h3>
-                    <p className="text-sm text-gray-500">
-                      ID: {item.product}
-                    </p>
+                  
                   </div>
                 </div>
 
@@ -165,15 +171,16 @@ const CartPage = () => {
           </div>
 
           {/* Clear Cart Button */}
-          <div className="mt-4">
-            <button
-              onClick={handleClearCart}
-              className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
-            >
-              <Trash2 size={16} />
-              Clear Cart
-            </button>
-          </div>
+         <div className="mt-4">
+  <button
+    onClick={() => setShowConfirmModal(true)}
+    className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
+  >
+    <Trash2 size={16} />
+    Clear Cart
+  </button>
+</div>
+
         </div>
 
         {/* Cart Totals Sidebar */}
@@ -207,18 +214,41 @@ const CartPage = () => {
               </div>
             </div>
 
-           
             {/* Checkout Button */}
-              <Link to="/client/checkout">
-            <button className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
-              PROCEED TO CHECKOUT
-            </button>
-          </Link>
-
+            <Link to="/client/checkout">
+              <button className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
+                PROCEED TO CHECKOUT
+              </button>
+            </Link>
           </div>
         </div>
       </div>
-      
+      {showConfirmModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-sm">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Confirm Clear Cart</h2>
+      <p className="text-gray-600 mb-6">Are you sure you want to remove all items from your cart?</p>
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowConfirmModal(false)}
+          className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            handleClearCart();
+            setShowConfirmModal(false);
+          }}
+          className="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition"
+        >
+          Yes, Clear
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

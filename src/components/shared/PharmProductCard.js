@@ -39,6 +39,7 @@ function ProductCard({ product, categories, onDelete, onEdit }) {
         <span className="font-medium">Category:</span> {category.name}
       </p>
       <p className="text-gray-700">
+        {/* <span className="font-medium">Price:</span> ${product.price} */}
         <span className="font-medium">Price:</span> ${price.toFixed(2)}
       </p>
 

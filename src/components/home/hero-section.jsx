@@ -1,6 +1,9 @@
 import { ArrowRight, Play } from "lucide-react"
+import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,11 +26,16 @@ export default function HeroSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-full hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl">
+              <button
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-full hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
+                onClick={() => navigate('/login')}
+              >
                 Get Started Today
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="inline-flex items-center gap-2 text-blue-600 px-8 py-4 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-colors font-semibold text-lg">
+              <button className="inline-flex items-center gap-2 text-blue-600 px-8 py-4 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-colors font-semibold text-lg"
+                onClick={() => window.open('https://www.youtube.com/watch?v=tQlR_hg_RrI&ab_channel=OmarKhaled', '_blank')}
+              >
                 <Play className="w-5 h-5" />
                 Watch Demo
               </button>
@@ -53,15 +61,17 @@ export default function HeroSection() {
           {/* Right Content - Doctor Image */}
           <div className="relative">
             <div className="relative z-10">
-              <img
-                src="images/home/drug_finder.png"
+              <img  
+               src="images/image6.webp"
                 alt="Healthcare Professional"
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                // className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto-2xl "
+
               />
             </div>
             {/* Background Elements */}
-            <div className="absolute -top-4 -right-4 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
-            <div className="absolute -bottom-4 -left-4 w-48 h-48 bg-indigo-200 rounded-full blur-2xl opacity-40"></div>
+            {/* <div className="absolute -top-4 -right-4 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute -bottom-4 -left-4 w-48 h-48 bg-indigo-200 rounded-full blur-2xl opacity-40"></div> */}
           </div>
         </div>
       </div>

@@ -153,12 +153,12 @@ const apiEndpoints = {
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
-
     // [SENU]: update for the pharmacist store profile
     updatePharmacist: (id, data) => api.patch(`users/pharmacists/${id}/`, data),
-
     // [SENU]: fetch pharmacist profile to determine has_store
     getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
+    // NEW: fetch all pharmacists for admin
+    getAllPharmacists: () => api.get("users/all-pharmacists/"),
   },
   pharmacies: {
     findNearbyPharmacist: () => api.get("/medical_stores"),
@@ -188,9 +188,15 @@ const apiEndpoints = {
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
-    updateMedicine: (id, data) =>
-      apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    updateMedicineStock: (id, stock) => api.patch(`inventory/medicines/${id}/`, { stock }),
     deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`),
+
+    // SENU:
+    getDeletedMedicinesByStore: (storeId) =>
+      api.get("inventory/medicines/deleted_by_store/", {
+        params: { store_id: storeId },
+      }),
   },
   // {amira} added cart endpoints
   cart: {
@@ -215,6 +221,8 @@ const apiEndpoints = {
     getClientProfile: () => api.get("users/client/profile/"),
     updateClientProfile: (data) =>
       apiFileUpload.patch("users/client/profile/", data),
+    
+    
   },
   aiChat: {
     ask: (question) => api.post("AI-chat/ask/", { question }),
@@ -223,7 +231,7 @@ const apiEndpoints = {
   orders: {
     createOrder: (data) => api.post("orders/", data),
     updateOrderStatus: (orderId, newStatus) =>
-      api.post(`orders/${orderId}/update_status/`, { status: "paid" }),
+      api.post(`orders/${orderId}/update_status/`, { status: newStatus }),
     getMyOrders: () => api.get("orders/"),
     getPaginatedOrders: (page = 1, pageSize = 10, filters = {}) => {
       const params = new URLSearchParams({
@@ -235,6 +243,14 @@ const apiEndpoints = {
     },
     getOrderDetails: (orderId) => api.get(`orders/${orderId}/details/`),
     getItemDetails: (itemId) => api.get(`inventory/items/${itemId}/`),
+    getOrder: (orderId) => api.get(`orders/${orderId}/`), //[OKS] for order details
+   // [OKS] add cancel-order end-point
+    cancelOrder: (orderId) => {
+    return api.post(`/orders/${orderId}/update_status/`, {
+    status: 'cancelled'
+   })
+  },
+
 
     //[OKS] Convenience methods
     getOrdersByStatus: (status, page = 1, pageSize = 10) =>

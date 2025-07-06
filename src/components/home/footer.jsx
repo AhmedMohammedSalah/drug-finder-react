@@ -34,7 +34,7 @@ export default function Footer() {
             </p>
 
             {/* Social Media */}
-            <div className="flex gap-4 mb-8">
+            {/* <div className="flex gap-4 mb-8">
               <a
                 href="#"
                 className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
@@ -59,7 +59,7 @@ export default function Footer() {
               >
                 <Linkedin className="w-5 h-5" />
               </a>
-            </div>
+            </div> */}
 
             {/* Contact Info */}
             <div className="space-y-3">

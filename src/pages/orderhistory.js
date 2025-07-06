@@ -1,34 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Package, Clock, CheckCircle, XCircle, RefreshCw, 
-  Truck, CreditCard, AlertCircle, Loader,
-  ChevronLeft, ChevronRight, Image as ImageIcon
+  Truck, CreditCard, AlertCircle, Loader, Image as ImageIcon 
 } from 'lucide-react';
 import apiEndpoints from '../services/api';
+import Pagination from '../components/shared/pagination';
+import SharedLoadingComponent from '../components/shared/medicalLoading'; // Added import
+import { toast } from 'react-toastify'; 
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
+const MySwal = withReactContent(Swal);
+//[SARA]: going back
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null); // State to track specific order being cancelled
   const [pagination, setPagination] = useState({
     count: 0,
     currentPage: 1,
     totalPages: 1,
     pageSize: 10
   });
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const notify = {
+    success: (title, message) => toast.success(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { icon: <CheckCircle className="text-green-500" />, position: "top-right", autoClose: 3000 }
+    ),
+    error: (title, message) => toast.error(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { icon: <XCircle className="text-red-500" />, position: "top-right", autoClose: 5000 }
+    ),
+    info: (title, message) => toast.info(
+      <div>
+        <p className="font-medium">{title}</p>
+        {message && <p className="text-sm">{message}</p>}
+      </div>,
+      { position: "top-right", autoClose: 3000 }
+    ),
+  };
 
   const fetchOrders = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiEndpoints.orders.getPaginatedOrders(
-        page, 
+        page,
         pagination.pageSize,
         { ordering: '-created_at' }
       );
-      
-      // [OKS] Process orders with item details
+
       const processedOrders = await Promise.all(
         response.data.results.map(async (order) => {
           if (!order.items_details || order.items_details.length === 0) {
@@ -43,8 +74,7 @@ const OrderHistory = () => {
                     image: itemDetail.data.image,
                     category: itemDetail.data.category
                   };
-                } catch (err) {
-                  console.error('Error fetching item details:', err);
+                } catch {
                   return {
                     ...item,
                     name: `Item ${item.product}`,
@@ -69,8 +99,9 @@ const OrderHistory = () => {
         totalPages: Math.ceil(response.data.count / prev.pageSize)
       }));
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to load orders');
-      console.error('Error fetching orders:', err);
+      const errorMessage = err.response?.data?.detail || err.message || 'Failed to load orders';
+      setError(errorMessage);
+      notify.error('Error loading orders', errorMessage); // Use react-toastify for error
     } finally {
       setLoading(false);
     }
@@ -80,19 +111,41 @@ const OrderHistory = () => {
     fetchOrders();
   }, []);
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'pending': return <Clock className="h-4 w-4 text-amber-500" />;
-      case 'processing': return <Loader className="h-4 w-4 text-blue-500 animate-spin" />;
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'shipped': return <Truck className="h-4 w-4 text-indigo-500" />;
-      case 'cancelled': return <XCircle className="h-4 w-4 text-red-500" />;
-      default: return <Clock className="h-4 w-4 text-gray-500" />;
+  const handleCancelOrder = async (orderId) => {
+    const result = await MySwal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to cancel this order? This action cannot be undone.',
+      imageUrl: '/images/order_cancel.png',
+      imageHeight: 200, 
+      imageAlt: 'cancel',
+      showCancelButton: true,
+      confirmButtonColor: '#d33', 
+      cancelButtonColor: '#3085d6', 
+      confirmButtonText: 'Yes, cancel it!',
+      cancelButtonText: 'No, keep it'
+    });
+
+    if (!result.isConfirmed) {
+      notify.info('Cancellation avoided', `Order #${orderId} was not cancelled.`);
+      return;
+    }
+
+    try {
+      setCancellingOrderId(orderId); 
+      await apiEndpoints.orders.cancelOrder(orderId);
+      
+      await MySwal.fire('Cancelled!', `Order #${orderId} has been cancelled successfully.`, 'success');
+      
+      fetchOrders(pagination.currentPage); // Refresh orders to reflect the change
+    } catch (err) {
+      await MySwal.fire('Error!', err.response?.data?.detail || 'Failed to cancel order.', 'error');
+    } finally {
+      setCancellingOrderId(null); // Clear specific order loading
     }
   };
 
-  const getStatusColor = (order_status) => {
-    switch(order_status.toLowerCase()) {
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
       case 'pending': return 'bg-amber-100 text-amber-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'completed': return 'bg-green-100 text-green-800';
@@ -102,19 +155,23 @@ const OrderHistory = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const formatDate = (date) => new Date(date).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
   const handleRefresh = () => {
+    notify.info('Refreshing', 'Loading latest orders...');
     fetchOrders(pagination.currentPage);
   };
+
+  // Filter orders by status
+  const filteredOrders = statusFilter
+    ? orders.filter(order => order.order_status === statusFilter)
+    : orders;
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
@@ -128,14 +185,29 @@ const OrderHistory = () => {
             </span>
           )}
         </h1>
-        <button 
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex gap-2 items-center">
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="border border-blue-200 rounded-lg px-3 py-1.5 text-base text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="on_process">On Process</option>
+            <option value="shipping">Shipping</option>
+            <option value="delivered">Delivered</option>
+            <option value="canceled">Canceled</option>
+          </select>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -144,7 +216,7 @@ const OrderHistory = () => {
             <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
             <p className="text-red-700">{error}</p>
           </div>
-          <button 
+          <button
             onClick={handleRefresh}
             className="mt-2 text-sm text-red-600 hover:text-red-800"
           >
@@ -153,11 +225,15 @@ const OrderHistory = () => {
         </div>
       )}
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader className="animate-spin h-8 w-8 text-blue-500" />
-        </div>
-      ) : orders.length === 0 ? (
+
+      {loading && !cancellingOrderId ? (
+        <SharedLoadingComponent 
+          loadingText="Loading your order history..."
+          subText="Gathering all your past purchases..."
+          color="blue"
+          gif="/ordersLoading.gif"
+        />
+      ) : filteredOrders.length === 0 ? (
         <div className="bg-blue-50 rounded-lg p-6 text-center">
           <Package className="h-10 w-10 mx-auto text-blue-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-800 mb-1">No orders found</h3>
@@ -166,7 +242,7 @@ const OrderHistory = () => {
       ) : (
         <>
           <div className="space-y-4 mb-6">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                   <div className="flex items-center gap-3">
@@ -178,10 +254,10 @@ const OrderHistory = () => {
                     </span>
                   </div>
                   <div className="text-sm font-medium">
-                Total: ${parseFloat(order.total_price || 0).toFixed(2)}
+                    Total: ${parseFloat(order.total_price || 0).toFixed(2)}
                   </div>
                 </div>
-                
+
                 <div className="p-4">
                   <div className="mb-4">
                     <h3 className="font-medium mb-2">Items ({order.items.length})</h3>
@@ -190,8 +266,8 @@ const OrderHistory = () => {
                         <div key={index} className="flex gap-3 py-2">
                           <div className="flex-shrink-0">
                             {item.image ? (
-                              <img 
-                                src={item.image} 
+                              <img
+                                src={item.image}
                                 alt={item.name}
                                 className="w-12 h-12 rounded-md object-cover border border-gray-200"
                               />
@@ -209,65 +285,44 @@ const OrderHistory = () => {
                           </div>
                           <p className="font-medium">
                             ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-
                           </p>
                         </div>
                       ))}
                     </div>
                   </div>
+
+                  {order.order_status === 'pending' && (
+                    <div className="pt-2">
+                      <button
+                        onClick={() => handleCancelOrder(order.id)} // This triggers the SweetAlert2 confirmation
+                        disabled={cancellingOrderId === order.id || loading}
+                        className="px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-md hover:bg-red-100 transition disabled:opacity-50 flex items-center"
+                      >
+                        {cancellingOrderId === order.id ? (
+                          <>
+                            <Loader className="h-4 w-4 mr-1 animate-spin" />
+                            Cancelling...
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Cancel Order
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           {pagination.totalPages > 1 && (
-            <div className="flex justify-between items-center mt-6">
-              <button
-                onClick={() => fetchOrders(pagination.currentPage - 1)}
-                disabled={pagination.currentPage === 1 || loading}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Previous
-              </button>
-              
-              <div className="flex items-center gap-2">
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (pagination.totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (pagination.currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                    pageNum = pagination.totalPages - 4 + i;
-                  } else {
-                    pageNum = pagination.currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => fetchOrders(pageNum)}
-                      disabled={loading}
-                      className={`px-3 py-1 rounded-md ${pagination.currentPage === pageNum 
-                        ? 'bg-blue-500 text-white' 
-                        : 'hover:bg-gray-100'}`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-              
-              <button
-                onClick={() => fetchOrders(pagination.currentPage + 1)}
-                disabled={pagination.currentPage >= pagination.totalPages || loading}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
-            </div>
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={(page) => fetchOrders(page)}
+            />
           )}
         </>
       )}
