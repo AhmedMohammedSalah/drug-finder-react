@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import PharmacistRequestCard from "../../components/admin/PharmacistRequestCard";
-import PharmacistFilter from "../../components/admin/PharmacistFilter";
-import SummaryStatisticsCard from "../../components/admin/SummaryStatisticsCard";
-import LoadingOverlay from "../../components/shared/LoadingOverlay";
-import Pagination from "../../components/admin/Pagination";
-import PharmacistModal from "../../components/admin/PharmacistModal";
-import { Inbox } from "lucide-react";
-=======
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard';
@@ -18,7 +8,6 @@ import AdminLoader from '../../components/admin/adminLoader';
 import Pagination from '../../components/shared/pagination';
 import PharmacistModal from '../../components/admin/PharmacistModal';
 import { Inbox } from 'lucide-react';
->>>>>>> main
 
 const PharmacistRequestsPage = () => {
   const [selectedPharmacist, setSelectedPharmacist] = useState(null);
@@ -42,18 +31,6 @@ const PharmacistRequestsPage = () => {
     const fetchPharmacists = async () => {
       try {
         setLoading(true);
-<<<<<<< HEAD
-        const token = localStorage.getItem("access_token");
-        const res = await axios.get(
-          "https://ahmedmsalah.pythonanywhere.com/users/pharmacists/",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = res.data.results;
-
-        console.log("Fetched pharmacists:", data);
-=======
         setError(null);
         const token = localStorage.getItem('access_token');
         const res = await axios.get('http://localhost:8000/users/all-pharmacists/', {
@@ -63,7 +40,6 @@ const PharmacistRequestsPage = () => {
 
         // see the data that comming from backend
         console.log('Fetched pharmacists:', data);
->>>>>>> main
 
         setPharmacists(data);
         setFilteredPharmacists(data);
@@ -73,12 +49,8 @@ const PharmacistRequestsPage = () => {
           totalItems: data.length,
         }));
       } catch (err) {
-<<<<<<< HEAD
-        console.error("Failed to fetch pharmacists:", err);
-=======
         setError('Failed to fetch pharmacists. Please try again.');
         console.error('Failed to fetch pharmacists:', err);
->>>>>>> main
       } finally {
         setLoading(false);
       }
@@ -146,14 +118,6 @@ const PharmacistRequestsPage = () => {
       );
 
       // Update local state
-<<<<<<< HEAD
-      setPharmacists((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, license_status: newStatus } : p))
-      );
-    } catch (err) {}
-  };
-
-=======
       setPharmacists(prev => prev.map(p => 
         p.id === id ? { ...p, license_status: newStatus } : p
       ));
@@ -166,7 +130,6 @@ const PharmacistRequestsPage = () => {
     }
   };
   
->>>>>>> main
   const handlePageChange = (page) => {
     setPagination((prev) => ({
       ...prev,
@@ -174,17 +137,6 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
-<<<<<<< HEAD
-  const handleItemsPerPageChange = (itemsPerPage) => {
-    setPagination((prev) => ({
-      ...prev,
-      itemsPerPage,
-      currentPage: 1,
-    }));
-  };
-
-=======
->>>>>>> main
   const getCurrentItems = () => {
     const { currentPage, itemsPerPage } = pagination;
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -196,22 +148,9 @@ const PharmacistRequestsPage = () => {
 
   return (
     <div className="relative min-h-screen">
-<<<<<<< HEAD
-      {loading && <LoadingOverlay />}
-
-      <div
-        className={`container mx-auto px-4 pb-24 ${
-          loading ? "opacity-50 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">
-          Pharmacist Requests
-        </h1>
-=======
       <AdminLoader loading={loading} error={error} loadingMessage="Loading pharmacist requests..." />
       <div className={`container mx-auto px-4 pb-24 ${loading || error ? 'opacity-50 pointer-events-none select-none' : 'opacity-100'}`}>
         <h1 className="text-3xl font-bold text-gray-800 mb-6 pt-6">Pharmacist Requests</h1>
->>>>>>> main
 
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:w-3/4 flex flex-col">

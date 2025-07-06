@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import apiEndpoints from "../services/api";
 
@@ -873,5 +872,3 @@ function StoreDetails({ store }) {
 }
 
 export default OrdersAdminPage;
-=======
->>>>>>> main
