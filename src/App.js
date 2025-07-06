@@ -46,7 +46,6 @@ import EditClientProfilePage from "./pages/EditClientProfilePage.js";
 import ClientStoreProfile from "./pages/pharmacist_pages/ClientStoreProfile.jsx";
 import SharedLoadingComponent from "./components/shared/medicalLoading.js";
 
-
 // Guards
 import {
   RequireAuth,
@@ -110,25 +109,23 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        
         <Route path="test" element={<SharedLoadingComponent />} />
         <Route path="order-success" element={<OrderSuccess />}></Route>
 
         {/* Guest Routes (No auth required) */}
+        <Route index element={<Home />} />
         <Route path="/" element={<DefaultLayout />}>
-          <Route index element={<Home />} />
           <Route path="pharmacies" element={<PharmacyList />} />
           {/* <Route path="pharmacy/:id" element={<PharmacyPage />} /> [SENU] ANOTHER WRONG PATH */}
           <Route path="PharmacyMapPage" element={<PharmacyMapPage />} />
-        </Route> 
-
+        </Route>
 
         {/*===========================================================*/}
 
         {/* PHARMACY DASHBOARD */}
         <Route path="/cart" element={<CartPage />}></Route>
         {/* [AMS] default layout for guest */}
-        
+
         {/* [AMS] this is default layout for guest / client */}
         <Route path="/" element={<DefaultLayout />}>
           {/*[AMS] any route here will have auto header and footer */}
@@ -146,9 +143,8 @@ function App() {
         {/* Client Routes */}
         <Route element={<RequireRole allowedRoles={["client"]} />}>
           <Route path="/client" element={<ClientLayout />}>
-          
-          <Route path="profile" element={<ClientProfilePage/>} />
-        <Route path="profile/edit" element={<EditClientProfilePage/>} />
+            <Route path="profile" element={<ClientProfilePage />} />
+            <Route path="profile/edit" element={<EditClientProfilePage />} />
             <Route index element={<MedicineSearchPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />

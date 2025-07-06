@@ -8,18 +8,23 @@ import PracticeManagementSection from "./practice-management-section"
 import CTASection from "./cta-section"
 import FAQSection from "./faq-section"
 import Footer from "./footer"
+import { LanguageProvider } from "./translation/LanguageContext"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      <HeroSection />
-      <ServiceCards />
-      <StatisticsSection />
-      <ProfessionalServicesSection />
-      <StepGuideSection />
-      <PracticeManagementSection />
-      <CTASection />
-      <FAQSection />
-    </div>
+    <LanguageProvider>
+      <div className="min-h-screen">
+        <Header />
+        <HeroSection />
+        <ServiceCards />
+        <StatisticsSection />
+        <ProfessionalServicesSection />
+        <StepGuideSection />
+        <PracticeManagementSection />
+        <CTASection />
+        <FAQSection />
+        <Footer />
+      </div>
+    </LanguageProvider>
   )
 }
