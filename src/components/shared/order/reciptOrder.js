@@ -71,14 +71,14 @@ const ReceiptOrder = ({ order, fetchClientById }) => {
                   <th className="px-3 py-2 text-left font-semibold">Price</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody>{console.log(order)}
                 {order.items_details.map((item, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-blue-50/60'}>
                     <td className="px-3 py-2 font-medium text-gray-800">{item.name}</td>
                     <td className="px-3 py-2">
                       <span className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold">x{item.quantity}</span>
                     </td>
-                    <td className="px-3 py-2 text-gray-700 font-semibold">{item.price} EGP</td>
+                    <td className="px-3 py-2 text-gray-700 font-semibold">{order.items.map((item)=>item.price)} EGP</td>
                   </tr>
                 ))}
               </tbody>
