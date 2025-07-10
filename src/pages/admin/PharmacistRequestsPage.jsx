@@ -4,7 +4,7 @@ import PharmacistRequestCard from '../../components/admin/PharmacistRequestCard'
 import PharmacistFilter from '../../components/admin/PharmacistFilter';
 import SummaryStatisticsCard from '../../components/admin/SummaryStatisticsCard';
 import AdminLoader from '../../components/admin/adminLoader';
-import Pagination from '../../components/admin/Pagination';
+import Pagination from '../../components/shared/pagination';
 import PharmacistModal from '../../components/admin/PharmacistModal';
 import { Inbox } from 'lucide-react';
 
@@ -32,10 +32,14 @@ const PharmacistRequestsPage = () => {
         setLoading(true);
         setError(null);
         const token = localStorage.getItem('access_token');
-        const res = await axios.get('http://localhost:8000/users/pharmacists/', {
+        const res = await axios.get('http://localhost:8000/users/all-pharmacists/', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = res.data.results;
+        const data = res.data; // New endpoint returns array directly, not paginated
+
+        // see the data that comming from backend
+        console.log('Fetched pharmacists:', data);
+
         setPharmacists(data);
         setFilteredPharmacists(data);
         updateStatistics(data);
@@ -65,6 +69,8 @@ const PharmacistRequestsPage = () => {
       rejected,
       total: data.length,
     });
+    // Log stats to verify pending count
+    console.log('Stats:', { pending, approved, rejected, total: data.length });
   };
 
   const handleFilterChange = (filters) => {
@@ -88,6 +94,8 @@ const PharmacistRequestsPage = () => {
       currentPage: 1,
       totalItems: filtered.length,
     }));
+    // Log filtered pharmacists
+    console.log('Filtered pharmacists:', filtered);
   };
 
   const handleUpdatePharmacist = async (id, newStatus, rejectMessage = '') => {
@@ -110,12 +118,15 @@ const PharmacistRequestsPage = () => {
       setPharmacists(prev => prev.map(p => 
         p.id === id ? { ...p, license_status: newStatus } : p
       ));
-      
+      setFilteredPharmacists(prev => prev.map(p => 
+        p.id === id ? { ...p, license_status: newStatus } : p
+      ));
+      updateStatistics(pharmacists); // Update stats after status change
     } catch (err) {
+      console.error('Failed to update pharmacist:', err);
     }
   };
   
-
   const handlePageChange = (page) => {
     setPagination(prev => ({
       ...prev,
@@ -123,19 +134,13 @@ const PharmacistRequestsPage = () => {
     }));
   };
 
-  const handleItemsPerPageChange = (itemsPerPage) => {
-    setPagination(prev => ({
-      ...prev,
-      itemsPerPage,
-      currentPage: 1,
-    }));
-  };
-
   const getCurrentItems = () => {
     const { currentPage, itemsPerPage } = pagination;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredPharmacists.slice(startIndex, endIndex);
+    const items = filteredPharmacists.slice(startIndex, endIndex);
+    console.log('Current items:', items);
+    return items;
   };
 
   return (
@@ -175,13 +180,11 @@ const PharmacistRequestsPage = () => {
       </div>
       {filteredPharmacists.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg py-3">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-2">
             <Pagination
               currentPage={pagination.currentPage}
-              itemsPerPage={pagination.itemsPerPage}
-              totalItems={pagination.totalItems}
+              totalPages={Math.ceil(pagination.totalItems / pagination.itemsPerPage)}
               onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
         </div>

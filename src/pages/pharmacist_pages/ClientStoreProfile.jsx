@@ -8,6 +8,7 @@ import ClientMedicineViewer from '../../components/pharamcieslist/pharmaStoreVie
 import apiEndpoints, { api } from '../../services/api';
 import { store } from '../../app/store';
 import SharedLoadingComponent from '../../components/shared/medicalLoading'; // [SENU] Added import
+import AdminLoader from '../../components/admin/adminLoader';
 
 const ClientStoreProfile = () => {
   const { storeId } = useParams();
@@ -39,6 +40,7 @@ const ClientStoreProfile = () => {
       color="blue"
       gif='/storeLoading.gif' // [SENU] Replaced loading spinner
     />; // [SENU] Replaced loading spinner
+    return <AdminLoader loading={isLoading} error={error} loadingMessage="Loading store data..." />;
   }
 
   if (error) {

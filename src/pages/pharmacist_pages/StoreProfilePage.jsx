@@ -1,25 +1,33 @@
-import React from 'react';
-import useStoreForm from '../../hooks/useStoreForm';
-import MapSection from '../../components/pharamcieslist/pharamStoreCreation/MapSection';
-import ProfileImageSection from '../../components/pharamcieslist/pharamStoreCreation/ProfileImageSection';
-import InputSection from '../../components/pharamcieslist/pharamStoreCreation/InputSection';
-import MapLoadingOverlay from '../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay';
-import { Pencil } from 'lucide-react';
-import MedicineManager from '../../components/medicine/MedicineManager';
-import PendingLicenseCard from '../../components/medicine/PendingLicenseCard';
-import { RejectedLicenseCard } from '../../components/medicine/RejectionLicenseCard';
-import SharedLoadingComponent  from '../../components/shared/medicalLoading';
+import React from "react";
+import useStoreForm from "../../hooks/useStoreForm";
+import MapSection from "../../components/pharamcieslist/pharamStoreCreation/MapSection";
+import ProfileImageSection from "../../components/pharamcieslist/pharamStoreCreation/ProfileImageSection";
+import InputSection from "../../components/pharamcieslist/pharamStoreCreation/InputSection";
+import MapLoadingOverlay from "../../components/pharamcieslist/pharamStoreCreation/MapLoadingOverlay";
+import { Pencil } from "lucide-react";
+import MedicineManager from "../../components/medicine/MedicineManager";
+import PendingLicenseCard from "../../components/medicine/PendingLicenseCard";
+import { RejectedLicenseCard } from "../../components/medicine/RejectionLicenseCard";
+import SharedLoadingComponent from "../../components/shared/medicalLoading";
 
 const StoreProfileForm = () => {
   const {
-    logoImage, setLogoImage,
-    storeName, setStoreName,
-    address, setAddress,
-    phone, setPhone,
-    description, setDescription,
-    latLng, setLatLng,
-    showMapModal, setShowMapModal,
-    isSubmitting, isSubmitted,
+    logoImage,
+    setLogoImage,
+    storeName,
+    setStoreName,
+    address,
+    setAddress,
+    phone,
+    setPhone,
+    description,
+    setDescription,
+    latLng,
+    setLatLng,
+    showMapModal,
+    setShowMapModal,
+    isSubmitting,
+    isSubmitted,
     mapLoading,
     handleLatChange,
     handleLngChange,
@@ -28,8 +36,10 @@ const StoreProfileForm = () => {
     isEditMode,
     setIsEditMode,
     hasStore,
-    startTime, setStartTime,
-    endTime, setEndTime,
+    startTime,
+    setStartTime,
+    endTime,
+    setEndTime,
     isLoading,
     licenseStatus,
   } = useStoreForm();
@@ -37,7 +47,7 @@ const StoreProfileForm = () => {
   const canEdit = isEditMode || !hasStore;
 
   // Debugging: Log the loading state
-  console.log('isLoading:', isLoading, 'hasStore:', hasStore);
+  console.log("isLoading:", isLoading, "hasStore:", hasStore);
 
   // Show MedicalLoadingComponent while data is loading
   if (isLoading) {
@@ -125,9 +135,13 @@ const StoreProfileForm = () => {
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      {hasStore ? 'Updating...' : 'Saving...'}
+                      {hasStore ? "Updating..." : "Saving..."}
                     </span>
-                  ) : hasStore ? 'Update Profile' : 'Save Profile'}
+                  ) : hasStore ? (
+                    "Update Profile"
+                  ) : (
+                    "Save Profile"
+                  )}
                 </button>
               </div>
             )}
@@ -137,13 +151,13 @@ const StoreProfileForm = () => {
         {/* License Status Section */}
         {hasStore && !isEditMode && (
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-4 sm:p-6 w-full">
-            {licenseStatus === 'approved' ? (
+            {licenseStatus === "approved" ? (
               <div className="w-full overflow-x-hidden">
                 <MedicineManager />
               </div>
-            ) : licenseStatus === 'pending' ? (
+            ) : licenseStatus === "pending" ? (
               <PendingLicenseCard />
-            ) : licenseStatus === 'rejected' ? (
+            ) : licenseStatus === "rejected" ? (
               <RejectedLicenseCard
                 adminMessage="Your license was rejected due to incomplete documentation. Please submit your professional certification."
                 appealLink="/pharmacy/profile/"

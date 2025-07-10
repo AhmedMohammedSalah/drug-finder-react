@@ -153,12 +153,12 @@ const apiEndpoints = {
     getCurrentUser: () => api.get("users/me/"),
     updateUser: (userData) => api.patch("users/me/", userData),
     deleteUser: () => api.delete("users/me/"),
-
     // [SENU]: update for the pharmacist store profile
     updatePharmacist: (id, data) => api.patch(`users/pharmacists/${id}/`, data),
-
     // [SENU]: fetch pharmacist profile to determine has_store
     getPharmacistProfile: () => api.get("/users/me/pharmacist/"),
+    // NEW: fetch all pharmacists for admin
+    getAllPharmacists: () => api.get("users/all-pharmacists/"),
   },
   pharmacies: {
     findNearbyPharmacist: () => api.get("/medical_stores"),
@@ -188,16 +188,15 @@ const apiEndpoints = {
   inventory: {
     getMedicines: (config = {}) => api.get("inventory/medicines/", config),
     createMedicine: (data) => apiFileUpload.post("inventory/medicines/", data),
-    updateMedicine: (id, data) =>apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    updateMedicine: (id, data) => apiFileUpload.patch(`inventory/medicines/${id}/`, data),
+    updateMedicineStock: (id, stock) => api.patch(`inventory/medicines/${id}/`, { stock }),
     deleteMedicine: (id) => api.delete(`inventory/medicines/${id}/`),
 
     // SENU:
     getDeletedMedicinesByStore: (storeId) =>
-    api.get("inventory/medicines/deleted_by_store/", {
-      params: { store_id: storeId },
-    }),
-
-
+      api.get("inventory/medicines/deleted_by_store/", {
+        params: { store_id: storeId },
+      }),
   },
   // {amira} added cart endpoints
   cart: {
@@ -278,4 +277,4 @@ const apiEndpoints = {
 // [AMS]
 // Add to apiEndpoints object
 
-  export { api, apiFileUpload, apiEndpoints as default };
+export { api, apiFileUpload, apiEndpoints as default };

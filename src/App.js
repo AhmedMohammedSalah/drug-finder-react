@@ -14,7 +14,7 @@ import DashboardLayout from "./components/layout/admin-layout";
 import Home from "./pages/homePage";
 import Drugs from "./pages/drugPage";
 import AddDrug from "./pages/addDrugPage";
-import Orders from "./pages/ordersPage";
+import Orders from "./pages/pharmacist_pages/ordersPage.js";
 import PharmacyList from "./pages/pharamcieslist.js";
 import PharmacyPage from "./pages/PharmacyPage.js";
 import PharmacyMapPage from "./pages/PharmacyMapPage.js";
@@ -149,7 +149,7 @@ function App() {
           
           <Route path="profile" element={<ClientProfilePage/>} />
         <Route path="profile/edit" element={<EditClientProfilePage/>} />
-            <Route index element={<PharmacyMapPage />} />
+            <Route index element={<MedicineSearchPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="pharmacies" element={<PharmacyList />} />
@@ -171,11 +171,15 @@ function App() {
         {/* Pharmacist Routes */}
         <Route element={<RequireRole allowedRoles={["pharmacist"]} />}>
           <Route path="/pharmacy" element={<Pharmaciestlayout />}>
-            {/* <Route index element={<Drugs />} /> */}
+            <Route index element={<PharmacistProfile />} />
             <Route path="store" element={<PharmacistStoreProfilePage />} />
             {/* <Route path="drugs" element={<Drugs />} /> */}
             <Route path="archive" element={<ArchivePage />} />
             <Route path="drugs/add" element={<AddDrug />} />
+            <Route index element={<PharmacistProfile />} />
+            <Route path="store" element={<PharmacistStoreProfilePage />} />
+            {/* <Route path="drugs" element={<Drugs />} /> */}
+            {/* <Route path="drugs/add" element={<AddDrug />} /> */}
             <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<PharmacistProfile />} />
             <Route path="notifications" element={<NotificationPage />} />
