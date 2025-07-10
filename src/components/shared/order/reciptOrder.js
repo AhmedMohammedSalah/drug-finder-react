@@ -78,8 +78,8 @@ const ReceiptOrder = ({ order, fetchClientById }) => {
                     <td className="px-3 py-2">
                       <span className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold">x{item.quantity}</span>
                     </td>
-                    <td className="px-3 py-2 text-gray-700 font-semibold">{order.items.map((item)=>item.price)} EGP</td>
-                  </tr>
+                    <td className="px-3 py-2 text-gray-700 font-semibold">{order.items[idx].price} EGP</td>
+                  </tr> 
                 ))}
               </tbody>
             </table>
