@@ -40,12 +40,12 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link
+            {/* <Link
               to="/pharmacies"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Pharmacies
-            </Link>
+            </Link> */}
             <Link
               to="/#services"
               className="text-gray-700 hover:text-blue-600  font-medium transition-colors"

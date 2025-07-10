@@ -316,7 +316,7 @@ function StoresAdminPage() {
             <>
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50" />
               <div className="fixed inset-0 flex items-center justify-center z-50">
-                <form onSubmit={handleEditSubmit} className="bg-white rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col gap-6 min-w-[90vw] sm:min-w-[350px] max-w-md max-h-[90vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn">
+                <form onSubmit={handleEditSubmit} className="bg-white rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col gap-6 min-w-[90vw] sm:min-w-[900px] max-w-5xl max-h-[95vh] overflow-y-auto border-2 border-blue-200 relative animate-fadeIn">
                   <div className="flex flex-col items-center justify-center rounded-t-3xl bg-gradient-to-r from-blue-500 to-blue-400 p-6">
                     <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border-4 border-blue-200 mb-2 shadow-lg">
                       <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6 6M3 21h6v-6H3v6z" /></svg>

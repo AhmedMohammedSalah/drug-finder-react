@@ -57,7 +57,7 @@ const PharmacistRequestCard = ({ pharmacist, onClick }) => {
             <p className="text-sm text-gray-600">{phone_number}</p>
           )}
           <p className="text-xs text-gray-500 mt-1">
-            Requested on: {requestDate}
+            Requested
           </p>
         </div>
       </div>
