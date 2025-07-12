@@ -7,7 +7,7 @@ import EmailCard from "../../components/PharmacistProfile/EmailCard";
 import { Pencil } from "lucide-react";
 import SharedLoadingComponent from "../../components/shared/medicalLoading";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://ahmedmsalah.pythonanywhere.com";
 
 const PharmacistProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -107,7 +107,7 @@ const PharmacistProfilePage = () => {
               <img
                 src={
                   pharmacist.image_profile?.startsWith("/media")
-                    ? `http://localhost:8000${pharmacist.image_profile}`
+                    ? `https://ahmedmsalah.pythonanywhere.com${pharmacist.image_profile}`
                     : pharmacist.image_profile || "/default-profile.png"
                 }
                 alt="Profile"

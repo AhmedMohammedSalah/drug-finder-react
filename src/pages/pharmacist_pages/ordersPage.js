@@ -32,9 +32,12 @@ function OrdersPage() {
 
   useEffect(() => {
     if (!user?.id || !token) return;
-    fetch(`http://localhost:8000/medical_stores/?owner_id=${pharmacistId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      `https://ahmedmsalah.pythonanywhere.com/medical_stores/?owner_id=${pharmacistId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         const stores = Array.isArray(data) ? data.results : data.results;
@@ -51,7 +54,7 @@ function OrdersPage() {
     if (!storeId || !token) return;
     setLoading(true);
     fetch(
-      `http://localhost:8000/orders/?store_id=${storeId}&page=${page}&page_size=${pageSize}`,
+      `https://ahmedmsalah.pythonanywhere.com/orders/?store_id=${storeId}&page=${page}&page_size=${pageSize}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -78,9 +81,12 @@ function OrdersPage() {
       setAllOrders([]);
       return;
     }
-    fetch(`http://localhost:8000/orders/?store=${storeId}&page_size=10000`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      `https://ahmedmsalah.pythonanywhere.com/orders/?store=${storeId}&page_size=10000`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -106,7 +112,7 @@ function OrdersPage() {
     if (clientCache[clientId]) return clientCache[clientId];
     try {
       const res = await fetch(
-        `http://localhost:8000/users/users/${clientId}/`,
+        `https://ahmedmsalah.pythonanywhere.com/users/users/${clientId}/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -134,14 +140,17 @@ function OrdersPage() {
 
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:8000/orders/${editOrder.id}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ order_status: editForm.order_status }),
-      });
+      const res = await fetch(
+        `https://ahmedmsalah.pythonanywhere.com/orders/${editOrder.id}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ order_status: editForm.order_status }),
+        }
+      );
       if (res.ok) {
         const updatedOrder = await res.json();
         setOrders(
