@@ -1,13 +1,14 @@
-import React from 'react';
-import { Pencil } from 'lucide-react';
-import { GraduationCap } from 'lucide-react';
+import React from "react";
+import { Pencil } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 const FacultyCard = ({ pharmacist, editMode, setPharmacist }) => {
   const defaultFaculty = "Please enter your pharmacy faculty/university";
-  
+
   const logo =
-    pharmacist.pharmacist_faculty_logo && pharmacist.pharmacist_faculty_logo.startsWith('/media')
-      ? `http://localhost:8000${pharmacist.pharmacist_faculty_logo}`
+    pharmacist.pharmacist_faculty_logo &&
+    pharmacist.pharmacist_faculty_logo.startsWith("/media")
+      ? `https://ahmedmsalah.pythonanywhere.com${pharmacist.pharmacist_faculty_logo}`
       : null;
 
   return (
@@ -53,9 +54,12 @@ const FacultyCard = ({ pharmacist, editMode, setPharmacist }) => {
               type="text"
               className="w-full border border-gray-300 rounded p-2 text-sm"
               placeholder={defaultFaculty}
-              value={pharmacist.pharmacist_faculty || ''}
+              value={pharmacist.pharmacist_faculty || ""}
               onChange={(e) =>
-                setPharmacist((prev) => ({ ...prev, pharmacist_faculty: e.target.value }))
+                setPharmacist((prev) => ({
+                  ...prev,
+                  pharmacist_faculty: e.target.value,
+                }))
               }
             />
           ) : (

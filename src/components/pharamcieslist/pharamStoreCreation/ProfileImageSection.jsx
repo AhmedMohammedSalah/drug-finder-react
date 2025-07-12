@@ -1,5 +1,5 @@
-import React from 'react';
-import { Pencil, Store } from 'lucide-react';
+import React from "react";
+import { Pencil, Store } from "lucide-react";
 
 const ProfileImageSection = ({ logoImage, setLogoImage }) => {
   const handleImageChange = (e) => {
@@ -12,10 +12,10 @@ const ProfileImageSection = ({ logoImage, setLogoImage }) => {
   const imageSrc =
     logoImage instanceof File
       ? URL.createObjectURL(logoImage)
-      : logoImage?.startsWith('http')
+      : logoImage?.startsWith("http")
       ? logoImage
       : logoImage
-      ? `http://localhost:8000${logoImage}`
+      ? `https://ahmedmsalah.pythonanywhere.com${logoImage}`
       : null;
 
   return (

@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { X } from "lucide-react";
+import toast from "react-hot-toast";
 
 const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
-  const [selectedStatus, setSelectedStatus] = useState(pharmacist.license_status || 'pending');
-  const [rejectMessage, setRejectMessage] = useState(pharmacist.reject_message || '');
+  const [selectedStatus, setSelectedStatus] = useState(
+    pharmacist.license_status || "pending"
+  );
+  const [rejectMessage, setRejectMessage] = useState(
+    pharmacist.reject_message || ""
+  );
   const [loading, setLoading] = useState(false);
   const [zoom, setZoom] = useState(1);
   const zoomContainerRef = useRef(null);
 
   useEffect(() => {
-    setSelectedStatus(pharmacist.license_status || 'pending');
-    setRejectMessage(pharmacist.reject_message || '');
+    setSelectedStatus(pharmacist.license_status || "pending");
+    setRejectMessage(pharmacist.reject_message || "");
     setZoom(1); // reset zoom
   }, [pharmacist]);
 
@@ -26,28 +30,32 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
   };
 
   const handleConfirm = async () => {
-    const toastId = toast.loading('Saving...', {
-      position: 'top-right',
-      style: { animation: 'slide-in-right 0.3s ease-out' },
+    const toastId = toast.loading("Saving...", {
+      position: "top-right",
+      style: { animation: "slide-in-right 0.3s ease-out" },
     });
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem("access_token");
       const body = { license_status: selectedStatus };
 
-      if (selectedStatus === 'rejected') {
+      if (selectedStatus === "rejected") {
         body.reject_message = rejectMessage;
       }
 
-      await axios.patch(`http://localhost:8000/users/pharmacists/${pharmacist.id}/`, body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      await axios.patch(
+        `https://ahmedmsalah.pythonanywhere.com/users/pharmacists/${pharmacist.id}/`,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      toast.success('Pharmacist updated successfully!', {
+      toast.success("Pharmacist updated successfully!", {
         id: toastId,
         duration: 4000,
       });
@@ -55,21 +63,21 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
       onConfirm(pharmacist.id, selectedStatus, rejectMessage);
       onClose();
     } catch (error) {
-      toast.error('Failed to update pharmacist.', {
+      toast.error("Failed to update pharmacist.", {
         id: toastId,
         duration: 5000,
       });
-      console.error('Failed to update pharmacist:', error);
+      console.error("Failed to update pharmacist:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleClose = () => {
-    toast('Saving canceled', {
-      icon: '❌',
+    toast("Saving canceled", {
+      icon: "❌",
       duration: 3000,
-      position: 'top-right',
+      position: "top-right",
     });
     onClose();
   };
@@ -97,9 +105,9 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
             <div
               style={{
                 transform: `scale(${zoom})`,
-                transformOrigin: 'center center',
-                transition: 'transform 0.1s ease-out',
-                width: '100%',
+                transformOrigin: "center center",
+                transition: "transform 0.1s ease-out",
+                width: "100%",
               }}
               className="flex justify-center items-center"
             >
@@ -115,12 +123,14 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
           <div className="w-full md:w-1/2 flex flex-col space-y-4">
             <div className="flex items-center gap-4">
               <img
-                src={pharmacist.image_profile || '/avatar.jpg'}
+                src={pharmacist.image_profile || "/avatar.jpg"}
                 alt="Profile"
                 className="w-16 h-16 rounded-full object-cover border"
               />
               <div>
-                <h3 className="text-xl font-bold text-gray-800">{pharmacist.name}</h3>
+                <h3 className="text-xl font-bold text-gray-800">
+                  {pharmacist.name}
+                </h3>
                 <p className="text-sm text-gray-600">{pharmacist.email}</p>
               </div>
             </div>
@@ -142,9 +152,11 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
             </div>
 
             {/* Reject Reason */}
-            {selectedStatus === 'rejected' && (
+            {selectedStatus === "rejected" && (
               <div>
-                <label className="block mb-1 text-sm font-medium text-red-700">Reject Reason</label>
+                <label className="block mb-1 text-sm font-medium text-red-700">
+                  Reject Reason
+                </label>
                 <textarea
                   className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 text-sm"
                   rows={4}
@@ -163,10 +175,12 @@ const PharmacistModal = ({ pharmacist, onClose, onConfirm }) => {
             onClick={handleConfirm}
             disabled={loading}
             className={`w-full py-2 rounded-md text-white font-semibold text-sm ${
-              loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {loading ? 'Saving...' : 'Confirm'}
+            {loading ? "Saving..." : "Confirm"}
           </button>
         </div>
       </div>
