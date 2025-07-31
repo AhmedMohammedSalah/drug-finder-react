@@ -47,10 +47,11 @@ const PharmacyCardLocator = ({
 
   return (
     <>
-      <div 
-        className={`p-4 md:p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer mb-4 last:mb-0 w-full max-w-full overflow-hidden ${
-          selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'
-        }`}
+       <div 
+      className={`p-4 md:p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer mb-4 last:mb-0 w-[95%] md:w-[650px] max-w-full overflow-hidden ${
+      selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'
+                 }`}
+
         onClick={onClick}
       >
         <div className="flex justify-between items-start gap-2 flex-wrap">
