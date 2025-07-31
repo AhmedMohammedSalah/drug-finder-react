@@ -76,22 +76,21 @@ const PharmacyList = ({
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
-              {pharmacies.map(pharmacy => {
+              <div className="space-y-3 flex flex-col items-center">
+                {pharmacies.map(pharmacy => {
                const firstMedicine = findSearchedMedicine(pharmacy);
-
-  
-            return (
-                    <PharmacyCardLocator
+                return (
+                  <PharmacyCardLocator
                     key={pharmacy.id}
                     pharmacy={pharmacy}
                     medicine={firstMedicine}
                     selected={selectedPharmacy?.store_id === pharmacy.store_id}
                     onClick={() => onPharmacyClick(pharmacy)}
-                    />
-            );
-            })}
-              </div>
+                  />
+                );
+              })}
+            </div>
+
             )}
           </div>
         </div>
