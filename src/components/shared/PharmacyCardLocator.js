@@ -4,8 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import MedicinePopup from '../client/PharmacyLocator/MedicinePopup';
-import toast, { Toaster } from 'react-hot-toast';
-
+import toast from 'react-hot-toast';
 
 const PharmacyCardLocator = ({ 
   pharmacy, 
@@ -16,15 +15,12 @@ const PharmacyCardLocator = ({
   const [adding, setAdding] = useState(false);
   const [showMedicineModal, setShowMedicineModal] = useState(false);
   const dispatch = useDispatch();
-  const [toastMessage, setToastMessage] = useState(null);
-
 
   const handleAddToCart = async (e) => {
     if (e) e.stopPropagation();
     if (!medicine?.id) {
       console.error('Invalid medicine:', medicine);
       toast.error('Invalid medicine');
-
       return;
     }
 
@@ -35,12 +31,10 @@ const PharmacyCardLocator = ({
         pharmacy_id: pharmacy.store_id,
         pharmacy_name: pharmacy.store_name
       })).unwrap();
-      toast.success(`${medicine.brand_name} added to cart successfully!`)
+      toast.success(`${medicine.brand_name} added to cart successfully!`);
     } catch (err) {
       console.error('Add to cart failed:', err);
       toast.error(err.message || 'Failed to add item to cart');
-      ;
-
     } finally {
       setAdding(false);
     }
@@ -54,12 +48,12 @@ const PharmacyCardLocator = ({
   return (
     <>
       <div 
-        className={`p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer mb-4 last:mb-0 w-full ${
+        className={`p-4 md:p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer mb-4 last:mb-0 w-full max-w-full overflow-hidden ${
           selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'
         }`}
         onClick={onClick}
       >
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start gap-2 flex-wrap">
           <div className="flex items-start">
             <div className="w-12 h-12 rounded-md mr-3 flex items-center justify-center bg-gray-100 overflow-hidden">
               {pharmacy.store_logo_url ? (
@@ -77,7 +71,7 @@ const PharmacyCardLocator = ({
                 {pharmacy.store_name.charAt(0).toUpperCase()}
               </div>
             </div>
-            <div>
+            <div className="min-w-0">
               <h3 className="font-bold text-base text-gray-800">{pharmacy.store_name}</h3>
               <div className="mt-1 text-sm text-gray-600">
                 {pharmacy.phone && <p>{pharmacy.phone}</p>}
@@ -90,7 +84,7 @@ const PharmacyCardLocator = ({
             </div>
           </div>
           <Link 
-            className="text-blue-600 text-sm font-medium hover:text-blue-800"
+            className="text-blue-600 text-sm font-medium hover:text-blue-800 flex-shrink-0"
             to={`/client/pharmacies/${pharmacy.store_id}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -101,7 +95,7 @@ const PharmacyCardLocator = ({
         {medicine && (
           <>
             <div className="my-4 border-t border-gray-100"></div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <div className="w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
                 {medicine.image ? (
                   <img 
@@ -127,11 +121,11 @@ const PharmacyCardLocator = ({
                 <p className="text-gray-600 text-sm leading-relaxed mb-4 break-words hyphens-auto">
                   <span className="line-clamp-2">{medicine.description}</span>
                 </p>
-                <span className="bg-green-600 text-white text-sm font-semibold px-3 py-1.5 rounded-full border border-green-700">
+                <span className="bg-green-600 text-white text-sm font-semibold px-3 py-1.5 rounded-full border border-green-700 inline-block mb-2">
                   ${parseFloat(medicine.price).toFixed(2)}
                 </span>
                 
-                <div className="flex items-center justify-between gap-3 mt-3">
+                <div className="flex items-center justify-between gap-3 mt-3 flex-wrap">
                   <button 
                     className="text-blue-600 text-sm font-medium hover:text-blue-700 transition-colors duration-200 flex-shrink-0"
                     onClick={handleViewDetails}
@@ -140,7 +134,7 @@ const PharmacyCardLocator = ({
                   </button>
                   
                   <button 
-                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     onClick={handleAddToCart}
                     disabled={adding}
                   >
@@ -171,7 +165,6 @@ const PharmacyCardLocator = ({
           isAddingToCart={adding}
         />
       )}
- 
     </>
   );
 };
